@@ -52,6 +52,14 @@ class Email_Encoder_Settings{
 	 */
 	private $widget_callback_hook;
 
+        /**
+	 * The template tags
+	 *
+	 * @var string
+	 * @since x.x.x
+	 */
+	private $template_tags;
+
 	/**
 	 * The settings key
 	 *
