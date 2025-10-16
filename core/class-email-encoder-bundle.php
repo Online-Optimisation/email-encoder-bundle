@@ -120,7 +120,7 @@ if ( ! class_exists( 'Email_Encoder' ) ) :
 			} else {
 				require_once EEB_PLUGIN_DIR . 'core/includes/classes/class-email-encoder-bundle-run.php';
 			}
-			
+
 		}
 
 		/**
@@ -131,7 +131,7 @@ if ( ! class_exists( 'Email_Encoder' ) ) :
 		 * @return void
 		 */
 		private function base_hooks() {
-			add_action( 'plugins_loaded', array( self::$instance, 'load_textdomain' ) );
+			add_action( 'init', array( self::$instance, 'load_textdomain' ) );
 		}
 
 		/**

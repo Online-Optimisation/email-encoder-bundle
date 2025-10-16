@@ -4,22 +4,26 @@
             <li>
                 <a href="https://wpemailencoder.com/email-checker/" target="_blank">
                     <i class="dashicons-before dashicons-search"></i>
-                    Email checker        </a>
+                    Email checker
+                </a>
             </li>
             <li>
                 <a href="https://wpemailencoder.com/docs/article-categories/email-encoder/" target="_blank">
                     <i class="dashicons-before dashicons-media-text"></i>
-                    Documentation        </a>
+                    Documentation
+                </a>
             </li>
             <li>
                 <a href="http://wordpress.org/support/plugin/email-encoder-bundle#postform" target="_blank">
                     <i class="dashicons-before dashicons-welcome-comments"></i>
-                    Report a problem        </a>
+                    Report a problem
+                </a>
             </li>
             <li>
                 <a href="http://wordpress.org/extend/plugins/email-encoder-bundle/faq/" target="_blank">
                     <i class="dashicons-before dashicons-editor-help"></i>
-                    FAQ        </a>
+                    FAQ
+                </a>
             </li>
         </ul>
 
@@ -31,6 +35,7 @@
             </a>
         </p>
 
+        <?php /*
         <div>
             <a title="Visit wp-webhooks.com" href="https://wp-webhooks.com" target="_blank" style="text-decoration: none;">
                 <div style="background:linear-gradient(0deg, #0E0A1D 0%, rgb(99, 87, 219) 100%);padding: 20px;text-align: center;color: #fff;border-radius: 5px;">
@@ -43,7 +48,7 @@
                 </div>
             </a>
         </div>
-        
+
         <h4>Other plugins and services by Ironikus</h4>
         <ul id="other_plugins">
             <li>
@@ -60,5 +65,6 @@
             </li>
 
         </ul>
+        */ ?>
     </div>
 </div>

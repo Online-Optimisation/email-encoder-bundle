@@ -272,7 +272,9 @@ class Email_Encoder_Settings{
 		);
 
 		//Load data
-		$this->settings        			= $this->load_settings();
+		// $this->settings        			= $this->load_settings();
+        add_action( 'admin_init', [ $this, 'load_settings' ] );
+
 		$this->version        			= $this->load_version();
 		$this->email_image_secret       = $this->load_email_image_secret();
 	}
@@ -290,7 +292,7 @@ class Email_Encoder_Settings{
 	  *
 	  * @return array - An array with all available settings and filled values
 	  */
-	private function load_settings(){
+	public function load_settings(){
 		$fields = array(
 
 			'protect' => array(
@@ -299,7 +301,7 @@ class Email_Encoder_Settings{
 				'type'        => 'multi-input',
 				'input-type'  => 'radio',
 				'title'       => __( 'Protect emails', 'email-encoder-bundle' ),
-				'inputs' 	  => array( 
+				'inputs' 	  => array(
 					1 => array(
 						'label' => __( 'Full-page scan', 'email-encoder-bundle' ),
 						'description' => __('This will check the whole page against any mails and secures them.', 'email-encoder-bundle' )
@@ -323,7 +325,7 @@ class Email_Encoder_Settings{
 				'type'        => 'multi-input',
 				'input-type'  => 'radio',
 				'title'       => __( 'Protect emails using', 'email-encoder-bundle' ),
-				'inputs' 	  => array( 
+				'inputs' 	  => array(
 					'with_javascript' => array(
 						'label' => __( 'automatically the best method (including javascript)', 'email-encoder-bundle' )
 					),
@@ -604,7 +606,7 @@ class Email_Encoder_Settings{
 			update_option( $this->settings_key, $default_values );
 			$values = $default_values;
 		}
-		
+
 		//Bakwards compatibility
 		if( ! isset( $values['protect_using'] ) ){
 			$values['protect_using'] = 'with_javascript';
@@ -668,7 +670,7 @@ class Email_Encoder_Settings{
 							$fields[ $key ]['inputs'][ $smi_key ]['value'] = $values[ $smi_key ];
 						}
 					}
-					
+
 				}
 			} else {
 				if( isset( $values[ $key ] ) ){
@@ -677,7 +679,8 @@ class Email_Encoder_Settings{
 			}
 		}
 
-		return apply_filters( 'eeb/settings/fields', $fields );
+		$this->settings = apply_filters( 'eeb/settings/fields', $fields );
+        return $this->settings;
 	}
 
 	/**
@@ -901,10 +904,10 @@ class Email_Encoder_Settings{
 
 		return apply_filters( 'eeb/settings/get_email_regex', $return, $include );
 	}
-	
+
 	/**
 	 * Get Woocommerce variation attribute regex
-	 * 
+	 *
      * @param boolean $include
      * @return string
      */
@@ -925,7 +928,7 @@ class Email_Encoder_Settings{
 
 	/**
      * Get hook priorities
-	 * 
+	 *
      * @param boolean $single - wether you want to return only a single hook priority or not
      * @return mixed - An array or string of hook priority(-ies)
      */
@@ -933,7 +936,7 @@ class Email_Encoder_Settings{
 
 		$return = $this->hook_priorities;
 		$default = false;
-		
+
 		if( $single ){
 			if( isset( $this->hook_priorities[ $single ] ) ){
 				$return = $this->hook_priorities[ $single ];
@@ -947,7 +950,7 @@ class Email_Encoder_Settings{
     }
 
 	/**
-	  * Get a collection of safe HTML attributes 
+	  * Get a collection of safe HTML attributes
 	  *
 	  * @return array
 	  */
@@ -1012,7 +1015,7 @@ class Email_Encoder_Settings{
 					$return = $this->settings[ $slug ]['value'];
 				}
 
-				if( 
+				if(
 					! empty( $group )
 					&& isset( $this->settings[ $group ]['type'] )
 					&& $this->settings[ $group ]['type'] === 'multi-input'
@@ -1022,7 +1025,7 @@ class Email_Encoder_Settings{
 						$return = $this->settings[ $group ]['inputs'][ $slug ]['value'];
 					}
 				}
-				
+
 			} else {
 
 				if( ! empty( $group ) && isset( $this->settings[ $group ] ) ){
@@ -1030,9 +1033,9 @@ class Email_Encoder_Settings{
 				} else {
 					$return = $this->settings[ $slug ];
 				}
-				
+
 			}
-			
+
 		}
 
 		return $return;

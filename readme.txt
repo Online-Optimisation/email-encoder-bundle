@@ -1,16 +1,16 @@
 === Email Encoder - Protect Email Addresses and Phone Numbers ===
-Contributors: ironikus
+Contributors: onlineoptimisation
 Tags: anti spam, protect, encode, encrypt, hide, antispam, phone number, spambot, secure, e-mail, email, mail
 Requires at least: 4.7
 Requires PHP: 5.1
-Tested up to: 6.5.4
-Stable tag: 2.2.2
+Tested up to: 6.8.3
+Stable tag: 2.2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Author URI: https://wpemailencoder.com/
 Plugin URI: https://wordpress.org/plugins/email-encoder-bundle/
-Contributors: ironikus
-Donate link: https://paypal.me/ironikus
+Contributors: onlineoptimisation
+Donate link: https://paypal.me/onlineoptimisation
 
 Protect email addresses and phone numbers on your site and hide them from spambots. Easy to use & flexible.
 
@@ -33,7 +33,7 @@ It also protects phone numbers or any other text using our integrated `[eeb_prot
 * Shortcode support: `[eeb_protect_emails]`, `[eeb_protect_content]`, `[eeb_mailto]`, `[eeb_form]`
 * Template tag support: `eeb_protect_emails()`, `eeb_protect_content()`, `eeb_mailto()`, `eeb_form()`
 * Protect phone numbers (or any text or html)
-* Also supports special chars, like é, â, ö, Chinese characters etcetera
+* Also supports special chars, like Ã©, Ã¢, Ã¶, Chinese characters etcetera
 * Use the Encoder Form to manually create encoded scripts
 
 = Compatibilities =
@@ -69,7 +69,7 @@ We also offer custom shortcodes and template functions to protect phone numbers 
 
 = How can I test if an email address (or other content) is encoded? =
 
-You can test this in three different ways. 
+You can test this in three different ways.
 
 The easiest (and most efficient) way is to use our website checker, which looks over your website and detects unprotected emails. It is completely free and you can [find it here](https://wpemailencoder.com/email-protection-checker/) on our website.
 
@@ -83,7 +83,7 @@ Now your (real) source code will be shown. Your email address should not be show
 
 = How do I encode my email address(es)? =
 
-All email addresses are protected automatically by default, so it is not necessary to configure anything else. 
+All email addresses are protected automatically by default, so it is not necessary to configure anything else.
 
 In case you wish to customize it, we also offer some neatsettings,  shortcodes and template functions. Please check the settings page within your WordPress website or [our documentation](https://wpemailencoder.com/)
 
@@ -100,12 +100,12 @@ For other parts of your site you can use the template function `eeb_protect_cont
 
 = My website looks broken after activating the plugin. What to do? =
 
-First: Don't panic! 
+First: Don't panic!
 Simply create a support request within the [support forum](http://wordpress.org/support/plugin/email-encoder-bundle#postform) and we will come back to you as soon as possible with help.
 
 = How can I encode content of BBPress, WP e-commerce or other plugins? =
 
-Every content will be automatically protected. In case you find something, that doesn't work from your end, we are very happy to help! 
+Every content will be automatically protected. In case you find something, that doesn't work from your end, we are very happy to help!
 Our plugin is fully compatible with [WP Webhooks](https://wp-webhooks.com/) and plugins created via [Pluginplate](https://pluginplate.com/)
 
 = Can I use special characters (like Chinese)? =
@@ -125,6 +125,18 @@ Yes, since version 1.3.0 also special characters are supported.
 * Title icon on Admin Options Page was made by [Jack Cai](http://www.doublejdesign.co.uk/)
 
 == Changelog ==
+
+= 2.2.3: October 16, 2025 =
+* Fix: Fixed some PHP 8.4+ notices
+* Fix: Translations loading in time
+* Tweak: Compatibility with WP 6.8.3
+
+= 2.2.1: February 11, 2024 =
+* Tweak: Security Patch
+* Tweak: Provide compatibility if GD Library Not Enabled
+* Tweak: Compatibility with WP 6.4.3
+* Fix: Fixed some PHP 8.2+ notices
+* Fix: Fixed Automatic Translations for WPML: https://wpml.org/errata/email-encoder-protect-email-addresses-and-phone-numbers-there-is-a-problem-connecting-to-automatic-translation/
 
 = 2.2.2: June 15, 2024 =
 * Tweak: Minor Security Patch (Multisite)
@@ -293,7 +305,7 @@ Yes, since version 1.3.0 also special characters are supported.
 * THIS PLUGIN WILL BE REFACTORED WITH THE NEXT UPDATE
 * TO PREPARE YOURSELF, YOU WILL FIND A LIST DOWN BELOW WITH THE CHANGES THAT AWAIT YOU
 * - The plugin will be simplified using automatically the best protection for your site
-* - The plugin will protect yout site out-of-the-box 
+* - The plugin will protect yout site out-of-the-box
 * - We introduce a site-wide protection, not only based on WordPress shortcodes (This includes protection for your FULL site)
 * - You will be able to choose the protection type. Available will be: Automatically (using Javascript), Automatically (Without Javascript), Protection Text, Entity encode
 * - The plugin structure will be optimized using the current WordPress standards
@@ -342,7 +354,7 @@ Yes, since version 1.3.0 also special characters are supported.
 * Added option protection text for encoded content (other than email addresses)
 
 = 1.3.0 =
-* Also support special chars for the javascript methods, like é, â, ö, Chinese chars etcetera
+* Also support special chars for the javascript methods, like Ã©, Ã¢, Ã¶, Chinese chars etcetera
 * Fixed bug unchecking options "use shortcode" and "use deprecated"
 
 = 1.2.1 =
