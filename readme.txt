@@ -126,6 +126,9 @@ Yes, since version 1.3.0 also special characters are supported.
 
 == Changelog ==
 
+= 2.2.4: October 28, 2025 =
+* Tweak: Compatibility with HivePress plugin 
+
 = 2.2.3: October 16, 2025 =
 * Fix: Fixed some PHP 8.4+ notices
 * Fix: Translations loading in time
