@@ -3,7 +3,7 @@
 // Exit if accessed directly.
 if ( !defined( 'ABSPATH' ) ) exit;
 
-if( ! class_exists( 'Email_Encoder_Integration_Divi' ) ){
+if ( ! class_exists( 'Email_Encoder_Integration_Divi' ) ){
 
     /**
      * Class Email_Encoder_Integration_Divi
@@ -68,14 +68,14 @@ if( ! class_exists( 'Email_Encoder_Integration_Divi' ) ){
          * ###
          * ######################
          */
-        
+
         public function deactivate_logic( $fields ){
 
-            if( $this->is_divi_active() ){
-                if( isset( $_GET['et_fb'] ) && $_GET['et_fb'] == '1' ){
-                    if( is_array( $fields ) ){
-                        if( isset( $fields[ 'protect' ] ) ){
-                            if( isset( $fields[ 'protect' ]['value'] ) ){
+            if ( $this->is_divi_active() ){
+                if ( isset( $_GET['et_fb'] ) && $_GET['et_fb'] == '1' ){
+                    if ( is_array( $fields ) ){
+                        if ( isset( $fields[ 'protect' ] ) ){
+                            if ( isset( $fields[ 'protect' ]['value'] ) ){
                                 $fields[ 'protect' ]['value'] = 3;
                             }
                         }
@@ -84,9 +84,9 @@ if( ! class_exists( 'Email_Encoder_Integration_Divi' ) ){
             }
 
             return $fields;
-            
+
         }
-        
+
 
     }
 

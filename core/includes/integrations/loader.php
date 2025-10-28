@@ -6,15 +6,15 @@
  */
 
  // Exit if accessed directly.
-if ( !defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
-class EEB_Integrations_Loader{
+class EEB_Integrations_Loader {
 
-    function __construct(){
+    function __construct() {
         $this->load_integrations();
     }
 
-    public function load_integrations(){
+    public function load_integrations() {
 
         $plugins = array(
             'avada_builder' => 'avada_builder.php',
@@ -25,6 +25,7 @@ class EEB_Integrations_Loader{
             'oxygen_builder' => 'oxygen_builder.php',
             'the_events_calendar' => 'the_events_calendar.php',
             'wpml' => 'wpml.php',
+            'hive_press' => 'hive_press.php',
         );
 
         $services = array(
@@ -32,18 +33,18 @@ class EEB_Integrations_Loader{
         );
 
         $integrations = array_merge( $plugins, $services );
-        
+
         foreach ( $integrations as $plugin_id => $plugin_file ) :
-        
+
             $plugin_file = 'classes/' . $plugin_file;
             $full_path = EEB_PLUGIN_DIR . 'core/includes/integrations/' . $plugin_file;
-        
-            if ( TRUE === apply_filters( 'eeb/integrations/' . $plugin_id, true ) ){
-                if( file_exists( $full_path ) ){
+
+            if ( TRUE === apply_filters( 'eeb/integrations/' . $plugin_id, true ) ) {
+                if ( file_exists( $full_path ) ){
                     include( $plugin_file );
                 }
             }
-        
+
         endforeach;
 
     }

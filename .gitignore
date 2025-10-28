@@ -3,3 +3,4 @@
 
 /vendor/
 .phpcs-cache
+/release

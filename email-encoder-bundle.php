@@ -22,7 +22,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 define( 'EEB_NAME',           'Email Encoder' );
 
 // Plugin version.
-define( 'EEB_VERSION',        '2.2.3' );
+define( 'EEB_VERSION',        '2.2.4' );
 
 // Determines if the plugin is loaded
 define( 'EEB_SETUP',          true );

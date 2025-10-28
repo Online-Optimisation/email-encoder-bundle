@@ -48,7 +48,7 @@ class Email_Encoder_Validate{
 	/**
 	 * Our Email_Encoder_Run constructor.
 	 */
-	function __construct(){
+	function __construct() {
 		$this->page_name    			= EEB()->settings->get_page_name();
 		$this->page_title   			= EEB()->settings->get_page_title();
         $this->final_outout_buffer_hook = EEB()->settings->get_final_outout_buffer_hook();
@@ -70,20 +70,20 @@ class Email_Encoder_Validate{
       * @param bool $convertPlainEmails - wether plain emails should be preserved or not
       * @return string - The filtered content
       */
-    public function filter_page( $content, $protect_using ){
-        
+    public function filter_page( $content, $protect_using ) {
+
         //Added in 2.0.6
         $content = apply_filters( 'eeb/validate/filter_page_content', $content, $protect_using );
 
         $content = $this->filter_soft_dom_attributes( $content, 'char_encode' );
 
         $htmlSplit = preg_split( '/(<body(([^>]*)>))/is', $content, -1, PREG_SPLIT_DELIM_CAPTURE );
-        
+
         if ( count( $htmlSplit ) < 4 ) {
             return $content;
         }
 
-        switch( $protect_using ){
+        switch( $protect_using ) {
             case 'with_javascript':
             case 'without_javascript':
             case 'char_encode':
@@ -96,7 +96,7 @@ class Email_Encoder_Validate{
 
         //Filter head area
         $filtered_head = $this->filter_plain_emails( $htmlSplit[0], null, $head_encoding_method );
-        
+
         //Filter body
         //Soft attributes always need to be protected using only the char encode method since otherwise the logic breaks
         $filtered_body = $this->filter_soft_attributes( $htmlSplit[4], 'char_encode' );
@@ -112,12 +112,12 @@ class Email_Encoder_Validate{
 
     /**
      * Filter content
-     * 
+     *
      * @param string  $content
      * @param integer $protect_using
      * @return string
      */
-    public function filter_content( $content, $protect_using ){
+    public function filter_content( $content, $protect_using ) {
         $filtered = $content;
         $self = $this;
         $encode_mailtos = (bool) EEB()->settings->get_setting( 'encode_mailtos', true, 'filter_body' );
@@ -129,7 +129,7 @@ class Email_Encoder_Validate{
         //Soft attributes always need to be protected using only the char encode method since otherwise the logic breaks
         $filtered = $this->filter_soft_attributes( $filtered, 'char_encode' );
 
-        switch( $protect_using ){
+        switch( $protect_using ) {
             case 'char_encode':
                 $filtered = $this->filter_plain_emails( $filtered, null, 'char_encode' );
                 break;
@@ -141,14 +141,14 @@ class Email_Encoder_Validate{
                 $filtered = $this->filter_mailto_links( $filtered, 'without_javascript' );
                 $filtered = $this->filter_custom_links( $filtered, 'without_javascript' );
 
-                if( $convert_plain_to_image ){
+                if ( $convert_plain_to_image ) {
                     $replace_by = 'convert_image';
                 } else {
                     $replace_by = 'use_css';
                 }
 
-                if( $encode_mailtos ){
-                    if( ! ( function_exists( 'et_fb_enabled' ) && et_fb_enabled() ) ){
+                if ( $encode_mailtos ) {
+                    if ( ! ( function_exists( 'et_fb_enabled' ) && et_fb_enabled() ) ) {
                         $filtered = $this->filter_plain_emails( $filtered, function ( $match ) use ( $self ) {
                             return $self->create_protected_mailto( $match[0], array( 'href' => 'mailto:' . $match[0] ), 'without_javascript' );
                         }, $replace_by);
@@ -158,21 +158,21 @@ class Email_Encoder_Validate{
                 } else {
                     $filtered = $this->filter_plain_emails( $filtered, null, $replace_by );
                 }
-                
+
                 break;
             case 'with_javascript':
                 $filtered = $this->filter_input_fields( $filtered, $protect_using );
                 $filtered = $this->filter_mailto_links( $filtered );
                 $filtered = $this->filter_custom_links( $filtered );
 
-                if( $convert_plain_to_image ){
+                if ( $convert_plain_to_image ) {
                     $replace_by = 'convert_image';
                 } else {
                     $replace_by = 'use_javascript';
                 }
 
-                if( $encode_mailtos ){
-                    if( ! ( function_exists( 'et_fb_enabled' ) && et_fb_enabled() ) ){
+                if ( $encode_mailtos ) {
+                    if ( ! ( function_exists( 'et_fb_enabled' ) && et_fb_enabled() ) ) {
                         $filtered = $this->filter_plain_emails( $filtered, function ( $match ) use ( $self ) {
                             return $self->create_protected_mailto( $match[0], array( 'href' => 'mailto:' . $match[0] ), 'with_javascript' );
                         }, $replace_by);
@@ -200,9 +200,9 @@ class Email_Encoder_Validate{
      * @param mixed            $show_encoded_check  Optional
      * @return string
      */
-    public function filter_plain_emails($content, $replace_by = null, $protection_method = 'default', $show_encoded_check = 'default' ){
+    public function filter_plain_emails( $content, $replace_by = null, $protection_method = 'default', $show_encoded_check = 'default' ) {
 
-        if( $show_encoded_check === 'default' ){
+        if ( $show_encoded_check === 'default' ) {
             $show_encoded_check = (bool) EEB()->settings->get_setting( 'show_encoded_check', true );
         }
 
@@ -215,12 +215,12 @@ class Email_Encoder_Validate{
         return preg_replace_callback( EEB()->settings->get_email_regex(), function ( $matches ) use ( $replace_by, $protection_method, $show_encoded_check, $self ) {
             // workaround to skip responsive image names containing @
             $extention = strtolower( $matches[4] );
-            $excludedList = array( 
-                '.jpg', 
-                '.jpeg', 
-                '.png', 
-                '.gif', 
-                '.svg', 
+            $excludedList = array(
+                '.jpg',
+                '.jpeg',
+                '.png',
+                '.gif',
+                '.svg',
                 '.webp',
                 '.bmp',
                 '.tiff',
@@ -238,24 +238,24 @@ class Email_Encoder_Validate{
                 return call_user_func( $replace_by, $matches, $protection_method );
             }
 
-            if( $protection_method === 'char_encode' ){
+            if ( $protection_method === 'char_encode' ) {
                 $protected_return = antispambot( $matches[0] );
-            } elseif( $protection_method === 'convert_image' ){
+            } elseif ( $protection_method === 'convert_image' ) {
 
                 $image_link = $self->generate_email_image_url( $matches[0] );
-                if( ! empty( $image_link ) ){
+                if ( ! empty( $image_link ) ) {
                     $protected_return = '<img src="' . $image_link . '" />';
                 } else {
                     $protected_return = antispambot( $matches[0] );
                 }
-                
-            } elseif( $protection_method === 'use_javascript' ){
+
+            } elseif ( $protection_method === 'use_javascript' ) {
                 $protection_text = __( EEB()->settings->get_setting( 'protection_text', true ), 'email-encoder-bundle' );
                 $protected_return = $this->dynamic_js_email_encoding( $matches[0], $protection_text );
-            } elseif( $protection_method === 'use_css' ){
+            } elseif ( $protection_method === 'use_css' ) {
                 $protection_text = __( EEB()->settings->get_setting( 'protection_text', true ), 'email-encoder-bundle' );
                 $protected_return = $this->encode_email_css( $matches[0], $protection_text );
-            } elseif( $protection_method === 'no_encoding' ){
+            } elseif ( $protection_method === 'no_encoding' ) {
                 $protected_return = $matches[0];
             } else {
                 $protected_return = $replace_by;
@@ -267,17 +267,17 @@ class Email_Encoder_Validate{
             }
 
             return $protected_return;
-            
+
         }, $content );
     }
 
     /**
-     * Filter passed input fields 
-     * 
+     * Filter passed input fields
+     *
      * @param string $content
      * @return string
      */
-    public function filter_input_fields( $content, $encoding_method = 'default' ){
+    public function filter_input_fields( $content, $encoding_method = 'default' ) {
         $self = $this;
         $strong_encoding = (bool) EEB()->settings->get_setting( 'input_strong_protection', true, 'filter_body' );
 
@@ -286,7 +286,7 @@ class Email_Encoder_Validate{
             $email = $match[2];
 
             //Only allow strong encoding if javascript is supported
-            if( $encoding_method === 'without_javascript' ){
+            if ( $encoding_method === 'without_javascript' ) {
                 $strong_encoding = false;
             }
 
@@ -302,7 +302,7 @@ class Email_Encoder_Validate{
      * @param string $content
      * @return string
      */
-    public function filter_mailto_links( $content, $protection_method = null ){
+    public function filter_mailto_links( $content, $protection_method = null ) {
         $self = $this;
 
         $callbackEncodeMailtoLinks = function ( $match ) use ( $self, $protection_method ) {
@@ -319,22 +319,22 @@ class Email_Encoder_Validate{
      * @param string $content
      * @return string
      */
-    public function filter_custom_links( $content, $protection_method = null ){
+    public function filter_custom_links( $content, $protection_method = null ) {
         $self = $this;
         $custom_href_attr = (string) EEB()->settings->get_setting( 'custom_href_attr', true );
 
-        if( ! empty( $custom_href_attr ) ){
+        if ( ! empty( $custom_href_attr ) ) {
             $custom_attr_list = explode( ',', $custom_href_attr );
-            foreach( $custom_attr_list as $s_attr ){
+            foreach( $custom_attr_list as $s_attr ) {
                 $attr_name = trim( $s_attr );
 
                 $callbackEncodeCustomLinks = function ( $match ) use ( $self, $protection_method ) {
                     $attrs = shortcode_parse_atts( $match[1] );
                     return $self->create_protected_href_att( $match[4], $attrs, $protection_method );
                 };
-        
+
                 $regexpMailtoLink = '/<a[\s+]*(([^>]*)href=["\']' . addslashes( $attr_name ) . '\:([^>]*)["\' ])>(.*?)<\/a[\s+]*>/is';
-        
+
                 $content = preg_replace_callback( $regexpMailtoLink, $callbackEncodeCustomLinks, $content );
             }
         }
@@ -344,40 +344,40 @@ class Email_Encoder_Validate{
 
     /**
      * Emails will be replaced by '*protected email*'
-     * 
+     *
      * @param string $content
      * @return string
      */
-    public function filter_rss( $content, $protection_type ){
-        
-        if( $protection_type === 'strong_method' ) {
+    public function filter_rss( $content, $protection_type ) {
+
+        if ( $protection_type === 'strong_method' ) {
             $filtered = $this->filter_plain_emails( $content );
         } else {
             $filtered = $this->filter_plain_emails( $content, null, 'char_encode' );
         }
-        
+
         return $filtered;
     }
 
     /**
      * Filter plain emails using soft attributes
-     * 
+     *
      * @param string $content - the content that should be soft filtered
      * @param string $protection_method - The method (E.g. char_encode)
      * @return string
      */
-    public function filter_soft_attributes( $content, $protection_method ){
+    public function filter_soft_attributes( $content, $protection_method ) {
         $soft_attributes = EEB()->settings->get_soft_attribute_regex();
 
-        foreach( $soft_attributes as $ident => $regex ){
+        foreach( $soft_attributes as $ident => $regex ) {
 
             $attributes = array();
             preg_match_all( $regex, $content, $attributes );
-            
-            if( is_array( $attributes ) && isset( $attributes[0] ) ){
-                foreach( $attributes[0] as $single ){
 
-                    if( empty( $single ) ){
+            if ( is_array( $attributes ) && isset( $attributes[0] ) ) {
+                foreach( $attributes[0] as $single ) {
+
+                    if ( empty( $single ) ) {
                         continue;
                     }
 
@@ -392,92 +392,92 @@ class Email_Encoder_Validate{
 
     /**
      * Filter plain emails using soft dom attributes
-     * 
+     *
      * @param string $content - the content that should be soft filtered
      * @param string $protection_method - The method (E.g. char_encode)
      * @return string
      */
-    public function filter_soft_dom_attributes( $content, $protection_method ){
+    public function filter_soft_dom_attributes( $content, $protection_method ) {
 
         $no_script_tags = (bool) EEB()->settings->get_setting( 'no_script_tags', true, 'filter_body' );
         $no_attribute_validation = (bool) EEB()->settings->get_setting( 'no_attribute_validation', true, 'filter_body' );
 
-        if( ! empty( $content ) && is_string( $content ) ){
+        if ( ! empty( $content ) && is_string( $content ) ) {
 
-            if( class_exists( 'DOMDocument' ) ){
+            if ( class_exists( 'DOMDocument' ) ) {
                 $dom = new DOMDocument();
                 @$dom->loadHTML($content);
-    
+
                 //Filter html attributes
-                if( ! $no_attribute_validation ){
+                if ( ! $no_attribute_validation ) {
                     $allNodes = $dom->getElementsByTagName('*');
-                    foreach( $allNodes as $snote ){
-                        if( $snote->hasAttributes() ) {
+                    foreach( $allNodes as $snote ) {
+                        if ( $snote->hasAttributes() ) {
                             foreach( $snote->attributes as $attr ) {
-                                if( $attr->nodeName == 'href' || $attr->nodeName == 'src' ){
+                                if ( $attr->nodeName == 'href' || $attr->nodeName == 'src' ) {
                                     continue;
                                 }
-        
-                                if( strpos( $attr->nodeValue, '@' ) !== FALSE ){
+
+                                if ( strpos( $attr->nodeValue, '@' ) !== FALSE ) {
                                     $single_tags = array();
                                     preg_match_all( '/' . $attr->nodeName . '=["\']([^"]*)["\']/i', $content, $single_tags );
-                                    
-                                    if( is_array( $single_tags ) && isset( $single_tags[0] ) ){
-                                        foreach( $single_tags[0] as $single ){
-    
-                                            if( empty( $single ) ){
+
+                                    if ( is_array( $single_tags ) && isset( $single_tags[0] ) ) {
+                                        foreach( $single_tags[0] as $single ) {
+
+                                            if ( empty( $single ) ) {
                                                 continue;
                                             }
-    
+
                                             $content = str_replace( $single, $this->filter_plain_emails( $single, null, $protection_method, false ), $content );
                                         }
                                     }
-                                    
+
                                 }
                             }
                         }
                     }
                 }
-        
+
                 //Keep for now
                 //Soft-encode scripts
                 // $script = $dom->getElementsByTagName('script');
-                // if( ! empty( $script ) ){
+                // if ( ! empty( $script ) ) {
                 //     $scripts_encoded = true;
 
-                //     if( ! $no_script_tags ){
-                //         foreach( $script as $item ){
+                //     if ( ! $no_script_tags ) {
+                //         foreach( $script as $item ) {
                 //             $content = str_replace( $item->nodeValue, $this->filter_plain_emails( $item->nodeValue, null, $protection_method, false ), $content );
                 //         }
                 //     } else {
-                //         foreach( $script as $item ){
+                //         foreach( $script as $item ) {
                 //             $content = str_replace( $item->nodeValue, $this->temp_encode_at_symbol( $item->nodeValue ), $content );
                 //         }
                 //     }
                 // }
-                
+
             }
 
             //Validate script tags for better encoding
             $pattern = '/<script\b[^>]*>(.*?)<\/script>/is';
 
             preg_match_all($pattern, $content, $matches);
-            if( 
+            if (
                 isset( $matches[1] )
                 && ! empty( $matches[1] )
-                ){
-                if( ! $no_script_tags ){
-                    foreach( $matches[1] as $key => $item ){
+                ) {
+                if ( ! $no_script_tags ) {
+                    foreach( $matches[1] as $key => $item ) {
 
                         //Don't do anything if something doesn't add up
-                        if( ! isset( $matches[0][ $key ] ) ){
+                        if ( ! isset( $matches[0][ $key ] ) ) {
                             continue;
                         }
 
                         $org_script = $matches[0][ $key ];
 
                         //Only encode emails when a CDATA is given to not cause any break within the scripts
-                        if( strpos( $item, '<![CDATA' ) !== false ){
+                        if ( strpos( $item, '<![CDATA' ) !== false ) {
                             $validated_script = str_replace( $item, $this->filter_plain_emails( $item, null, $protection_method, false ), $org_script );
                         } else {
                             $validated_script = str_replace( $item, $this->temp_encode_at_symbol( $item ), $org_script );
@@ -486,10 +486,10 @@ class Email_Encoder_Validate{
                         $content = str_replace( $org_script, $validated_script, $content );
                     }
                 } else {
-                    foreach( $matches[1] as $key => $item ){
-                        
+                    foreach( $matches[1] as $key => $item ) {
+
                         //Don't do anything if something doesn't add up
-                        if( ! isset( $matches[0][ $key ] ) ){
+                        if ( ! isset( $matches[0][ $key ] ) ) {
                             continue;
                         }
 
@@ -502,8 +502,8 @@ class Email_Encoder_Validate{
             }
 
         }
-        
-        
+
+
         return $content;
     }
 
@@ -515,8 +515,8 @@ class Email_Encoder_Validate{
 	 * ######################
 	 */
 
-    public function temp_encode_at_symbol( $content, $decode = false ){
-        if( $decode ){
+    public function temp_encode_at_symbol( $content, $decode = false ) {
+        if ( $decode ) {
            return str_replace( $this->at_identifier, '@', $content );
         }
 
@@ -535,7 +535,7 @@ class Email_Encoder_Validate{
 
         // first encode, so special chars can be supported
         $mail_link = EEB()->helpers->encode_uri_components( $mail_link );
-        
+
         $mail_letters = '';
 
         for ($i = 0; $i < strlen($mail_link); $i ++) {
@@ -565,9 +565,9 @@ class Email_Encoder_Validate{
 
         return '<span id="'. $element_id . '"></span>'
                 . '<script type="text/javascript">'
-                . '(function(){'
+                . '(function() {'
                 . 'var ml="'. $mail_letters_enc .'",mi="'. $mail_indices .'",o="";'
-                . 'for(var j=0,l=mi.length;j<l;j++){'
+                . 'for(var j=0,l=mi.length;j<l;j++) {'
                 . 'o+=ml.charAt(mi.charCodeAt(j)-48);'
                 . '}document.getElementById("' . $element_id . '").innerHTML = decodeURIComponent(o);' // decode at the end, this way special chars can be supported
                 . '}());'
@@ -597,7 +597,7 @@ class Email_Encoder_Validate{
 
               foreach( $split as $c ) {
                 // preg split will return empty first and last characters, check for them and ignore
-                if( ! empty( $c ) || $c === '0' ) {
+                if ( ! empty( $c ) || $c === '0' ) {
                   $out .= '%' . dechex( ord( $c ) );
                 }
               }
@@ -615,8 +615,8 @@ class Email_Encoder_Validate{
      * @param string $email
      * @return string
      */
-    public function encode_input_field( $input, $email, $strongEncoding = false ){  
-        
+    public function encode_input_field( $input, $email, $strongEncoding = false ) {
+
         $show_encoded_check = (bool) EEB()->settings->get_setting( 'show_encoded_check', true );
 
         if ( $strongEncoding === false ) {
@@ -648,11 +648,11 @@ class Email_Encoder_Validate{
 
     /**
      * Get encoded email, used for data-attribute (translate by javascript)
-     * 
+     *
      * @param string $email
      * @return string
      */
-    public function get_encoded_email( $email ){
+    public function get_encoded_email( $email ) {
         $encEmail = $email;
 
         // decode entities
@@ -669,12 +669,12 @@ class Email_Encoder_Validate{
 
     /**
      * Get the ebcoded email icon
-     * 
+     *
      * @param string $email
      * @return string
      */
-    public function get_encoded_email_icon( $text = 'Email encoded successfully!' ){
-        
+    public function get_encoded_email_icon( $text = 'Email encoded successfully!' ) {
+
         $html = '<i class="eeb-encoded dashicons-before dashicons-lock" title="' . __( $text, 'email-encoder-bundle' ) . '"></i>';
 
         return apply_filters( 'eeb/validate/get_encoded_email_icon', $html, $text );
@@ -682,12 +682,12 @@ class Email_Encoder_Validate{
 
     /**
      * Create a protected email
-     * 
+     *
      * @param string $display
      * @param array $attrs Optional
      * @return string
      */
-    public function create_protected_mailto( $display, $attrs = array(), $protection_method = null ){
+    public function create_protected_mailto( $display, $attrs = array(), $protection_method = null ) {
         $email     = '';
         $class_ori = ( empty( $attrs['class'] ) ) ? '' : $attrs['class'];
         $custom_class = (string) EEB()->settings->get_setting( 'class_name', true );
@@ -711,7 +711,7 @@ class Email_Encoder_Validate{
 
         foreach ( $attrs AS $key => $value ) {
             if ( strtolower( $key ) == 'href' ) {
-                if( $protection_method === 'without_javascript' ){
+                if ( $protection_method === 'without_javascript' ) {
                     $link .= $key . '="' . antispambot( $value ) . '" ';
                 } else {
                     // get email from href
@@ -723,7 +723,7 @@ class Email_Encoder_Validate{
                     $link .= 'href="javascript:;" ';
                     $link .= 'data-enc-email="' . $encoded_email . '" ';
                 }
-                
+
             } else {
                 $link .= $key . '="' . $value . '" ';
             }
@@ -755,12 +755,12 @@ class Email_Encoder_Validate{
 
     /**
      * Create a protected custom attribute
-     * 
+     *
      * @param string $display
      * @param array $attrs Optional
      * @return string
      */
-    public function create_protected_href_att( $display, $attrs = array(), $protection_method = null ){
+    public function create_protected_href_att( $display, $attrs = array(), $protection_method = null ) {
         $email     = '';
         $class_ori = ( empty( $attrs['class'] ) ) ? '' : $attrs['class'];
         $custom_class = (string) EEB()->settings->get_setting( 'class_name', true );
@@ -820,7 +820,7 @@ class Email_Encoder_Validate{
      * @param string|array $display
      * @return string Protected display
      */
-    public function get_protected_display( $display, $protection_method = null ){
+    public function get_protected_display( $display, $protection_method = null ) {
 
         $convert_plain_to_image = (bool) EEB()->settings->get_setting( 'convert_plain_to_image', true, 'filter_body' );
         $protection_text = __( EEB()->settings->get_setting( 'protection_text', true ), 'email-encoder-bundle' );
@@ -831,16 +831,16 @@ class Email_Encoder_Validate{
             $display = $display[0];
         }
 
-        if( $convert_plain_to_image ){
+        if ( $convert_plain_to_image ) {
             $display = '<img src="' . $this->generate_email_image_url( $display ) . '" />';
-        } elseif( $protection_method !== 'without_javascript' ){
+        } elseif ( $protection_method !== 'without_javascript' ) {
             $display = $this->dynamic_js_email_encoding( $display, $protection_text );
         } else {
             $display = $this->encode_email_css( $display );
         }
 
         return apply_filters( 'eeb/validate/get_protected_display', $display, $raw_display, $protection_method, $protection_text );
-        
+
     }
 
     /**
@@ -850,11 +850,11 @@ class Email_Encoder_Validate{
      * @param string $protection_text
      * @return the encoded email
      */
-    public function dynamic_js_email_encoding( $email, $protection_text = null ){
+    public function dynamic_js_email_encoding( $email, $protection_text = null ) {
         $return = $email;
         $rand = apply_filters( 'eeb/validate/random_encoding', rand(0,2), $email, $protection_text );
 
-        switch( $rand ){
+        switch( $rand ) {
             case 2:
                 $return = $this->encode_escape( $return, $protection_text );
                 break;
@@ -869,7 +869,7 @@ class Email_Encoder_Validate{
         return $return;
     }
 
-    public function encode_email_css( $display ){
+    public function encode_email_css( $display ) {
         $deactivate_rtl = (bool) EEB()->settings->get_setting( 'deactivate_rtl', true, 'filter_body' );
 
         $stripped_display = strip_tags( $display );
@@ -882,7 +882,7 @@ class Email_Encoder_Validate{
         $protected = '';
         $protection_classes = 'eeb';
 
-        if( $deactivate_rtl ){
+        if ( $deactivate_rtl ) {
             $rev = $stripped_display;
             $protection_classes .= ' eeb-nrtl';
         } else {
@@ -890,7 +890,7 @@ class Email_Encoder_Validate{
             $rev = strrev( $stripped_display );
             $protection_classes .= ' eeb-rtl';
         }
-       
+
 
         while ( $offset < $length ) {
             $protected .= '<span class="eeb-sd">' . antispambot( substr( $rev, $offset, $interval ) ) . '</span>';
@@ -905,8 +905,8 @@ class Email_Encoder_Validate{
         return $protected;
     }
 
-    public function email_to_image( $email, $image_string_color = 'default', $image_background_color = 'default', $alpha_string = 0, $alpha_fill = 127, $font_size = 4 ){
-        
+    public function email_to_image( $email, $image_string_color = 'default', $image_background_color = 'default', $alpha_string = 0, $alpha_fill = 127, $font_size = 4 ) {
+
         $setting_image_string_color = (string) EEB()->settings->get_setting( 'image_color', true, 'image_settings' );
         $setting_image_background_color = (string) EEB()->settings->get_setting( 'image_background_color', true, 'image_settings' );
         $image_text_opacity = (int) EEB()->settings->get_setting( 'image_text_opacity', true, 'image_settings' );
@@ -917,7 +917,7 @@ class Email_Encoder_Validate{
         $border_offset = 2;
         $border_height = ( is_numeric( $image_underline ) && ! empty( $image_underline ) ) ? intval( $image_underline ) : 0;
 
-        if( $image_background_color === 'default' ){
+        if ( $image_background_color === 'default' ) {
             $image_background_color = $setting_image_background_color;
         } else {
             $image_background_color = '0,0,0';
@@ -928,7 +928,7 @@ class Email_Encoder_Validate{
         $bg_green = $colors[1];
         $bg_blue = $colors[2];
 
-        if( $image_string_color === 'default' ){
+        if ( $image_string_color === 'default' ) {
             $image_string_color = $setting_image_string_color;
         } else {
             $image_string_color = '0,0,0';
@@ -939,22 +939,22 @@ class Email_Encoder_Validate{
         $string_green = $colors[1];
         $string_blue = $colors[2];
 
-        if( ! empty( $image_text_opacity ) && $image_text_opacity >= 0 && $image_text_opacity <= 127 ){
+        if ( ! empty( $image_text_opacity ) && $image_text_opacity >= 0 && $image_text_opacity <= 127 ) {
             $alpha_string = intval( $image_text_opacity );
         }
 
-        if( ! empty( $image_background_opacity ) && $image_background_opacity >= 0 && $image_background_opacity <= 127 ){
+        if ( ! empty( $image_background_opacity ) && $image_background_opacity >= 0 && $image_background_opacity <= 127 ) {
             $alpha_fill = intval( $image_background_opacity );
         }
 
-        if( ! empty( $image_font_size ) && $image_font_size >= 1 && $image_font_size <= 5 ){
+        if ( ! empty( $image_font_size ) && $image_font_size >= 1 && $image_font_size <= 5 ) {
             $font_size = intval( $image_font_size );
         }
 
         $img_width = imagefontwidth( $font_size ) * strlen( $email );
         $img_height = imagefontheight( $font_size );
 
-        if( ! empty( $border_height ) ){
+        if ( ! empty( $border_height ) ) {
             $img_real_height = $img_height + $border_offset + $border_height;
         } else {
             $img_real_height = $img_height;
@@ -966,7 +966,7 @@ class Email_Encoder_Validate{
         imagestring( $img, $font_size, 0, 0, $email, imagecolorallocatealpha( $img, $string_red, $string_green, $string_blue, $alpha_string ) );
 
 
-        if( ! empty( $border_height ) ){
+        if ( ! empty( $border_height ) ) {
             $border_fill = imagecolorallocatealpha ($img, $string_red, $string_green, $string_blue, $alpha_string );
             imagefilledrectangle( $img, 0, $border_offset + $img_height + $border_height - 1, $border_padding + $img_width, $border_offset + $img_height, $border_fill );
         }
@@ -979,8 +979,8 @@ class Email_Encoder_Validate{
     }
 
     public function generate_email_signature( $email, $secret ) {
-        
-        if( ! $secret ){
+
+        if ( ! $secret ) {
             return false;
         }
 
@@ -990,8 +990,8 @@ class Email_Encoder_Validate{
 	}
 
     public function generate_email_image_url( $email ) {
-        
-        if( ! function_exists( 'imagefontwidth' ) || empty( $email ) || ! is_email( $email ) ){
+
+        if ( ! function_exists( 'imagefontwidth' ) || empty( $email ) || ! is_email( $email ) ) {
             return false;
         }
 
@@ -1003,7 +1003,7 @@ class Email_Encoder_Validate{
 
 		return $url;
     }
-    
+
     /**
 	 * ######################
 	 * ###
@@ -1011,7 +1011,7 @@ class Email_Encoder_Validate{
 	 * ###
 	 * ######################
 	 */
-    
+
     /**
      * Get the encoder form (to use as a demo, like on the options page)
      * @return string
@@ -1020,10 +1020,10 @@ class Email_Encoder_Validate{
         $powered_by_setting = (bool) EEB()->settings->get_setting( 'powered_by', true, 'encoder_form' );
 
         //shorten circle
-        if( 
+        if (
             ! EEB()->helpers->is_page( $this->page_name )
             && ! (bool) EEB()->settings->get_setting( 'encoder_form_frontend', true, 'encoder_form' )
-         ){
+         ) {
             return apply_filters('eeb_form_content_inactive', '' );
         }
 
@@ -1054,7 +1054,7 @@ class Email_Encoder_Validate{
             'powered_by' => $powered_by,
         );
 
-        extract($labels);
+        extract( $labels );
 
         $form = <<<FORM
 <div class="eeb-form">
@@ -1109,29 +1109,29 @@ FORM;
     }
 
 
-    public function is_post_excluded( $post_id = null ){
+    public function is_post_excluded( $post_id = null ) {
 
         $return = false;
         $skip_posts = (string) EEB()->settings->get_setting( 'skip_posts', true );
-		if( ! empty( $skip_posts ) ){
+		if ( ! empty( $skip_posts ) ) {
 
-            if( empty( $post_id ) ){
+            if ( empty( $post_id ) ) {
                 global $post;
-                if( ! empty( $post ) ){
+                if ( ! empty( $post ) ) {
                     $post_id = $post->ID;
                 }
             } else {
                 $post_id = intval( $post_id );
             }
-			
+
 			$exclude_pages = explode( ',', $skip_posts );
 
-			if( is_array( $exclude_pages ) ){
+			if ( is_array( $exclude_pages ) ) {
 				$exclude_pages_validated = array();
 
-				foreach( $exclude_pages as $spost_id ){
+				foreach( $exclude_pages as $spost_id ) {
                     $spost_id = trim($spost_id);
-					if( is_numeric( $spost_id ) ){
+					if ( is_numeric( $spost_id ) ) {
 						$exclude_pages_validated[] = intval( $spost_id );
 					}
 				}
@@ -1153,24 +1153,24 @@ FORM;
      * @param array $parameters
      * @return boolean
      */
-    public function is_query_parameter_excluded( $parameters = null ){
+    public function is_query_parameter_excluded( $parameters = null ) {
 
-        if( $parameters === null ){
+        if ( $parameters === null ) {
             $parameters = $_GET;
         }
 
         $return = false;
         $skip_query_parameters = (string) EEB()->settings->get_setting( 'skip_query_parameters', true );
-		if( ! empty( $skip_query_parameters ) && ! empty( $parameters ) ){
-			
+		if ( ! empty( $skip_query_parameters ) && ! empty( $parameters ) ) {
+
 			$excluded_parameters = explode( ',', $skip_query_parameters );
 
-			if( is_array( $excluded_parameters ) ){
+			if ( is_array( $excluded_parameters ) ) {
 
-				foreach( $excluded_parameters as $param ){
+				foreach( $excluded_parameters as $param ) {
                     $param = trim($param);
 
-					if( isset( $parameters[ $param ] ) ){
+					if ( isset( $parameters[ $param ] ) ) {
 						$return = true;
                         break;
 					}

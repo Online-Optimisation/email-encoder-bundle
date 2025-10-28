@@ -23,13 +23,13 @@ class Email_Encoder_Helpers {
 	 * @param $param
 	 * @return bool
 	 */
-	public function is_page( $param ){
+	public function is_page( $param ) {
 		if( empty( $param ) ){
 			return false;
 		}
 
-		if( isset( $_GET['page'] ) ){
-			if( $_GET['page'] == $param ){
+		if( isset( $_GET['page'] ) ) {
+			if( $_GET['page'] == $param ) {
 				return true;
 			}
 		}
@@ -81,7 +81,7 @@ class Email_Encoder_Helpers {
 				break;
 		}
 
-		if( is_array( $content ) ){
+		if( is_array( $content ) ) {
 			$validated_content = sprintf( __( $content[0], 'email-encoder-bundle' ), $content[1] );
         } else {
 			$validated_content = __( $content, 'email-encoder-bundle' );
@@ -135,7 +135,7 @@ class Email_Encoder_Helpers {
 	 */
 	public function get_parameters_from_url( $url ) {
 
-		$parts = parse_url($url);
+		$parts = parse_url( $url );
 
 		parse_str( $parts['query'], $url_parameter );
 
@@ -155,7 +155,7 @@ class Email_Encoder_Helpers {
 		$current_url = ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) ? 'https://' : 'http://';
 
 		$host_part = $_SERVER['SERVER_NAME'];
-		if( strpos( $host_part, $_SERVER['HTTP_HOST'] ) === false ){
+		if( strpos( $host_part, $_SERVER['HTTP_HOST'] ) === false ) {
 
 		    //Validate against HTTP_HOST in case SERVER_NAME has no "www" set
 			if( strpos( $_SERVER['HTTP_HOST'], '://www.' ) !== false && strpos( $host_part, '://www.' ) === false ) {

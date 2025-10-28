@@ -3,19 +3,19 @@
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'Email_Encoder_Integration_Avada' ) ) {
+if ( ! class_exists( 'Email_Encoder_Integration_Hive_Press' ) ) {
 
     /**
-     * Class Email_Encoder_Integration_Avada
+     * Class Email_Encoder_Integration_Divi
      *
-     * This class integrates support for the Avada page builder https://avada.com/
+     * This class integrates support for the divi themes https://www.elegantthemes.com/gallery/divi/
      *
-     * @since 2.1.6
+     * @since 2.0.0
      * @package EEB
      * @author Ironikus <info@ironikus.com>
      */
 
-    class Email_Encoder_Integration_Avada{
+    class Email_Encoder_Integration_Hive_Press {
 
         /**
          * Our Email_Encoder_Run constructor.
@@ -39,30 +39,32 @@ if ( ! class_exists( 'Email_Encoder_Integration_Avada' ) ) {
          * ######################
          */
 
-         /**
-          * Verify if Avada builder is active
-          * in the first place
-          *
-          * @return array
-          */
-        public function is_avada_active() {
-            return defined( 'FUSION_BUILDER_VERSION' );
+        public function is_active() {
+            return defined( 'HP_FILE' );
         }
+
+        /**
+         * ######################
+         * ###
+         * #### SCRIPTS & STYLES
+         * ###
+         * ######################
+         */
 
         public function deactivate_logic( $fields ) {
 
-            if ( $this->is_avada_active() ) {
+            if ( $this->is_active() ) {
+                $uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) : '';
 
-                if ( isset( $_GET['fb-edit'] ) ) {
+                if ( preg_match( '#/account/listings/(\d+)/?$#', $uri ) ) {
                     if ( is_array( $fields ) ) {
                         if ( isset( $fields[ 'protect' ] ) ) {
                             if ( isset( $fields[ 'protect' ]['value'] ) ) {
-                                $fields[ 'protect' ]['value'] = 3; //3 equals "Do Nothing"
+                                $fields[ 'protect' ]['value'] = 3;
                             }
                         }
                     }
                 }
-
             }
 
             return $fields;
@@ -72,5 +74,5 @@ if ( ! class_exists( 'Email_Encoder_Integration_Avada' ) ) {
 
     }
 
-    new Email_Encoder_Integration_Avada();
+    new Email_Encoder_Integration_Hive_Press();
 }
