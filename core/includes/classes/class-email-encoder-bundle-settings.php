@@ -186,7 +186,7 @@ class Email_Encoder_Settings{
 			'filter_content' => 100,
 			'first_version_init' => 100,
 			'version_update' => 100,
-			'display_email_image' => 10,
+			'display_email_image' => 999,
 			'callback_rss_remove_shortcodes' => 10,
 			'load_ajax_scripts_styles' => 10,
 			'load_ajax_scripts_styles_admin' => 10,
@@ -273,10 +273,13 @@ class Email_Encoder_Settings{
 
 		//Load data
 		// $this->settings        			= $this->load_settings();
-        add_action( 'admin_init', [ $this, 'load_settings' ] );
+        // add_action( 'wp', [ $this, 'load_settings' ], 0 );
+        add_action( 'init', [ $this, 'load_settings' ] );
 
 		$this->version        			= $this->load_version();
-		$this->email_image_secret       = $this->load_email_image_secret();
+        // add_action( 'init', [ $this, 'load_version' ] );
+		// $this->email_image_secret       = $this->load_email_image_secret();
+        add_action( 'init', [ $this, 'load_email_image_secret' ] );
 	}
 
 	/**
@@ -293,6 +296,7 @@ class Email_Encoder_Settings{
 	  * @return array - An array with all available settings and filled values
 	  */
 	public function load_settings(){
+
 		$fields = array(
 
 			'protect' => array(
@@ -680,6 +684,7 @@ class Email_Encoder_Settings{
 		}
 
 		$this->settings = apply_filters( 'eeb/settings/fields', $fields );
+
         return $this->settings;
 	}
 
@@ -710,6 +715,7 @@ class Email_Encoder_Settings{
 			}
 		}
 
+        $this->version = $current_version;
 		return $current_version;
 	 }
 
@@ -722,6 +728,8 @@ class Email_Encoder_Settings{
 		$image_descret = get_option( $this->get_image_secret_key() );
 
 		if ( ! empty( $image_descret ) ){
+
+            $this->email_image_secret = $image_descret;
 			return $image_descret;
 		}
 
@@ -733,6 +741,7 @@ class Email_Encoder_Settings{
 
 		update_option( $this->get_image_secret_key(), $key );
 
+        $this->email_image_secret = $key;
 		return $key;
 	 }
 
@@ -1000,6 +1009,7 @@ class Email_Encoder_Settings{
 	 * @return mixed - the default string
 	 */
 	public function get_setting( $slug = '', $single = false, $group = '' ){
+
 		$return = $this->settings;
 
 		if ( empty( $slug ) ){

@@ -1,7 +1,7 @@
 <?php
  /**
  * Plugin Name:    Email Encoder - Protect Email Addresses
- * Version:        2.2.4
+ * Version:        2.2.5
  * Plugin URI:     https://wordpress.org/plugins/email-encoder-bundle/
  * Description:    Protect email addresses on your site and hide them from spambots. Easy to use & flexible.
  * Author:         Online Optimisation
@@ -22,7 +22,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 define( 'EEB_NAME',           'Email Encoder' );
 
 // Plugin version.
-define( 'EEB_VERSION',        '2.2.4' );
+define( 'EEB_VERSION',        '2.2.5' );
 
 // Determines if the plugin is loaded
 define( 'EEB_SETUP',          true );

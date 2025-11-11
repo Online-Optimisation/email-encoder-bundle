@@ -140,7 +140,7 @@ class Email_Encoder_Run{
 		} else {
 			$this->pagehook = add_menu_page( __( $this->page_title, 'email-encoder-bundle' ), __( $this->page_title, 'email-encoder-bundle' ), EEB()->settings->get_admin_cap( 'admin-add-menu-page-item' ), $this->page_name, array( $this, 'render_admin_menu_page' ), plugins_url( 'core/includes/assets/img/icon-email-encoder-bundle.png', EEB_PLUGIN_FILE ) );
 		}
-		
+
 		add_action( 'load-' . $this->pagehook, array( $this, 'add_help_tabs' ) );
 	}
 
@@ -167,7 +167,7 @@ class Email_Encoder_Run{
 	 */
 
 	 public function save_settings(){
-		
+
 		if( isset( $_POST[ $this->page_name . '_nonce' ] ) ){
 			if( ! wp_verify_nonce( $_POST[ $this->page_name . '_nonce' ], $this->page_name ) ){
 				wp_die( __( 'You don\'t have permission to update these settings.', 'email-encoder-bundle' ) );
@@ -211,49 +211,49 @@ class Email_Encoder_Run{
 	public function add_help_tabs(){
 		$screen = get_current_screen();
 
-        $defaults = array(
-            'content'   => '',
-            'callback'  => array( $this, 'load_help_tabs' ),
-        );
+		$defaults = array(
+			'content'   => '',
+			'callback'  => array( $this, 'load_help_tabs' ),
+		);
 
-        $screen->add_help_tab(wp_parse_args(array(
-            'id'        => 'general',
-            'title'     => __('General', 'email-encoder-bundle'),
-        ), $defaults));
-
-        $screen->add_help_tab(wp_parse_args(array(
-            'id'        => 'shortcodes',
-            'title'     => __('Shortcode', 'email-encoder-bundle'),
-        ), $defaults));
-
-        $screen->add_help_tab(wp_parse_args(array(
-            'id'        => 'template-tags',
-            'title'     => __('Template Tags', 'email-encoder-bundle'),
+		$screen->add_help_tab(wp_parse_args(array(
+			'id'        => 'general',
+			'title'     => __('General', 'email-encoder-bundle'),
 		), $defaults));
-		
+
+		$screen->add_help_tab(wp_parse_args(array(
+			'id'        => 'shortcodes',
+			'title'     => __('Shortcode', 'email-encoder-bundle'),
+		), $defaults));
+
+		$screen->add_help_tab(wp_parse_args(array(
+			'id'        => 'template-tags',
+			'title'     => __('Template Tags', 'email-encoder-bundle'),
+		), $defaults));
+
 		if( EEB()->helpers->is_page( $this->page_name ) ){
 			add_meta_box( 'encode_form', __( $this->page_title, 'email-encoder-bundle' ), array( $this, 'show_meta_box_content' ), null, 'normal', 'core', array( 'encode_form' ) );
 		}
-		
+
 	}
 
 	public function load_help_tabs($screen, array $args){
-		
+
 		if( ! empty( $args['id'] ) ){
 			include( EEB_PLUGIN_DIR . 'core/includes/partials/help-tabs/' . $args['id'] . '.php' );
 		}
 
 	}
-	
-	/**
-     * Show content of metabox (callback)
-     * @param array $post
-     * @param array $meta_box
-     */
-    public function show_meta_box_content( $post, $meta_box ) {
-        $key = $meta_box['args'][0];
 
-        if ($key === 'encode_form') {
+	/**
+	 * Show content of metabox (callback)
+	 * @param array $post
+	 * @param array $meta_box
+	 */
+	public function show_meta_box_content( $post, $meta_box ) {
+		$key = $meta_box['args'][0];
+
+		if ($key === 'encode_form') {
 			?>
 			<p><?php _e('If you like you can also create you own secured emails manually with this form. Just copy/paste the generated code and put it in your post, page or template. We choose automatically the best method for you, based on your settings.', 'email-encoder-bundle') ?></p>
 

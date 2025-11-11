@@ -34,15 +34,17 @@ class Email_Encoder_Ajax{
 	function __construct(){
 		$this->page_name    = EEB()->settings->get_page_name();
 		$this->page_title   = EEB()->settings->get_page_title();
-		$this->add_hooks();
+
+		// $this->add_hooks();
+		add_action( 'init', [ $this, 'add_hooks' ] );
 	}
 
 	/**
 	 * Define all of our necessary hooks
 	 */
-	private function add_hooks(){
-		
-		if( 
+	public function add_hooks(){
+
+		if(
 			EEB()->helpers->is_page( $this->page_name )
 			|| ( wp_doing_ajax() && isset( $_POST['action'] ) && $_POST['action'] === 'eeb_get_email_form_output' )
 		){
@@ -56,7 +58,7 @@ class Email_Encoder_Ajax{
 			add_action( 'wp_enqueue_scripts', array( $this, 'load_ajax_scripts_styles' ), EEB()->settings->get_hook_priorities( 'load_ajax_scripts_styles' ) );
 			add_action( 'wp_ajax_nopriv_eeb_get_email_form_output', array( $this, 'eeb_ajax_email_encoder_response' ) );
 		}
-		
+
 	}
 
 	/**
@@ -67,20 +69,20 @@ class Email_Encoder_Ajax{
 	 * ######################
 	 */
 
-     /**
+	 /**
 	 * Register all necessary scripts and styles
 	 *
 	 * @since    2.0.0
 	 */
 	public function load_ajax_scripts_styles() {
-        
+
 		$js_version_form  = date( "ymd-Gis", filemtime( EEB_PLUGIN_DIR . 'core/includes/assets/js/encoder-form.js' ));
 		wp_enqueue_script( 'eeb-js-ajax-ef', EEB_PLUGIN_URL . 'core/includes/assets/js/encoder-form.js', array('jquery'), $js_version_form, true );
 		wp_localize_script( 'eeb-js-ajax-ef', 'eeb_ef', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			'security' => wp_create_nonce( $this->page_name )
 		));
-		
+
 	}
 
 	/**
@@ -94,23 +96,23 @@ class Email_Encoder_Ajax{
 	public function eeb_ajax_email_encoder_response(){
 		check_ajax_referer( $this->page_name, 'eebsec' );
 
-        $email = html_entity_decode( sanitize_email( $_POST['eebEmail'] ) );
-        $method = sanitize_text_field( $_POST['eebMethod'] );
-        $display = html_entity_decode( $_POST['eebDisplay'] );
+		$email = html_entity_decode( sanitize_email( $_POST['eebEmail'] ) );
+		$method = sanitize_text_field( $_POST['eebMethod'] );
+		$display = html_entity_decode( $_POST['eebDisplay'] );
 		$custom_class = (string) EEB()->settings->get_setting( 'class_name', true );
 		$protection_text = __( EEB()->settings->get_setting( 'protection_text', true ), 'email-encoder-bundle' );
 
 		if( empty( $display ) ) {
 			$display = $email;
-        } else {
-            $display = wp_kses_post( $display );
+		} else {
+			$display = wp_kses_post( $display );
 		}
 
 		$display = sanitize_text_field( $display );
-		
+
 		$class_name = ' class="' . esc_attr( $custom_class ) . '"';
 		$mailto = '<a href="mailto:' . $email . '"'. $class_name . '>' . $display . '</a>';
-		
+
 		switch( $method ){
 			case 'rot13':
 				$mailto = EEB()->validate->encode_ascii( $mailto, $protection_text );
@@ -125,7 +127,7 @@ class Email_Encoder_Ajax{
 		}
 
 		echo apply_filters( 'eeb/ajax/encoder_form_response', $mailto );
-        exit;
+		exit;
 	 }
 
 }
