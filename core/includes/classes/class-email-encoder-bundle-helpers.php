@@ -1,20 +1,7 @@
 <?php
 
-/**
- * Email_Encoder_Helpers Class
- *
- * This class contains all of the available helper functions
- *
- * @since 2.0.0
- */
+namespace OnlineOptimisation\EmailEncoderBundle;
 
-/**
- * The helpers of the plugin.
- *
- * @since 2.0.0
- * @package EEB
- * @author Ironikus <info@ironikus.com>
- */
 class Email_Encoder_Helpers {
 
 	/**
@@ -23,7 +10,7 @@ class Email_Encoder_Helpers {
 	 * @param $param
 	 * @return bool
 	 */
-	public function is_page( $param ) {
+	public function is_page( ?string $param ): bool {
 		if( empty( $param ) ){
 			return false;
 		}

@@ -12,45 +12,11 @@
 
 class Email_Encoder_Run{
 
-	/**
-	 * The main page name for our admin page
-	 *
-	 * @var string
-	 * @since 2.0.0
-	 */
-	private $page_name;
-
-	/**
-	 * The main page title for our admin page
-	 *
-	 * @var string
-	 * @since 2.0.0
-	 */
-	private $page_title;
-
-	/**
-	 * The page hook itself for registering the meta boxes
-	 *
-	 * @var string
-	 * @since 2.0.0
-	 */
-	private $pagehook;
-
-	/**
-	 * The settings key
-	 *
-	 * @var string
-	 * @since 2.0.0
-	 */
-	private $settings_key;
-
-	/**
-	 * The display notices
-	 *
-	 * @var string
-	 * @since 2.0.0
-	 */
-	private $display_notices;
+	private string $page_name;
+	private string $page_title;
+	private string $pagehook;
+	private string $settings_key;
+	private array $display_notices = [];
 
 	/**
 	 * Our Email_Encoder_Run constructor.
@@ -59,7 +25,7 @@ class Email_Encoder_Run{
 		$this->page_name    = EEB()->settings->get_page_name();
 		$this->page_title   = EEB()->settings->get_page_title();
 		$this->settings_key = EEB()->settings->get_settings_key();
-		$this->display_notices = array();
+		// $this->display_notices = array();
 		$this->add_hooks();
 	}
 

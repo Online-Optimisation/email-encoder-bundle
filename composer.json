@@ -1,0 +1,17 @@
+{
+    "name": "onlineoptimisation/email-encoder-bundle",
+    "description": "Email Encoder Bundle",
+    "type": "wordpress-plugin",
+    "autoload": {
+        "psr-4": {
+            "EmailEncoderBundle\\": "src/"
+        },
+        "classmap": [
+            "core/includes/classes",
+            "core/includes/integrations/classes"
+        ]
+    },
+    "require": {
+        "php": ">= 8.0"
+    }
+}

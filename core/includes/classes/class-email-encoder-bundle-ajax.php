@@ -10,6 +10,8 @@
  * @author Ironikus <info@ironikus.com>
  */
 
+namespace OnlineOptimisation\EmailEncoderBundle;
+
 class Email_Encoder_Ajax{
 
 	/**

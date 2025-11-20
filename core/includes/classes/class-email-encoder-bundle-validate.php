@@ -1,53 +1,17 @@
 <?php
 
-/**
- * Class Email_Encoder_Validate
- *
- * The main validation functionality for the plugin.
- * Here is where the logic happens.
- *
- * @since 2.0.0
- * @package EEB
- * @author Ironikus <info@ironikus.com>
- */
+namespace OnlineOptimisation\EmailEncoderBundle;
 
-class Email_Encoder_Validate{
+use DOMDocument;
 
-	/**
-	 * The main page name for our admin page
-	 *
-	 * @var string
-	 * @since 2.0.0
-	 */
-	private $page_name;
+class Email_Encoder_Validate {
 
-	/**
-	 * The main page title for our admin page
-	 *
-	 * @var string
-	 * @since 2.0.0
-	 */
-	private $page_title;
+	private string $page_name;
+	private string $page_title;
+	private string $final_outout_buffer_hook;
+	private string $at_identifier;
 
-	/**
-	 * The hook used for the final output buffer
-	 *
-	 * @var string
-	 * @since 2.0.0
-	 */
-	private $final_outout_buffer_hook;
 
-	/**
-	 * The identifier used for @ characters
-	 *
-	 * @var string
-	 * @since 2.0.0
-	 */
-	private $at_identifier;
-
-	/**
-	 * Our Email_Encoder_Run constructor.
-	 */
 	function __construct() {
 		$this->page_name    			= EEB()->settings->get_page_name();
 		$this->page_title   			= EEB()->settings->get_page_title();

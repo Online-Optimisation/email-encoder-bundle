@@ -16,36 +16,31 @@
  */
 
 // Exit if accessed directly.
-if ( !defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
-// Plugin name.
 define( 'EEB_NAME',           'Email Encoder' );
-
-// Plugin version.
 define( 'EEB_VERSION',        '2.2.5' );
-
-// Determines if the plugin is loaded
 define( 'EEB_SETUP',          true );
-
-// Plugin Root File.
 define( 'EEB_PLUGIN_FILE',    __FILE__ );
-
-// Plugin base.
 define( 'EEB_PLUGIN_BASE',    plugin_basename( EEB_PLUGIN_FILE ) );
-
-// Plugin Folder Path.
 define( 'EEB_PLUGIN_DIR',     plugin_dir_path( EEB_PLUGIN_FILE ) );
-
-// Plugin Folder URL.
 define( 'EEB_PLUGIN_URL',     plugin_dir_url( EEB_PLUGIN_FILE ) );
-
-// Plugin Root File.
 define( 'EEB_TEXTDOMAIN',     'email-encoder-bundle' );
 
-/**
- * Load the main instance for our core functions
- */
+add_action( 'eeb_ready', fn () => error_log( '--> HELLO! <--' ), 9999 );
+
+# Load the main instance for our core functions
 require_once EEB_PLUGIN_DIR . 'core/class-email-encoder-bundle.php';
+require_once EEB_PLUGIN_DIR . 'core/includes/functions/template-tags.php';
+
+# COMPOSER AUTOLOAD
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+	require __DIR__ . '/vendor/autoload.php';
+}
+
+# RUN IT
+add_action( 'plugins_loaded', 'EEB' );
+
 
 /**
  * The main function to load the only instance
@@ -54,7 +49,6 @@ require_once EEB_PLUGIN_DIR . 'core/class-email-encoder-bundle.php';
  * @return object|Email_Encoder
  */
 function EEB() {
-	return Email_Encoder::instance();
-}
 
-EEB();
+	return \OnlineOptimisation\EmailEncoderBundle\Email_Encoder::instance();
+}
