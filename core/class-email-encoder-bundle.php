@@ -12,13 +12,13 @@ final class Email_Encoder {
 
     private array $integrations = [
         'avada_builder'       => Integration\AvadaBuilder::class,
-        // 'bricks_builder'      => 'bricks_builder.php',
-        // 'maintenance'         => 'maintenance.php',
-        // 'divi_theme'          => 'divi_theme.php',
-        // 'google_site_kit'     => 'google_site_kit.php',
-        // 'oxygen_builder'      => 'oxygen_builder.php',
-        // 'the_events_calendar' => 'the_events_calendar.php',
-        // 'wpml'                => 'wpml.php',
+        'bricks_builder'      => Integration\BricksBuilder::class,
+        'maintenance'         => Integration\Maintenance::class,
+        'divi_theme'          => Integration\DiviTheme::class,
+        'google_site_kit'     => Integration\GoogleSiteKit::class,
+        'oxygen_builder'      => Integration\OxygenBuilder::class,
+        'the_events_calendar' => Integration\EventsCalendar::class,
+        'wpml'                => Integration\Wpml::class,
         'hive_press'          => Integration\HivePress::class,
     ];
 
@@ -46,6 +46,7 @@ final class Email_Encoder {
 		do_action( 'eeb_plugin_loaded', $this );
 	}
 
+
 	private function integrate3rdParty(): void {
 
 		foreach ( $this->integrations as $plugin_id => $class ) {
@@ -54,8 +55,6 @@ final class Email_Encoder {
 				continue;
 			}
 
-			error_log( 'integrate3rdParty: ' . $plugin_id );
-
 			$instance = new $class();
 			$instance->boot();
 		}
@@ -63,7 +62,8 @@ final class Email_Encoder {
 
 
 	/**
-	 * Cloning instances of the class is forbidden.
+	 * Protection.
+	 * Cloning instances and unserializing of the class is forbidden.
 	 */
 	public function __clone() {
 		_doing_it_wrong( __FUNCTION__,
@@ -72,9 +72,6 @@ final class Email_Encoder {
 		);
 	}
 
-	/**
-	 * Disable unserializing of the class.
-	 */
 	public function __wakeup() {
 		_doing_it_wrong( __FUNCTION__,
 			__( 'Cheatin&#8217; huh?', 'email-encoder-bundle' ),
