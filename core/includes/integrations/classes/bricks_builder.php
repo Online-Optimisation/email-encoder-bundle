@@ -4,16 +4,6 @@ namespace OnlineOptimisation\EmailEncoderBundle\Integration;
 
 class BricksBuilder {
 
-    // private string $page_name;
-    // private string $page_title;
-
-
-    // function __construct(){
-    //     $this->page_name    = EEB()->settings->get_page_name();
-    //     $this->page_title   = EEB()->settings->get_page_title();
-    // }
-
-
     public function boot(): void {
         add_filter( 'eeb/settings/fields', [ $this, 'deactivate_logic' ], 10 );
     }

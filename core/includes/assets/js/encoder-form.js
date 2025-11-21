@@ -28,7 +28,7 @@ jQuery( document ).ready( function( $ ) {
             $wrap.find('#eeb-encoded-output').val( response );
             $wrap.find('.eeb-output').fadeIn();
         });
-        
+
     };
 
     // hide output

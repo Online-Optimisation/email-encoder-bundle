@@ -9,6 +9,7 @@ final class Email_Encoder {
 	public Email_Encoder_Settings $settings;
 	public Email_Encoder_Helpers $helpers;
 	public Email_Encoder_Validate $validate;
+	public Email_Encoder_Ajax $ajax;
 
     private array $integrations = [
         'avada_builder'       => Integration\AvadaBuilder::class,
@@ -39,7 +40,9 @@ final class Email_Encoder {
 		$this->settings = new Email_Encoder_Settings();
 		$this->validate = new Email_Encoder_Validate();
 
-		new Email_Encoder_Ajax();
+		$this->ajax = new Email_Encoder_Ajax();
+		$this->ajax->boot();
+
 		$this->integrate3rdParty();
 		new Email_Encoder_Run();
 
@@ -51,7 +54,7 @@ final class Email_Encoder {
 
 		foreach ( $this->integrations as $plugin_id => $class ) {
 
-			if ( true !== apply_filters( 'eeb/integrations' . $plugin_id, true ) ) {
+			if ( true !== apply_filters( 'eeb/integrations/' . $plugin_id, true ) ) {
 				continue;
 			}
 
