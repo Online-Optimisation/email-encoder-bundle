@@ -1,6 +1,6 @@
 <?php
 
-namespace OnlineOptimisation\EmailEncoderBundle\Integration;
+namespace Legacy\EmailEncoderBundle\Integration;
 
 class GoogleSiteKit {
 

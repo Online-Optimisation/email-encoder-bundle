@@ -1,12 +1,13 @@
 <?php
 
-namespace OnlineOptimisation\EmailEncoderBundle\Integration;
+namespace Legacy\EmailEncoderBundle\Integration;
 
 class HivePress {
 
     public function boot (): void {
-        error_log( __METHOD__ );
-        add_filter( 'eeb/settings/fields', [ $this, 'deactivate_logic' ], 10 );
+        if ( $this->is_active() ) {
+            add_filter( 'eeb/settings/fields', [ $this, 'deactivate_logic' ], 10 );
+        }
     }
 
 
@@ -16,10 +17,6 @@ class HivePress {
 
 
     public function deactivate_logic( $fields ) {
-
-        if ( ! $this->is_active() ) {
-            return $fields;
-        }
 
         $uri = isset( $_SERVER['REQUEST_URI'] )
             ? wp_parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH )

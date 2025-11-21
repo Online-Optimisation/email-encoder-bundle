@@ -1,6 +1,6 @@
 <?php
 
-namespace OnlineOptimisation\EmailEncoderBundle;
+namespace Legacy\EmailEncoderBundle;
 
 class Email_Encoder_Helpers {
 

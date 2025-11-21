@@ -1,6 +1,6 @@
 <?php
 
-namespace OnlineOptimisation\EmailEncoderBundle;
+namespace Legacy\EmailEncoderBundle;
 
 
 final class Email_Encoder {
@@ -40,11 +40,11 @@ final class Email_Encoder {
 		$this->settings = new Email_Encoder_Settings();
 		$this->validate = new Email_Encoder_Validate();
 
-		$this->ajax = new Email_Encoder_Ajax();
-		$this->ajax->boot();
+		( new Email_Encoder_Ajax() )->boot();
 
 		$this->integrate3rdParty();
-		new Email_Encoder_Run();
+
+		( new Email_Encoder_Run() )->boot();
 
 		do_action( 'eeb_plugin_loaded', $this );
 	}

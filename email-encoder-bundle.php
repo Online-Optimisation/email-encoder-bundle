@@ -50,5 +50,5 @@ add_action( 'plugins_loaded', 'EEB' );
  */
 function EEB() {
 
-	return \OnlineOptimisation\EmailEncoderBundle\Email_Encoder::instance();
+	return \Legacy\EmailEncoderBundle\Email_Encoder::instance();
 }

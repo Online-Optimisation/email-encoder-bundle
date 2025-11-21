@@ -1,6 +1,6 @@
 <?php
 
-namespace OnlineOptimisation\EmailEncoderBundle\Integration;
+namespace Legacy\EmailEncoderBundle\Integration;
 
 /**
  * Class Email_Encoder_Integration_Maintenance

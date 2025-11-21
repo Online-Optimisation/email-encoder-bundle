@@ -1,6 +1,6 @@
 <?php
 
-namespace OnlineOptimisation\EmailEncoderBundle;
+namespace Legacy\EmailEncoderBundle;
 
 
 class EEB_Integrations_Loader {
