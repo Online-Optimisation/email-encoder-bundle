@@ -1,8 +1,7 @@
-<?php
-$allowed_attr_html = EEB()->settings->get_safe_html_attr();
-?>
 <h3><?php echo __( 'Shortcodes', 'email-encoder-bundle' ); ?></h3>
+
 <p><?php echo __( 'You can protect those addresses using the following shortcode. Everything you add within these both tags, will be checked for emails automatically.', 'email-encoder-bundle' ); ?></p>
+
 <p><code>[eeb_protect_emails protect_using="with_javascript"]…[/eeb_protect_emails]</code>
 </p>
 <p><?php echo __( 'Create a protected mailto link:', 'email-encoder-bundle' ); ?></p>
@@ -12,10 +11,12 @@ $allowed_attr_html = EEB()->settings->get_safe_html_attr();
 <p><code>[eeb_protect_content protection_text="I am a noscript text" method="rot13" do_shortcode="yes"]My Email[/eeb_protect_content]</code></p>
 <p><?php echo __( 'Display the encoder form', 'email-encoder-bundle' ); ?></p>
 <p><code>[eeb_form]</code></p>
-<p><strong><?php echo __( 'Allowed HTML attributes + arguments', 'email-encoder-bundle' ); ?></strong>
-<?php
-echo '<ul>';
 
+<p><strong><?php echo __( 'Allowed HTML attributes + arguments', 'email-encoder-bundle' ); ?></strong>
+
+<ul>
+
+<?php
 foreach ($allowed_attr_html as $tag => $attributes) {
     echo '<li><strong>' . htmlentities( '<' . $tag . '>' ) . '</strong>: ';
 
@@ -27,7 +28,7 @@ foreach ($allowed_attr_html as $tag => $attributes) {
 
     echo '</li>';
 }
-
-echo '</ul>';
 ?>
+</ul>
+
 </p>

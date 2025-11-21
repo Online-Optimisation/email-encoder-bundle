@@ -2,8 +2,11 @@
 
 namespace Legacy\EmailEncoderBundle\Integration;
 
+use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
+
 class GoogleSiteKit {
 
+    use PluginHelper;
 
     public function boot(): void {
         add_filter( 'googlesitekit_admin_data', [ $this, 'soft_encode_admin_data' ], 100, 1 );
@@ -18,7 +21,7 @@ class GoogleSiteKit {
 
             $admin_data['userData']['email'] = $soft_encode
                 ? antispambot( $admin_data['userData']['email'] )
-                : EEB()->validate->temp_encode_at_symbol( $admin_data['userData']['email'] )
+                : $this->validate()->temp_encode_at_symbol( $admin_data['userData']['email'] )
             ;
 
         }

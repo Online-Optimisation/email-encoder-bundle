@@ -2,18 +2,22 @@
 
 namespace Legacy\EmailEncoderBundle\Integration;
 
+use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
+
 /**
- * Class Email_Encoder_Integration_Maintenance
+ * Class Maintenance
  *
  * This class integrates support for the maintenance plugin:
  * https://wordpress.org/plugins/maintenance/
  *
  * @since 2.0.0
  * @package EEB
- * @author Ironikus <info@ironikus.com>
+ * @author OnlineOptimisation <info@onlineoptimisation.com.au>
  */
 
 class Maintenance {
+
+    use PluginHelper;
 
     public function boot(): void {
         add_action( 'load_custom_style', [ $this, 'load_custom_styles' ], 100 );
@@ -32,7 +36,7 @@ class Maintenance {
             return;
         }
 
-        $protection_activated = (int) EEB()->settings->get_setting( 'protect', true );
+        $protection_activated = (int) $this->getSetting( 'protect', true );
 
         if ( $protection_activated === 2 || $protection_activated === 1 ) {
 
@@ -48,8 +52,8 @@ class Maintenance {
             return;
         }
 
-        $protection_activated = (int) EEB()->settings->get_setting( 'protect', true );
-        $without_javascript = (string) EEB()->settings->get_setting( 'protect_using', true );
+        $protection_activated = (int) $this->getSetting( 'protect', true );
+        $without_javascript = (string) $this->getSetting( 'protect_using', true );
 
         if ( $protection_activated === 2 || $protection_activated === 1 ) {
 

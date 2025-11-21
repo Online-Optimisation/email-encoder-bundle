@@ -2,7 +2,11 @@
 
 namespace Legacy\EmailEncoderBundle\Integration;
 
+use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
+
 class HivePress {
+
+    use PluginHelper;
 
     public function boot (): void {
         if ( $this->is_active() ) {
@@ -29,7 +33,7 @@ class HivePress {
         ;
 
         if ( $condition ) {
-            error_log( 'HivePress: protecting' );
+            $this->log( 'HivePress: protecting; trait is working :)' );
             $fields[ 'protect' ]['value'] = 3;
         }
 

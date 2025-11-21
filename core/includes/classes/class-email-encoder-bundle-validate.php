@@ -3,20 +3,23 @@
 namespace Legacy\EmailEncoderBundle;
 
 use DOMDocument;
+use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 
 class Email_Encoder_Validate {
 
+    use PluginHelper;
+
 	private string $page_name;
-	private string $page_title;
-	private string $final_outout_buffer_hook;
+	// private string $page_title;
+	// private string $final_output_buffer_hook;
 	private string $at_identifier;
 
 
 	function __construct() {
-		$this->page_name    			= EEB()->settings->get_page_name();
-		$this->page_title   			= EEB()->settings->get_page_title();
-        $this->final_outout_buffer_hook = EEB()->settings->get_final_outout_buffer_hook();
-        $this->at_identifier            = EEB()->settings->get_at_identifier();
+		$this->page_name    			= $this->getPageName();
+		// $this->page_title   			= $this->settings()->get_page_title();
+        // $this->final_output_buffer_hook = $this->settings()->get_final_output_buffer_hook();
+        $this->at_identifier            = $this->settings()->get_at_identifier();
 	}
 
 	/**
@@ -84,8 +87,8 @@ class Email_Encoder_Validate {
     public function filter_content( $content, $protect_using ) {
         $filtered = $content;
         $self = $this;
-        $encode_mailtos = (bool) EEB()->settings->get_setting( 'encode_mailtos', true, 'filter_body' );
-        $convert_plain_to_image = (bool) EEB()->settings->get_setting( 'convert_plain_to_image', true, 'filter_body' );
+        $encode_mailtos = (bool) $this->getSetting( 'encode_mailtos', true, 'filter_body' );
+        $convert_plain_to_image = (bool) $this->getSetting( 'convert_plain_to_image', true, 'filter_body' );
 
         //Added in 2.0.6
         $filtered = apply_filters( 'eeb/validate/filter_content_content', $filtered, $protect_using );
@@ -167,16 +170,16 @@ class Email_Encoder_Validate {
     public function filter_plain_emails( $content, $replace_by = null, $protection_method = 'default', $show_encoded_check = 'default' ) {
 
         if ( $show_encoded_check === 'default' ) {
-            $show_encoded_check = (bool) EEB()->settings->get_setting( 'show_encoded_check', true );
+            $show_encoded_check = (bool) $this->getSetting( 'show_encoded_check', true );
         }
 
         if ( $replace_by === null ) {
-            $replace_by = __( EEB()->settings->get_setting( 'protection_text', true ), 'email-encoder-bundle' );
+            $replace_by = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
         }
 
         $self = $this;
 
-        return preg_replace_callback( EEB()->settings->get_email_regex(), function ( $matches ) use ( $replace_by, $protection_method, $show_encoded_check, $self ) {
+        return preg_replace_callback( $this->settings()->get_email_regex(), function ( $matches ) use ( $replace_by, $protection_method, $show_encoded_check, $self ) {
             // workaround to skip responsive image names containing @
             $extention = strtolower( $matches[4] );
             $excludedList = array(
@@ -214,10 +217,10 @@ class Email_Encoder_Validate {
                 }
 
             } elseif ( $protection_method === 'use_javascript' ) {
-                $protection_text = __( EEB()->settings->get_setting( 'protection_text', true ), 'email-encoder-bundle' );
+                $protection_text = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
                 $protected_return = $this->dynamic_js_email_encoding( $matches[0], $protection_text );
             } elseif ( $protection_method === 'use_css' ) {
-                $protection_text = __( EEB()->settings->get_setting( 'protection_text', true ), 'email-encoder-bundle' );
+                $protection_text = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
                 $protected_return = $this->encode_email_css( $matches[0], $protection_text );
             } elseif ( $protection_method === 'no_encoding' ) {
                 $protected_return = $matches[0];
@@ -226,7 +229,7 @@ class Email_Encoder_Validate {
             }
 
             // mark link as successfully encoded (for admin users)
-            if ( current_user_can( EEB()->settings->get_admin_cap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
+            if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
                 $protected_return .= $this->get_encoded_email_icon();
             }
 
@@ -243,7 +246,7 @@ class Email_Encoder_Validate {
      */
     public function filter_input_fields( $content, $encoding_method = 'default' ) {
         $self = $this;
-        $strong_encoding = (bool) EEB()->settings->get_setting( 'input_strong_protection', true, 'filter_body' );
+        $strong_encoding = (bool) $this->getSetting( 'input_strong_protection', true, 'filter_body' );
 
         $callback_encode_input_fields = function ( $match ) use ( $self, $encoding_method, $strong_encoding ) {
             $input = $match[0];
@@ -257,7 +260,7 @@ class Email_Encoder_Validate {
             return $self->encode_input_field( $input, $email, $strong_encoding );
         };
 
-        $regexpInputField = '/<input([^>]*)value=["\'][\s+]*' . EEB()->settings->get_email_regex( true ) . '[\s+]*["\']([^>]*)>/is';
+        $regexpInputField = '/<input([^>]*)value=["\'][\s+]*' . $this->settings()->get_email_regex( true ) . '[\s+]*["\']([^>]*)>/is';
 
         return preg_replace_callback( $regexpInputField, $callback_encode_input_fields, $content );
     }
@@ -270,7 +273,7 @@ class Email_Encoder_Validate {
         $self = $this;
 
         $callbackEncodeMailtoLinks = function ( $match ) use ( $self, $protection_method ) {
-            $attrs = EEB()->helpers->parse_html_attributes( $match[1] );
+            $attrs = $this->helper()->parse_html_attributes( $match[1] );
             return $self->create_protected_mailto( $match[4], $attrs, $protection_method );
         };
 
@@ -285,7 +288,7 @@ class Email_Encoder_Validate {
      */
     public function filter_custom_links( $content, $protection_method = null ) {
         $self = $this;
-        $custom_href_attr = (string) EEB()->settings->get_setting( 'custom_href_attr', true );
+        $custom_href_attr = (string) $this->getSetting( 'custom_href_attr', true );
 
         if ( ! empty( $custom_href_attr ) ) {
             $custom_attr_list = explode( ',', $custom_href_attr );
@@ -331,7 +334,7 @@ class Email_Encoder_Validate {
      * @return string
      */
     public function filter_soft_attributes( $content, $protection_method ) {
-        $soft_attributes = EEB()->settings->get_soft_attribute_regex();
+        $soft_attributes = $this->settings()->get_soft_attribute_regex();
 
         foreach( $soft_attributes as $ident => $regex ) {
 
@@ -363,8 +366,8 @@ class Email_Encoder_Validate {
      */
     public function filter_soft_dom_attributes( $content, $protection_method ) {
 
-        $no_script_tags = (bool) EEB()->settings->get_setting( 'no_script_tags', true, 'filter_body' );
-        $no_attribute_validation = (bool) EEB()->settings->get_setting( 'no_attribute_validation', true, 'filter_body' );
+        $no_script_tags = (bool) $this->getSetting( 'no_script_tags', true, 'filter_body' );
+        $no_attribute_validation = (bool) $this->getSetting( 'no_attribute_validation', true, 'filter_body' );
 
         if ( ! empty( $content ) && is_string( $content ) ) {
 
@@ -498,7 +501,7 @@ class Email_Encoder_Validate {
         $mail_link = $value;
 
         // first encode, so special chars can be supported
-        $mail_link = EEB()->helpers->encode_uri_components( $mail_link );
+        $mail_link = $this->helper()->encode_uri_components( $mail_link );
 
         $mail_letters = '';
 
@@ -581,13 +584,13 @@ class Email_Encoder_Validate {
      */
     public function encode_input_field( $input, $email, $strongEncoding = false ) {
 
-        $show_encoded_check = (bool) EEB()->settings->get_setting( 'show_encoded_check', true );
+        $show_encoded_check = (bool) $this->getSetting( 'show_encoded_check', true );
 
         if ( $strongEncoding === false ) {
             // encode email with entities (default wp method)
             $sub_return = str_replace( $email, antispambot( $email ), $input );
 
-            if ( current_user_can( EEB()->settings->get_admin_cap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
+            if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
                 $sub_return .= $this->get_encoded_email_icon();
             }
 
@@ -600,7 +603,7 @@ class Email_Encoder_Validate {
         $inputWithDataAttr .= substr( $input, 6 );
 
         // mark link as successfullly encoded (for admin users)
-        if ( current_user_can( EEB()->settings->get_admin_cap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
+        if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
             $inputWithDataAttr .= $this->get_encoded_email_icon();
         }
 
@@ -654,8 +657,8 @@ class Email_Encoder_Validate {
     public function create_protected_mailto( $display, $attrs = array(), $protection_method = null ) {
         $email     = '';
         $class_ori = ( empty( $attrs['class'] ) ) ? '' : $attrs['class'];
-        $custom_class = (string) EEB()->settings->get_setting( 'class_name', true );
-        $show_encoded_check = (string) EEB()->settings->get_setting( 'show_encoded_check', true );
+        $custom_class = (string) $this->getSetting( 'class_name', true );
+        $show_encoded_check = (string) $this->getSetting( 'show_encoded_check', true );
 
         // set user-defined class
         if ( $custom_class && strpos( $class_ori, $custom_class ) === FALSE ) {
@@ -698,7 +701,7 @@ class Email_Encoder_Validate {
 
         $link .= '>';
 
-        $link .= ( preg_match( EEB()->settings->get_email_regex(), $display) > 0 ) ? $this->get_protected_display( $display, $protection_method ) : $display;
+        $link .= ( preg_match( $this->settings()->get_email_regex(), $display) > 0 ) ? $this->get_protected_display( $display, $protection_method ) : $display;
 
         $link .= '</a>';
 
@@ -709,7 +712,7 @@ class Email_Encoder_Validate {
         $link = $this->filter_plain_emails( $link, null, 'char_encode' );
 
         // mark link as successfullly encoded (for admin users)
-        if ( current_user_can( EEB()->settings->get_admin_cap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
+        if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
             $link .= $this->get_encoded_email_icon();
         }
 
@@ -727,8 +730,8 @@ class Email_Encoder_Validate {
     public function create_protected_href_att( $display, $attrs = array(), $protection_method = null ) {
         $email     = '';
         $class_ori = ( empty( $attrs['class'] ) ) ? '' : $attrs['class'];
-        $custom_class = (string) EEB()->settings->get_setting( 'class_name', true );
-        $show_encoded_check = (string) EEB()->settings->get_setting( 'show_encoded_check', true );
+        $custom_class = (string) $this->getSetting( 'class_name', true );
+        $show_encoded_check = (string) $this->getSetting( 'show_encoded_check', true );
 
         // set user-defined class
         if ( $custom_class && strpos( $class_ori, $custom_class ) === FALSE ) {
@@ -767,7 +770,7 @@ class Email_Encoder_Validate {
         $link = apply_filters( 'eeb_custom_href', $link, $display, $email, $attrs );
 
         // mark link as successfullly encoded (for admin users)
-        if ( current_user_can( EEB()->settings->get_admin_cap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
+        if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
             $link .= $this->get_encoded_email_icon( 'Custom attribute encoded successfully!' );
         }
 
@@ -786,8 +789,8 @@ class Email_Encoder_Validate {
      */
     public function get_protected_display( $display, $protection_method = null ) {
 
-        $convert_plain_to_image = (bool) EEB()->settings->get_setting( 'convert_plain_to_image', true, 'filter_body' );
-        $protection_text = __( EEB()->settings->get_setting( 'protection_text', true ), 'email-encoder-bundle' );
+        $convert_plain_to_image = (bool) $this->getSetting( 'convert_plain_to_image', true, 'filter_body' );
+        $protection_text = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
         $raw_display = $display;
 
         // get display out of array (result of preg callback)
@@ -834,7 +837,7 @@ class Email_Encoder_Validate {
     }
 
     public function encode_email_css( $display ) {
-        $deactivate_rtl = (bool) EEB()->settings->get_setting( 'deactivate_rtl', true, 'filter_body' );
+        $deactivate_rtl = (bool) $this->getSetting( 'deactivate_rtl', true, 'filter_body' );
 
         $stripped_display = strip_tags( $display );
         $stripped_display = html_entity_decode( $stripped_display );
@@ -871,12 +874,12 @@ class Email_Encoder_Validate {
 
     public function email_to_image( $email, $image_string_color = 'default', $image_background_color = 'default', $alpha_string = 0, $alpha_fill = 127, $font_size = 4 ) {
 
-        $setting_image_string_color = (string) EEB()->settings->get_setting( 'image_color', true, 'image_settings' );
-        $setting_image_background_color = (string) EEB()->settings->get_setting( 'image_background_color', true, 'image_settings' );
-        $image_text_opacity = (int) EEB()->settings->get_setting( 'image_text_opacity', true, 'image_settings' );
-        $image_background_opacity = (int) EEB()->settings->get_setting( 'image_background_opacity', true, 'image_settings' );
-        $image_font_size = (int) EEB()->settings->get_setting( 'image_font_size', true, 'image_settings' );
-        $image_underline = (int) EEB()->settings->get_setting( 'image_underline', true, 'image_settings' );
+        $setting_image_string_color = (string) $this->getSetting( 'image_color', true, 'image_settings' );
+        $setting_image_background_color = (string) $this->getSetting( 'image_background_color', true, 'image_settings' );
+        $image_text_opacity = (int) $this->getSetting( 'image_text_opacity', true, 'image_settings' );
+        $image_background_opacity = (int) $this->getSetting( 'image_background_opacity', true, 'image_settings' );
+        $image_font_size = (int) $this->getSetting( 'image_font_size', true, 'image_settings' );
+        $image_underline = (int) $this->getSetting( 'image_underline', true, 'image_settings' );
         $border_padding = 0;
         $border_offset = 2;
         $border_height = ( is_numeric( $image_underline ) && ! empty( $image_underline ) ) ? intval( $image_underline ) : 0;
@@ -959,7 +962,7 @@ class Email_Encoder_Validate {
             return false;
         }
 
-        $secret = EEB()->settings->get_email_image_secret();
+        $secret = $this->settings()->get_email_image_secret();
         $signature = $this->generate_email_signature( $email, $secret );
         $url = home_url() . '?eeb_mail=' . urlencode( base64_encode( $email ) ) . '&eeb_hash=' . urlencode( $signature );
 
@@ -981,12 +984,12 @@ class Email_Encoder_Validate {
      * @return string
      */
     public function get_encoder_form() {
-        $powered_by_setting = (bool) EEB()->settings->get_setting( 'powered_by', true, 'encoder_form' );
+        $powered_by_setting = (bool) $this->getSetting( 'powered_by', true, 'encoder_form' );
 
         //shorten circle
         if (
-            ! EEB()->helpers->is_page( $this->page_name )
-            && ! (bool) EEB()->settings->get_setting( 'encoder_form_frontend', true, 'encoder_form' )
+            ! $this->helper()->is_page( $this->page_name )
+            && ! (bool) $this->getSetting( 'encoder_form_frontend', true, 'encoder_form' )
          ) {
             return apply_filters('eeb_form_content_inactive', '' );
         }
@@ -1076,7 +1079,7 @@ FORM;
     public function is_post_excluded( $post_id = null ) {
 
         $return = false;
-        $skip_posts = (string) EEB()->settings->get_setting( 'skip_posts', true );
+        $skip_posts = (string) $this->getSetting( 'skip_posts', true );
 		if ( ! empty( $skip_posts ) ) {
 
             if ( empty( $post_id ) ) {
@@ -1124,7 +1127,7 @@ FORM;
         }
 
         $return = false;
-        $skip_query_parameters = (string) EEB()->settings->get_setting( 'skip_query_parameters', true );
+        $skip_query_parameters = (string) $this->getSetting( 'skip_query_parameters', true );
 		if ( ! empty( $skip_query_parameters ) && ! empty( $parameters ) ) {
 
 			$excluded_parameters = explode( ',', $skip_query_parameters );

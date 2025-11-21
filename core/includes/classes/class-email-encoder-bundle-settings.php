@@ -7,7 +7,7 @@ class Email_Encoder_Settings {
 	private string $admin_cap = 'manage_options';
 	private string $page_name = 'email-encoder-bundle-option-page';
 	private string $page_title;
-	private string $final_outout_buffer_hook = 'final_output';
+	private string $final_output_buffer_hook = 'final_output';
 	private string $widget_callback_hook = 'widget_output';
 	private string $settings_key= 'WP_Email_Encoder_Bundle_options';
 	private string $version_key= 'email-encoder-bundle-version';
@@ -19,7 +19,6 @@ class Email_Encoder_Settings {
 		'setup_single_filter_hooks' => 100,
 		'add_custom_template_tags' => 10,
 		'load_frontend_header_styling' => 10,
-		'eeb_dynamic_sidebar_params' => 100, //deprecated but kept for compatibility
 		'filter_rss' => 100,
 		'filter_page' => 100,
 		'filter_content' => 100,
@@ -30,6 +29,7 @@ class Email_Encoder_Settings {
 		'load_ajax_scripts_styles' => 10,
 		'load_ajax_scripts_styles_admin' => 10,
 		'reload_settings_for_integrations' => 5,
+		// 'eeb_dynamic_sidebar_params' => 100, //deprecated but kept for compatibility
 	];
 	private array $safe_attr_html;
 	private string $email_regex = '([_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,}))';
@@ -324,8 +324,8 @@ class Email_Encoder_Settings {
 	 *
 	 * @return string - the final output buffer hook name
 	 */
-	public function get_final_outout_buffer_hook() {
-		return apply_filters( 'eeb/settings/final_outout_buffer_hook', $this->final_outout_buffer_hook );
+	public function get_final_output_buffer_hook() {
+		return apply_filters( 'eeb/settings/final_output_buffer_hook', $this->final_output_buffer_hook );
 	}
 
 	/**

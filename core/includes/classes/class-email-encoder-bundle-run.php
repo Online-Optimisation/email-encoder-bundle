@@ -2,16 +2,18 @@
 
 namespace Legacy\EmailEncoderBundle;
 
+use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
+
 class Email_Encoder_Run {
 
-    private Email_Encoder $plugin;
+    use PluginHelper;
 
 	# COMMON
 	private string $page_name;
 	private string $page_title;
 
 	# NON-ADMIN
-	private string $final_outout_buffer_hook;
+	private string $final_output_buffer_hook;
 	private string $widget_callback_hook;
 
 	# ADMIN
@@ -24,29 +26,22 @@ class Email_Encoder_Run {
 
 
 	function __construct() {
-        $this->plugin = Email_Encoder::instance();
 		$this->is_admin = is_admin();
 
-		$this->page_name  = $this->plugin->settings->get_page_name();
-		$this->page_title = $this->plugin->settings->get_page_title();
-
-        error_log( print_r( [
-            'page_name' => $this->page_name,
-            'page_title' => $this->page_title,
-            'is admin' => $this->is_admin,
-        ], true ) );
+		$this->page_name  = $this->getPageName();
+		$this->page_title = $this->getPageTitle();
 	}
 
     public function boot(): void {
 
 		if ( $this->is_admin ) {
-			$this->settings_key = $this->plugin->settings->get_settings_key();
+			$this->settings_key = $this->getSettingsKey();
 
 			add_action( 'init', [ $this, 'add_hooks_admin' ] );
 		}
 		else {
-			$this->final_outout_buffer_hook = $this->plugin->settings->get_final_outout_buffer_hook();
-			$this->widget_callback_hook 	= $this->plugin->settings->get_widget_callback_hook();
+			$this->final_output_buffer_hook = $this->getFinalOutputBufferHook();
+			$this->widget_callback_hook 	= $this->getWidgetCallbackHook();
 
 			add_action( 'init', [ $this, 'add_hooks' ] );
 			add_action( 'init', [ $this, 'add_shortcodes' ] );
@@ -59,7 +54,7 @@ class Email_Encoder_Run {
 	 */
 	public function add_hooks() {
 
-		$filter_hook = (bool) $this->plugin->settings->get_setting( 'filter_hook', true, 'filter_body' );
+		$filter_hook = (bool) $this->getSetting( 'filter_hook', true, 'filter_body' );
 		$hook_name = $filter_hook ? 'init' : 'wp';
 
 		$actions = [
@@ -73,7 +68,7 @@ class Email_Encoder_Run {
 		];
 
 		foreach ( $actions as [ $tag, $method ] ) {
-			$priority = $this->plugin->settings->get_hook_priorities( $method );
+			$priority = $this->getHookPriorities( $method );
 
 			add_action( $tag, [ $this, $method ], $priority, 0 );
 		}
@@ -139,23 +134,23 @@ class Email_Encoder_Run {
 
 		$apply_protection = true;
 
-		if( $this->plugin->validate->is_query_parameter_excluded() ) {
+		if ( $this->isQueryParameterExcluded() ) {
 			$apply_protection = false;
 		}
 
-		if( $this->plugin->validate->is_post_excluded() ) {
+		if ( $this->isPostExcluded() ) {
 			$apply_protection = false;
 		}
 
 		$apply_protection = apply_filters( 'eeb/frontend/apply_protection', $apply_protection );
 
-		if( ! $apply_protection ) {
+		if ( ! $apply_protection ) {
 			return $content;
 		}
 
-		$protect_using = (string) $this->plugin->settings->get_setting( 'protect_using', true );
+		$protect_using = (string) $this->getSetting( 'protect_using', true );
 
-		return $this->plugin->validate->filter_content( $content, $protect_using );
+		return $this->filterContent( $content, $protect_using );
 	}
 
 	/**
@@ -166,7 +161,7 @@ class Email_Encoder_Run {
 	 * @return void
 	 */
 	public function reload_settings_for_integrations() {
-		$this->plugin->settings->reload_settings();
+		$this->reloadSettings();
 	}
 
 	/**
@@ -184,24 +179,24 @@ class Email_Encoder_Run {
 	  */
 	public function buffer_final_output() {
 
-		if( defined( 'WP_CLI' ) || defined( 'DOING_CRON' ) ) {
+		if ( defined( 'WP_CLI' ) || defined( 'DOING_CRON' ) ) {
 			return;
 		}
 
-		if( wp_doing_ajax() ) {
+		if ( wp_doing_ajax() ) {
 			//Maybe allow filtering for ajax requests
-			$filter_ajax_requests = (int) $this->plugin->settings->get_setting( 'ajax_requests', true, 'filter_body' );
-			if( $filter_ajax_requests !== 1 ) {
+			$filter_ajax_requests = (int) $this->getSetting( 'ajax_requests', true, 'filter_body' );
+			if ( $filter_ajax_requests !== 1 ) {
 				return;
 			}
 
 		}
 
-		if( is_admin() ) {
+		if ( is_admin() ) {
 
 			//Maybe allow filtering for admin requests
-			$filter_admin_requests = (int) $this->plugin->settings->get_setting( 'admin_requests', true, 'filter_body' );
-			if( $filter_admin_requests !== 1 ) {
+			$filter_admin_requests = (int) $this->getSetting( 'admin_requests', true, 'filter_body' );
+			if ( $filter_admin_requests !== 1 ) {
 				return;
 			}
 
@@ -217,72 +212,72 @@ class Email_Encoder_Run {
 	 * @return string - the filtered content
 	 */
 	public function apply_content_filter( $content ) {
-		$filteredContent = apply_filters( $this->final_outout_buffer_hook, $content );
+		$filteredContent = apply_filters( $this->final_output_buffer_hook, $content );
 
 		// remove filters after applying to prevent multiple applies
-		remove_all_filters( $this->final_outout_buffer_hook );
+		remove_all_filters( $this->final_output_buffer_hook );
 
 		return $filteredContent;
 	}
 
-	/**
-	 * Filter for "dynamic_sidebar_params" hook
-	 *
-	 * @deprecated 2.1.4
-	 * @global array $wp_registered_widgets
-	 * @param  array $params
-	 * @return array
-	 */
-	public function eeb_dynamic_sidebar_params( $params) {
-		global $wp_registered_widgets;
+	// /**
+	//  * Filter for "dynamic_sidebar_params" hook
+	//  *
+	//  * @deprecated 2.1.4
+	//  * @global array $wp_registered_widgets
+	//  * @param  array $params
+	//  * @return array
+	//  */
+	// public function eeb_dynamic_sidebar_params( $params) {
+	// 	global $wp_registered_widgets;
 
-		if ( is_admin() ) {
-			return $params;
-		}
+	// 	if ( is_admin() ) {
+	// 		return $params;
+	// 	}
 
-		$widget_id = $params[0]['widget_id'];
+	// 	$widget_id = $params[0]['widget_id'];
 
-		// prevent overwriting when already set by another version of the widget output class
-		if ( isset( $wp_registered_widgets[ $widget_id ]['_wo_original_callback'] ) ) {
-			return $params;
-		}
+	// 	// prevent overwriting when already set by another version of the widget output class
+	// 	if ( isset( $wp_registered_widgets[ $widget_id ]['_wo_original_callback'] ) ) {
+	// 		return $params;
+	// 	}
 
-		$wp_registered_widgets[ $widget_id ]['_wo_original_callback'] = $wp_registered_widgets[ $widget_id ]['callback'];
-		$wp_registered_widgets[ $widget_id ]['callback'] = array( $this, 'call_widget_callback' );
+	// 	$wp_registered_widgets[ $widget_id ]['_wo_original_callback'] = $wp_registered_widgets[ $widget_id ]['callback'];
+	// 	$wp_registered_widgets[ $widget_id ]['callback'] = array( $this, 'call_widget_callback' );
 
-		return $params;
-	}
+	// 	return $params;
+	// }
 
-	/**
-	 * The Widget Callback
-	 *
-	 * @deprecated 2.1.4
-	 * @global array $wp_registered_widgets
-	 */
-	public function call_widget_callback() {
-		global $wp_registered_widgets;
+	// /**
+	//  * The Widget Callback
+	//  *
+	//  * @deprecated 2.1.4
+	//  * @global array $wp_registered_widgets
+	//  */
+	// public function call_widget_callback() {
+	// 	global $wp_registered_widgets;
 
-		$original_callback_params = func_get_args();
-		$original_callback = null;
+	// 	$original_callback_params = func_get_args();
+	// 	$original_callback = null;
 
-		$widget_id = $original_callback_params[0]['widget_id'];
+	// 	$widget_id = $original_callback_params[0]['widget_id'];
 
-		$original_callback = $wp_registered_widgets[ $widget_id ]['_wo_original_callback'];
-		$wp_registered_widgets[ $widget_id ]['callback'] = $original_callback;
+	// 	$original_callback = $wp_registered_widgets[ $widget_id ]['_wo_original_callback'];
+	// 	$wp_registered_widgets[ $widget_id ]['callback'] = $original_callback;
 
-		$widget_id_base = ( isset( $wp_registered_widgets[ $widget_id ]['callback'][0]->id_base ) ) ? $wp_registered_widgets[ $widget_id ]['callback'][0]->id_base : 0;
+	// 	$widget_id_base = ( isset( $wp_registered_widgets[ $widget_id ]['callback'][0]->id_base ) ) ? $wp_registered_widgets[ $widget_id ]['callback'][0]->id_base : 0;
 
-		if ( is_callable( $original_callback ) ) {
-			ob_start();
-			call_user_func_array( $original_callback, $original_callback_params );
-			$widget_output = ob_get_clean();
+	// 	if ( is_callable( $original_callback ) ) {
+	// 		ob_start();
+	// 		call_user_func_array( $original_callback, $original_callback_params );
+	// 		$widget_output = ob_get_clean();
 
-			echo apply_filters( $this->widget_callback_hook, $widget_output, $widget_id_base, $widget_id );
+	// 		echo apply_filters( $this->widget_callback_hook, $widget_output, $widget_id_base, $widget_id );
 
-			// remove filters after applying to prevent multiple applies
-			remove_all_filters( $this->widget_callback_hook );
-		}
-	}
+	// 		// remove filters after applying to prevent multiple applies
+	// 		remove_all_filters( $this->widget_callback_hook );
+	// 	}
+	// }
 
 	/**
 	 * ######################
@@ -296,14 +291,14 @@ class Email_Encoder_Run {
 
 		$js_version  = date( "ymd-Gis", filemtime( EEB_PLUGIN_DIR . 'core/includes/assets/js/custom.js' ));
 		$css_version = date( "ymd-Gis", filemtime( EEB_PLUGIN_DIR . 'core/includes/assets/css/style.css' ));
-		$protect_using = (string) $this->plugin->settings->get_setting( 'protect_using', true );
-		$footer_scripts = (bool) $this->plugin->settings->get_setting( 'footer_scripts', true );
+		$protect_using = (string) $this->getSetting( 'protect_using', true );
+		$footer_scripts = (bool) $this->getSetting( 'footer_scripts', true );
 
-		if( $protect_using === 'with_javascript' ) {
+		if ( $protect_using === 'with_javascript' ) {
 			wp_enqueue_script( 'eeb-js-frontend', EEB_PLUGIN_URL . 'core/includes/assets/js/custom.js', array( 'jquery' ), $js_version, $footer_scripts );
 		}
 
-		if(
+		if (
 			$protect_using === 'with_javascript'
 			|| $protect_using === 'without_javascript'
 		) {
@@ -311,7 +306,7 @@ class Email_Encoder_Run {
 			wp_enqueue_style ( 'eeb-css-frontend' );
 		}
 
-		if( (string) $this->plugin->settings->get_setting( 'show_encoded_check', true ) === '1' ) {
+		if ( (string) $this->getSetting( 'show_encoded_check', true ) === '1' ) {
 			wp_enqueue_style('dashicons');
 		}
 
@@ -332,28 +327,28 @@ class Email_Encoder_Run {
 	  */
 	public function setup_single_filter_hooks() {
 
-		if( $this->plugin->validate->is_query_parameter_excluded() ) {
+		if ( $this->isQueryParameterExcluded() ) {
 			return;
 		}
 
-		if( $this->plugin->validate->is_post_excluded() ) {
+		if ( $this->isPostExcluded() ) {
 			return;
 		}
 
-		$protection_method = (int) $this->plugin->settings->get_setting( 'protect', true );
-		$filter_rss = (int) $this->plugin->settings->get_setting( 'filter_rss', true, 'filter_body' );
-		$remove_shortcodes_rss = (int) $this->plugin->settings->get_setting( 'remove_shortcodes_rss', true, 'filter_body' );
-		$protect_shortcode_tags = (bool) $this->plugin->settings->get_setting( 'protect_shortcode_tags', true, 'filter_body' );
+		$protection_method = (int) $this->getSetting( 'protect', true );
+		$filter_rss = (int) $this->getSetting( 'filter_rss', true, 'filter_body' );
+		$remove_shortcodes_rss = (int) $this->getSetting( 'remove_shortcodes_rss', true, 'filter_body' );
+		$protect_shortcode_tags = (bool) $this->getSetting( 'protect_shortcode_tags', true, 'filter_body' );
 		$protect_shortcode_tags_valid = false;
 
 		if ( is_feed() ) {
 
-			if( $filter_rss === 1 ) {
-				add_filter( $this->final_outout_buffer_hook, array( $this, 'filter_rss' ), $this->plugin->settings->get_hook_priorities( 'filter_rss' ) );
+			if ( $filter_rss === 1 ) {
+				add_filter( $this->final_output_buffer_hook, array( $this, 'filter_rss' ), $this->getHookPriorities( 'filter_rss' ) );
 			}
 
 			if ( $remove_shortcodes_rss ) {
-				add_filter( $this->final_outout_buffer_hook, array( $this, 'callback_rss_remove_shortcodes' ), $this->plugin->settings->get_hook_priorities( 'callback_rss_remove_shortcodes' ) );
+				add_filter( $this->final_output_buffer_hook, array( $this, 'callback_rss_remove_shortcodes' ), $this->getHookPriorities( 'callback_rss_remove_shortcodes' ) );
 			}
 
 		}
@@ -384,18 +379,16 @@ class Email_Encoder_Run {
 			$filter_hooks = apply_filters( 'eeb/frontend/wordpress_filters', $filter_hooks );
 
 			foreach ( $filter_hooks as $hook ) {
-			   add_filter( $hook, array( $this, 'filter_content' ), $this->plugin->settings->get_hook_priorities( 'filter_content' ) );
+			   add_filter( $hook, array( $this, 'filter_content' ), $this->getHookPriorities( 'filter_content' ) );
 			}
 		} elseif ( $protection_method === 1 ) {
 			$protect_shortcode_tags_valid = true;
 
-			add_filter( $this->final_outout_buffer_hook, array( $this, 'filter_page' ), $this->plugin->settings->get_hook_priorities( 'filter_page' ) );
+			add_filter( $this->final_output_buffer_hook, array( $this, 'filter_page' ), $this->getHookPriorities( 'filter_page' ) );
 		}
 
-		if ( $protect_shortcode_tags_valid ) {
-			if ( $protect_shortcode_tags ) {
-				add_filter( 'do_shortcode_tag', array( $this, 'filter_content' ), $this->plugin->settings->get_hook_priorities( 'do_shortcode_tag' ) );
-			}
+		if ( $protect_shortcode_tags_valid && $protect_shortcode_tags ) {
+            add_filter( 'do_shortcode_tag', [ $this, 'filter_content' ], $this->getHookPriorities( 'do_shortcode_tag' ) );
 		}
 
 	}
@@ -407,9 +400,9 @@ class Email_Encoder_Run {
 	 * @return string
 	 */
 	public function filter_page( $content ) {
-		$protect_using = (string) $this->plugin->settings->get_setting( 'protect_using', true );
+		$protect_using = (string) $this->getSetting( 'protect_using', true );
 
-		return $this->plugin->validate->filter_page( $content, $protect_using );
+		return $this->filterPage( $content, $protect_using );
 	}
 
 	/**
@@ -419,8 +412,8 @@ class Email_Encoder_Run {
 	 * @return string
 	 */
 	public function filter_content( $content ) {
-		$protect_using = (string) $this->plugin->settings->get_setting( 'protect_using', true );
-		return $this->plugin->validate->filter_content( $content, $protect_using );
+		$protect_using = (string) $this->getSetting( 'protect_using', true );
+		return $this->filterContent( $content, $protect_using );
 	}
 
 	/**
@@ -430,8 +423,8 @@ class Email_Encoder_Run {
 	 * @return string
 	 */
 	public function filter_rss( $content ) {
-		$protection_type = (string) $this->plugin->settings->get_setting( 'protect_using', true );
-		return $this->plugin->validate->filter_rss( $content, $protection_type );
+		$protection_type = (string) $this->getSetting( 'protect_using', true );
+		return $this->validate()->filter_rss( $content, $protection_type );
 	}
 
 	/**
@@ -460,23 +453,23 @@ class Email_Encoder_Run {
 	 * @param string  $content
 	 */
 	public function protect_content_shortcode( $atts, $content = null ) {
-		$protect = (int) $this->plugin->settings->get_setting( 'protect', true );
-		$allowed_attr_html = $this->plugin->settings->get_safe_html_attr();
-		$protect_using = (string) $this->plugin->settings->get_setting( 'protect_using', true );
+		$protect = (int) $this->getSetting( 'protect', true );
+		$allowed_attr_html = $this->getSafeHtmlAttr();
+		$protect_using = (string) $this->getSetting( 'protect_using', true );
 		$protection_activated = ( $protect === 1 || $protect === 2 ) ? true : false;
 
 		if ( ! $protection_activated ) {
 			return $content;
 		}
 
-		if( isset( $atts['protect_using'] ) ) {
+		if ( isset( $atts['protect_using'] ) ) {
 			$protect_using = sanitize_title( $atts['protect_using'] );
 		}
 
 		//Filter content first
 		$content = wp_kses( html_entity_decode( $content ), $allowed_attr_html );
 
-		$content = $this->plugin->validate->filter_content( $content, $protect_using );
+		$content = $this->validate()->filter_content( $content, $protect_using );
 
 		return $content;
 	}
@@ -488,11 +481,11 @@ class Email_Encoder_Run {
 	 */
 	public function shortcode_email_encoder_form( $atts = array(), $content = null ) {
 
-		if(
-			$this->plugin->helpers->is_page( $this->page_name )
-			|| (bool) $this->plugin->settings->get_setting( 'encoder_form_frontend', true, 'encoder_form' )
+		if (
+			$this->helper()->is_page( $this->page_name )
+			|| (bool) $this->getSetting( 'encoder_form_frontend', true, 'encoder_form' )
 		 ) {
-			return $this->plugin->validate->get_encoder_form();
+			return $this->validate()->get_encoder_form();
 		}
 
 		return '';
@@ -506,16 +499,16 @@ class Email_Encoder_Run {
 	public function shortcode_eeb_content( $atts = array(), $content = null ) {
 
 		$original_content = $content;
-		$allowed_attr_html = $this->plugin->settings->get_safe_html_attr();
-		$show_encoded_check = (string) $this->plugin->settings->get_setting( 'show_encoded_check', true );
+		$allowed_attr_html = $this->getSafeHtmlAttr();
+		$show_encoded_check = (string) $this->getSetting( 'show_encoded_check', true );
 
-		if( ! isset( $atts['protection_text'] ) ) {
-			$protection_text = __( $this->plugin->settings->get_setting( 'protection_text', true ), 'email-protection-text-eeb-content' );
+		if ( ! isset( $atts['protection_text'] ) ) {
+			$protection_text = __( $this->getSetting( 'protection_text', true ), 'email-protection-text-eeb-content' );
 		} else {
 			$protection_text = wp_kses_post( $atts['protection_text'] );
 		}
 
-		if( isset( $atts['method'] ) ) {
+		if ( isset( $atts['method'] ) ) {
 			$method = sanitize_title( $atts['method'] );
 		} else {
 			$method = 'rot13';
@@ -523,18 +516,18 @@ class Email_Encoder_Run {
 
 		$content = wp_kses( html_entity_decode( $content ), $allowed_attr_html );
 
-		if( isset( $atts['do_shortcode'] ) && $atts['do_shortcode'] === 'yes' ) {
+		if ( isset( $atts['do_shortcode'] ) && $atts['do_shortcode'] === 'yes' ) {
 			$content = do_shortcode( $content );
 		}
 
 		switch( $method ) {
 			case 'enc_ascii':
 			case 'rot13':
-				$content = $this->plugin->validate->encode_ascii( $content, $protection_text );
+				$content = $this->validate()->encode_ascii( $content, $protection_text );
 				break;
 			case 'enc_escape':
 			case 'escape':
-				$content = $this->plugin->validate->encode_escape( $content, $protection_text );
+				$content = $this->validate()->encode_escape( $content, $protection_text );
 				break;
 			case 'enc_html':
 			case 'encode':
@@ -544,8 +537,8 @@ class Email_Encoder_Run {
 		}
 
 		 // mark link as successfullly encoded (for admin users)
-		 if ( current_user_can( $this->plugin->settings->get_admin_cap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
-			$content .= $this->plugin->validate->get_encoded_email_icon();
+		 if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
+			$content .= $this->validate()->get_encoded_email_icon();
 		}
 
 		return apply_filters( 'eeb/frontend/shortcode/eeb_protect_content', $content, $atts, $original_content );
@@ -558,25 +551,25 @@ class Email_Encoder_Run {
 	 */
 	public function shortcode_eeb_email( $atts = array(), $content = null ) {
 
-		$allowed_attr_html = $this->plugin->settings->get_safe_html_attr();
-		$show_encoded_check = (bool) $this->plugin->settings->get_setting( 'show_encoded_check', true );
-		$protection_text = __( $this->plugin->settings->get_setting( 'protection_text', true ), 'email-encoder-bundle' );
+		$allowed_attr_html = $this->getSafeHtmlAttr();
+		$show_encoded_check = (bool) $this->getSetting( 'show_encoded_check', true );
+		$protection_text = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
 
-		if( empty( $atts['email'] ) ) {
+		if ( empty( $atts['email'] ) ) {
 			return '';
 		} else {
 			$email = sanitize_email( $atts['email'] );
 		}
 
-		if( empty( $atts['extra_attrs'] ) ) {
+		if ( empty( $atts['extra_attrs'] ) ) {
 			$extra_attrs = '';
 		} else {
 			$extra_attrs = $atts['extra_attrs'];
 		}
 
-		if( ! isset( $atts['method'] ) || empty( $atts['method'] ) ) {
-			$protect_using = (string) $this->plugin->settings->get_setting( 'protect_using', true );
-			if( ! empty( $protect_using ) ) {
+		if ( ! isset( $atts['method'] ) || empty( $atts['method'] ) ) {
+			$protect_using = (string) $this->getSetting( 'protect_using', true );
+			if ( ! empty( $protect_using ) ) {
 				$method = $protect_using;
 			} else {
 				$method = 'rot13'; //keep as fallback
@@ -585,46 +578,46 @@ class Email_Encoder_Run {
 			$method = sanitize_title( $atts['method'] );
 		}
 
-		$custom_class = (string) $this->plugin->settings->get_setting( 'class_name', true );
+		$custom_class = (string) $this->getSetting( 'class_name', true );
 
-		if( empty( $atts['display'] ) ) {
+		if ( empty( $atts['display'] ) ) {
 			$display = $email;
 		} else {
 			$display = wp_kses( html_entity_decode( $atts['display'] ), $allowed_attr_html );
 			$display = str_replace( '\\', '', $display ); //Additionally sanitize unicode
 		}
 
-		if( empty( $atts['noscript'] ) ) {
+		if ( empty( $atts['noscript'] ) ) {
 			$noscript = $protection_text;
 		} else {
 			$noscript = wp_kses( html_entity_decode( $atts['noscript'] ), $allowed_attr_html );
 			$noscript = str_replace( '\\', '', $noscript ); //Additionally sanitize unicode
 		}
 
-		$class_name = ' ' . $this->plugin->helpers->sanitize_html_attributes( $extra_attrs );
+		$class_name = ' ' . $this->helper()->sanitize_html_attributes( $extra_attrs );
 		$class_name .= ' class="' . esc_attr( $custom_class ) . '"';
 		$mailto = '<a href="mailto:' . $email . '"'. $class_name . '>' . $display . '</a>';
 
 		switch( $method ) {
 			case 'enc_ascii':
 			case 'rot13':
-				$mailto = $this->plugin->validate->encode_ascii( $mailto, $noscript );
+				$mailto = $this->validate()->encode_ascii( $mailto, $noscript );
 				break;
 			case 'enc_escape':
 			case 'escape':
-				$mailto = $this->plugin->validate->encode_escape( $mailto, $noscript );
+				$mailto = $this->validate()->encode_escape( $mailto, $noscript );
 				break;
 			case 'with_javascript':
-				$mailto = $this->plugin->validate->dynamic_js_email_encoding( $mailto, $noscript );
+				$mailto = $this->validate()->dynamic_js_email_encoding( $mailto, $noscript );
 				break;
 			case 'without_javascript':
-				$mailto = $this->plugin->validate->encode_email_css( $mailto );
+				$mailto = $this->validate()->encode_email_css( $mailto );
 				break;
 			case 'char_encode':
-				$mailto = $this->plugin->validate->filter_plain_emails( $mailto, null, 'char_encode' );
+				$mailto = $this->validate()->filter_plain_emails( $mailto, null, 'char_encode' );
 				break;
 			case 'strong_method':
-				$mailto = $this->plugin->validate->filter_plain_emails( $mailto );
+				$mailto = $this->validate()->filter_plain_emails( $mailto );
 				break;
 			case 'enc_html':
 			case 'encode':
@@ -634,8 +627,8 @@ class Email_Encoder_Run {
 		}
 
 		// mark link as successfullly encoded (for admin users)
-		if ( current_user_can( $this->plugin->settings->get_admin_cap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
-			$mailto .= $this->plugin->validate->get_encoded_email_icon();
+		if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
+			$mailto .= $this->validate()->get_encoded_email_icon();
 		}
 
 		return apply_filters( 'eeb/frontend/shortcode/eeb_mailto', $mailto );
@@ -651,30 +644,30 @@ class Email_Encoder_Run {
 
 	public function display_email_image() {
 
-		if( ! isset( $_GET['eeb_mail'] ) ) {
+		if ( ! isset( $_GET['eeb_mail'] ) ) {
 			return;
 		}
 
 		$email = sanitize_email( base64_decode( $_GET['eeb_mail'] ) );
 
-		if( ! is_email( $email ) || ! isset( $_GET['eeb_hash'] ) ) {
+		if ( ! is_email( $email ) || ! isset( $_GET['eeb_hash'] ) ) {
 			return;
 		}
 
 		$hash = (string) $_GET['eeb_hash'];
-		$secret = $this->plugin->settings->get_email_image_secret();
+		$secret = $this->settings()->get_email_image_secret();
 
-		if( ! function_exists( 'imagefontwidth' ) ) {
+		if ( ! function_exists( 'imagefontwidth' ) ) {
 			wp_die( __('GD Library Not Enabled. Please enable it first.', 'email-encoder-bundle') );
 		}
 
-		if( $this->plugin->validate->generate_email_signature( $email, $secret ) !== $hash ) {
+		if ( $this->validate()->generate_email_signature( $email, $secret ) !== $hash ) {
 			wp_die( __('Your signture is invalid.', 'email-encoder-bundle') );
 		}
 
-		$image = $this->plugin->validate->email_to_image( $email );
+		$image = $this->validate()->email_to_image( $email );
 
-		if( empty( $image ) ) {
+		if ( empty( $image ) ) {
 			wp_die( __('Your email could not be converted.', 'email-encoder-bundle') );
 		}
 
@@ -694,12 +687,12 @@ class Email_Encoder_Run {
 
 	public function add_custom_template_tags() {
         error_log( __METHOD__ );
-		$template_tags = $this->plugin->settings->get_template_tags();
+		$template_tags = $this->getTemplateTags();
 
 		foreach( $template_tags as $hook => $callback ) {
 
 			//Make sure we only call our own custom template tags
-			if( is_callable( array( $this, $callback ) ) ) {
+			if ( is_callable( array( $this, $callback ) ) ) {
 				apply_filters( $hook, array( $this, $callback ), 10 );
 			}
 
@@ -710,22 +703,22 @@ class Email_Encoder_Run {
 	 * Filter for the eeb_filter template tag
 	 *
 	 * This function is called dynamically by add_custom_template_tags
-	 * using the $this->plugin->settings->get_template_tags() callback.
+	 * using the $this->getTemplateTags() callback.
 	 *
 	 * @param string $content - the default content
 	 * @return string - the filtered content
 	 */
 	public function template_tag_eeb_filter( $content ) {
         error_log( __METHOD__ );
-		$protect_using = (string) $this->plugin->settings->get_setting( 'protect_using', true );
-		return $this->plugin->validate->filter_content( $content, $protect_using );
+		$protect_using = (string) $this->getSetting( 'protect_using', true );
+		return $this->validate()->filter_content( $content, $protect_using );
 	}
 
 	/**
 	 * Filter for the eeb_filter template tag
 	 *
 	 * This function is called dynamically by add_custom_template_tags
-	 * using the $this->plugin->settings->get_template_tags() callback.
+	 * using the $this->getTemplateTags() callback.
 	 *
 	 * @param string $content - the default content
 	 * @return string - the filtered content
@@ -740,7 +733,7 @@ class Email_Encoder_Run {
 			$atts['href'] = 'mailto:'.$email;
 		}
 
-		return $this->plugin->validate->create_protected_mailto( $display, $atts );
+		return $this->validate()->create_protected_mailto( $display, $atts );
 	}
 
 
@@ -776,7 +769,7 @@ class Email_Encoder_Run {
 	 * @since    2.0.0
 	 */
 	public function enqueue_scripts_and_styles_admin() {
-		if( $this->plugin->helpers->is_page( $this->page_name ) ) {
+		if ( $this->helper()->is_page( $this->page_name ) ) {
 			$js_version  = date( "ymd-Gis", filemtime( EEB_PLUGIN_DIR . 'core/includes/assets/js/custom-admin.js' ));
 			$css_version = date( "ymd-Gis", filemtime( EEB_PLUGIN_DIR . 'core/includes/assets/css/style-admin.css' ));
 
@@ -791,10 +784,10 @@ class Email_Encoder_Run {
 	 */
 	public function add_user_submenu_admin() {
 
-		if( (string) $this->plugin->settings->get_setting( 'own_admin_menu', true ) !== '1' ){
-			$this->pagehook = add_submenu_page( 'options-general.php', __( $this->page_title, 'email-encoder-bundle' ), __( $this->page_title, 'email-encoder-bundle' ), $this->plugin->settings->get_admin_cap( 'admin-add-submenu-page-item' ), $this->page_name, array( $this, 'render_admin_menu_page' ) );
+		if ( (string) $this->getSetting( 'own_admin_menu', true ) !== '1' ) {
+			$this->pagehook = add_submenu_page( 'options-general.php', __( $this->page_title, 'email-encoder-bundle' ), __( $this->page_title, 'email-encoder-bundle' ), $this->getAdminCap( 'admin-add-submenu-page-item' ), $this->page_name, array( $this, 'render_admin_menu_page' ) );
 		} else {
-			$this->pagehook = add_menu_page( __( $this->page_title, 'email-encoder-bundle' ), __( $this->page_title, 'email-encoder-bundle' ), $this->plugin->settings->get_admin_cap( 'admin-add-menu-page-item' ), $this->page_name, array( $this, 'render_admin_menu_page' ), plugins_url( 'core/includes/assets/img/icon-email-encoder-bundle.png', EEB_PLUGIN_FILE ) );
+			$this->pagehook = add_menu_page( __( $this->page_title, 'email-encoder-bundle' ), __( $this->page_title, 'email-encoder-bundle' ), $this->getAdminCap( 'admin-add-menu-page-item' ), $this->page_name, array( $this, 'render_admin_menu_page' ), plugins_url( 'core/includes/assets/img/icon-email-encoder-bundle.png', EEB_PLUGIN_FILE ) );
 		}
 
 		add_action( 'load-' . $this->pagehook, array( $this, 'add_help_tabs' ) );
@@ -803,31 +796,31 @@ class Email_Encoder_Run {
 
 	public function save_settings_admin() {
 
-		if( isset( $_POST[ $this->page_name . '_nonce' ] ) ){
-			if( ! wp_verify_nonce( $_POST[ $this->page_name . '_nonce' ], $this->page_name ) ){
+		if ( isset( $_POST[ $this->page_name . '_nonce' ] ) ) {
+			if ( ! wp_verify_nonce( $_POST[ $this->page_name . '_nonce' ], $this->page_name ) ) {
 				wp_die( __( 'You don\'t have permission to update these settings.', 'email-encoder-bundle' ) );
 			}
 
-			if( ! current_user_can( $this->plugin->settings->get_admin_cap( 'admin-update-settings' ) ) ){
+			if ( ! current_user_can( $this->getAdminCap( 'admin-update-settings' ) ) ) {
 				wp_die( __( 'You don\'t have permission to update these settings.', 'email-encoder-bundle' ) );
 			}
 
-			if( isset( $_POST[ $this->settings_key ] ) && is_array( $_POST[ $this->settings_key ] ) ){
+			if ( isset( $_POST[ $this->settings_key ] ) && is_array( $_POST[ $this->settings_key ] ) ) {
 
 				//Strip duplicate slashes before saving
-				foreach( $_POST[ $this->settings_key ] as $k => $v ){
-					if( is_string( $v ) ){
+				foreach( $_POST[ $this->settings_key ] as $k => $v ) {
+					if ( is_string( $v ) ) {
 						$_POST[ $this->settings_key ][ $k ] = stripslashes( $v );
 					}
 				}
 
 				$check = update_option( $this->settings_key, $_POST[ $this->settings_key ] );
-				if( $check ){
-					$this->plugin->settings->reload_settings();
-					$update_notice = $this->plugin->helpers->create_admin_notice( 'Settings successfully saved.', 'success', true );
+				if ( $check ) {
+					$this->reloadSettings();
+					$update_notice = $this->helper()->create_admin_notice( 'Settings successfully saved.', 'success', true );
 					$this->display_notices[] = $update_notice;
 				} else {
-					$update_notice = $this->plugin->helpers->create_admin_notice( 'No changes were made to your settings with your last save.', 'info', true );
+					$update_notice = $this->helper()->create_admin_notice( 'No changes were made to your settings with your last save.', 'info', true );
 					$this->display_notices[] = $update_notice;
 				}
 			}
@@ -843,7 +836,7 @@ class Email_Encoder_Run {
 	 * ###
 	 * ######################
 	 */
-	public function add_help_tabs(){
+	public function add_help_tabs() {
 		$screen = get_current_screen();
 
 		$defaults = array(
@@ -866,17 +859,21 @@ class Email_Encoder_Run {
 			'title'     => __('Template Tags', 'email-encoder-bundle'),
 		), $defaults));
 
-		if( $this->plugin->helpers->is_page( $this->page_name ) ){
+		if ( $this->helper()->is_page( $this->page_name ) ) {
 			add_meta_box( 'encode_form', __( $this->page_title, 'email-encoder-bundle' ), array( $this, 'show_meta_box_content' ), null, 'normal', 'core', array( 'encode_form' ) );
 		}
 
 	}
 
-	public function load_help_tabs($screen, array $args){
+	public function load_help_tabs( \WP_Screen $screen, array $args ) {
 
-		if( ! empty( $args['id'] ) ){
-			include( EEB_PLUGIN_DIR . 'core/includes/partials/help-tabs/' . $args['id'] . '.php' );
-		}
+		if ( empty( $args['id'] ) ) {
+            return;
+        }
+
+        $allowed_attr_html = $this->getSafeHtmlAttr();
+
+        include EEB_PLUGIN_DIR . 'core/includes/partials/help-tabs/' . $args['id'] . '.php';
 
 	}
 
@@ -888,20 +885,20 @@ class Email_Encoder_Run {
 	public function show_meta_box_content( $post, $meta_box ) {
 		$key = $meta_box['args'][0];
 
-		if ($key === 'encode_form') {
+		if ( $key === 'encode_form' ) {
 			?>
 			<p><?php _e('If you like you can also create you own secured emails manually with this form. Just copy/paste the generated code and put it in your post, page or template. We choose automatically the best method for you, based on your settings.', 'email-encoder-bundle') ?></p>
 
 			<hr style="border:1px solid #FFF; border-top:1px solid #EEE;" />
 
-			<?php echo $this->plugin->validate->get_encoder_form(); ?>
+			<?php echo $this->validate()->get_encoder_form(); ?>
 
 			<hr style="border:1px solid #FFF; border-top:1px solid #EEE;"/>
 
 			<?php
 
-			$form_frontend = (bool) $this->plugin->settings->get_setting( 'encoder_form_frontend', true, 'encoder_form' );
-			if( $form_frontend ){
+			$form_frontend = (bool) $this->getSetting( 'encoder_form_frontend', true, 'encoder_form' );
+			if ( $form_frontend ) {
 				?>
 					<p class="description"><?php _e('You can also put the encoder form on your site by using the shortcode <code>[eeb_form]</code> or the template function <code>eeb_form()</code>.', 'email-encoder-bundle') ?></p>
 				<?php
@@ -919,9 +916,9 @@ class Email_Encoder_Run {
 	 *
 	 * You need the specified capability to edit it.
 	 */
-	public function render_admin_menu_page(){
-		if( ! current_user_can( $this->plugin->settings->get_admin_cap('admin-menu-page') ) ){
-			wp_die( __( $this->plugin->settings->get_default_string( 'insufficient-permissions' ), 'email-encoder-bundle' ) );
+	public function render_admin_menu_page() {
+		if ( ! current_user_can( $this->getAdminCap('admin-menu-page') ) ) {
+			wp_die( __( $this->settings()->get_default_string( 'insufficient-permissions' ), 'email-encoder-bundle' ) );
 		}
 
 		include( EEB_PLUGIN_DIR . 'core/includes/partials/eeb-page-display.php' );
