@@ -2,6 +2,8 @@
 
 namespace Legacy\EmailEncoderBundle;
 
+use OnlineOptimisation\EmailEncoderBundle\Admin\Admin;
+use OnlineOptimisation\EmailEncoderBundle\Front\Front;
 
 final class Email_Encoder {
 
@@ -10,6 +12,7 @@ final class Email_Encoder {
 	public Email_Encoder_Helpers $helpers;
 	public Email_Encoder_Validate $validate;
 	public Email_Encoder_Ajax $ajax;
+	public Admin|Front $context;
 
     private array $integrations = [
         'avada_builder'       => Integration\AvadaBuilder::class,
@@ -44,7 +47,8 @@ final class Email_Encoder {
 
 		$this->integrate3rdParty();
 
-		( new Email_Encoder_Run() )->boot();
+		$this->context = is_admin() ? new Admin() : new Front();
+		$this->context->boot();
 
 		do_action( 'eeb_plugin_loaded', $this );
 	}

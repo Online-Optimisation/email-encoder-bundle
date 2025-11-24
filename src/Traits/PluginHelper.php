@@ -7,6 +7,9 @@ use Legacy\EmailEncoderBundle\Email_Encoder_Helpers;
 use Legacy\EmailEncoderBundle\Email_Encoder_Settings;
 use Legacy\EmailEncoderBundle\Email_Encoder_Validate;
 
+use OnlineOptimisation\EmailEncoderBundle\Admin\Admin;
+use OnlineOptimisation\EmailEncoderBundle\Front\Front;
+
 trait PluginHelper
 {
     # MAJORS =================================================================
@@ -29,6 +32,11 @@ trait PluginHelper
     public function settings(): Email_Encoder_Settings
     {
         return $this->plugin()->settings;
+    }
+
+    public function context(): Admin|Front
+    {
+        return $this->plugin()->context;
     }
 
     # SETTINGS ===============================================================

@@ -17,7 +17,7 @@
 <ul>
 
 <?php
-foreach ($allowed_attr_html as $tag => $attributes) {
+foreach ( $allowed_attr_html as $tag => $attributes ) {
     echo '<li><strong>' . htmlentities( '<' . $tag . '>' ) . '</strong>: ';
 
     if (!empty($attributes)) {

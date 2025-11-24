@@ -1,7 +1,8 @@
 <?php
 
-$settings = EEB()->settings->get_setting();
-$advanced_settings = (bool) EEB()->settings->get_setting( 'advanced_settings', true );
+// $settings = EEB()->settings->get_setting();
+$settings = $this->getSetting();
+$advanced_settings = (bool) $this->getSetting( 'advanced_settings', true );
 
 ?>
 <div id="post-body-content">
@@ -38,7 +39,7 @@ $advanced_settings = (bool) EEB()->settings->get_setting( 'advanced_settings', t
                             <td scope="row" valign="top">
                                 <p>
                                     <?php if( $setting['type'] === 'multi-input' ) : ?>
-                                        <?php foreach( $setting['inputs'] as $si_key => $data ) : 
+                                        <?php foreach( $setting['inputs'] as $si_key => $data ) :
                                             $hide_sub_layer = '';
 
                                             if( ! $advanced_settings && isset( $data['advanced'] ) && $data['advanced'] === true ){
@@ -65,7 +66,7 @@ $advanced_settings = (bool) EEB()->settings->get_setting( 'advanced_settings', t
                                             }
                                             ?>
                                             <p <?php echo $hide_sub_layer; ?>>
-                                                <input id="<?php echo $si_name . '_' . $si_key; ?>" name="<?php echo $this->settings_key; ?>[<?php echo $si_name; ?>]" type="<?php echo $setting['input-type']; ?>" class="regular-text" value="<?php echo $mi_value; ?>" <?php echo $mi_is_checked; ?> />
+                                                <input id="<?php echo $si_name . '_' . $si_key; ?>" name="<?php echo $this->getSettingsKey(); ?>[<?php echo $si_name; ?>]" type="<?php echo $setting['input-type']; ?>" class="regular-text" value="<?php echo $mi_value; ?>" <?php echo $mi_is_checked; ?> />
                                                 <label for="<?php echo $si_name . '_' . $si_key; ?>">
                                                     <?php echo $data['label']; ?>
                                                 </label>
@@ -80,7 +81,7 @@ $advanced_settings = (bool) EEB()->settings->get_setting( 'advanced_settings', t
                                             <?php endif; ?>
                                         <?php endforeach; ?>
                                     <?php else : ?>
-                                        <input id="<?php echo $setting['id']; ?>" name="<?php echo $this->settings_key; ?>[<?php echo $setting_name; ?>]" type="<?php echo $setting['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
+                                        <input id="<?php echo $setting['id']; ?>" name="<?php echo $this->getSettingsKey(); ?>[<?php echo $setting_name; ?>]" type="<?php echo $setting['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
                                         <?php if( isset( $setting['label'] ) ) : ?>
                                             <label for="<?php echo $setting_name; ?>">
                                                 <?php echo $setting['label']; ?>
@@ -95,7 +96,7 @@ $advanced_settings = (bool) EEB()->settings->get_setting( 'advanced_settings', t
                                 <?php endif; ?>
                             </td>
                             <td>
-                                
+
                             </td>
                         </tr>
                     <?php endforeach; ?>

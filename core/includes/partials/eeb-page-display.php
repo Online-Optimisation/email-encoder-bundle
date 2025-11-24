@@ -21,9 +21,9 @@ $mulsitie_slug = ( is_multisite() ) ? 'network/' : '';
     <?php endif; ?>
 
     <form method="post" action="">
-        <?php settings_fields( $this->page_name ); ?>
+        <?php settings_fields( $this->getPageName() ); ?>
 
-        <input type="hidden" name="<?php echo $this->page_name; ?>_nonce" value="<?php echo wp_create_nonce( $this->page_name ) ?>">
+        <input type="hidden" name="<?php echo $this->getPageName(); ?>_nonce" value="<?php echo wp_create_nonce( $this->getPageName() ) ?>">
 
         <div id="poststuff">
             <div id="post-body" class="metabox-holder columns-<?php echo $columnCount; ?>">
