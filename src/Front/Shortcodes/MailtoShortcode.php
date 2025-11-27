@@ -67,23 +67,23 @@ class MailtoShortcode {
 		switch( $method ) {
 			case 'enc_ascii':
 			case 'rot13':
-				$mailto = $this->validate()->encode_ascii( $mailto, $noscript );
+				$mailto = $this->encodeAscii( $mailto, $noscript );
 				break;
 			case 'enc_escape':
 			case 'escape':
-				$mailto = $this->validate()->encode_escape( $mailto, $noscript );
+				$mailto = $this->encodeEscape( $mailto, $noscript );
 				break;
 			case 'with_javascript':
-				$mailto = $this->validate()->dynamic_js_email_encoding( $mailto, $noscript );
+				$mailto = $this->dynamicJsEmailEncoding( $mailto, $noscript );
 				break;
 			case 'without_javascript':
-				$mailto = $this->validate()->encode_email_css( $mailto );
+				$mailto = $this->encodeEmailCss( $mailto );
 				break;
 			case 'char_encode':
-				$mailto = $this->validate()->filter_plain_emails( $mailto, null, 'char_encode' );
+				$mailto = $this->filterPlainEmails( $mailto, null, 'char_encode' );
 				break;
 			case 'strong_method':
-				$mailto = $this->validate()->filter_plain_emails( $mailto );
+				$mailto = $this->filterPlainEmails( $mailto );
 				break;
 			case 'enc_html':
 			case 'encode':
@@ -94,7 +94,7 @@ class MailtoShortcode {
 
 		// mark link as successfullly encoded (for admin users)
 		if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
-			$mailto .= $this->validate()->get_encoded_email_icon();
+			$mailto .= $this->getEncodedEmailIcon();
 		}
 
 		return apply_filters( 'eeb/frontend/shortcode/eeb_mailto', $mailto );

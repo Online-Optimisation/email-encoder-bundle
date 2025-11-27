@@ -27,13 +27,13 @@ if (!function_exists('eeb_mailto')):
     function eeb_mailto( $email, $display = null, $extra_attrs = '', $method = null ) {
 
         $custom_class = (string) EEB()->settings->get_setting( 'class_name', true );
-        
+
         if( empty( $display ) ) {
 			$display = $email;
         } else {
             $display = html_entity_decode($display);
 		}
-        
+
         $class_name = ' ' . EEB()->helpers->sanitize_html_attributes( $extra_attrs );
 		$class_name .= ' class="' . esc_attr( $custom_class ) . '"';
 		$mailto = '<a href="mailto:' . $email . '"'. $class_name . '>' . $display . '</a>';
@@ -44,27 +44,27 @@ if (!function_exists('eeb_mailto')):
 				$method = $protect_using;
 			}
 		}
-		
+
 		switch( $method ){
 			case 'enc_ascii':
 			case 'rot13':
-				$mailto = EEB()->validate->encode_ascii( $mailto, $display );
+				$mailto = EEB()->validate->encoding->encode_ascii( $mailto, $display );
 				break;
 			case 'enc_escape':
 			case 'escape':
-				$mailto = EEB()->validate->encode_escape( $mailto, $display );
+				$mailto = EEB()->validate->encoding->encode_escape( $mailto, $display );
 				break;
 			case 'with_javascript':
-				$mailto = EEB()->validate->dynamic_js_email_encoding( $mailto, $display );
+				$mailto = EEB()->validate->encoding->dynamic_js_email_encoding( $mailto, $display );
 				break;
 			case 'without_javascript':
-				$mailto = EEB()->validate->encode_email_css( $mailto );
+				$mailto = EEB()->validate->encoding->encode_email_css( $mailto );
 				break;
 			case 'char_encode':
-				$mailto = EEB()->validate->filter_plain_emails( $mailto, null, 'char_encode' );
+				$mailto = EEB()->validate->filters->filter_plain_emails( $mailto, null, 'char_encode' );
 				break;
 			case 'strong_method':
-				$mailto = EEB()->validate->filter_plain_emails( $mailto );
+				$mailto = EEB()->validate->filters->filter_plain_emails( $mailto );
 				break;
 			case 'enc_html':
 			case 'encode':
@@ -144,7 +144,7 @@ if( ! function_exists( 'eeb_email_filter' ) ){
 }
 if (!function_exists('eeb_protect_emails')):
     function eeb_protect_emails( $content, $method = null, $enc_mailtos = true, $enc_plain_emails = true, $enc_input_fields = true ) {
-        
+
         //backwards compatibility for enc tags
         if( $method === null || is_bool( $method ) ){
             $protect_using = (string) EEB()->settings->get_setting( 'protect_using', true );

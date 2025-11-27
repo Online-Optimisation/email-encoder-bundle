@@ -42,11 +42,11 @@ class ProtectContentShortcode {
 		switch( $method ) {
 			case 'enc_ascii':
 			case 'rot13':
-				$content = $this->validate()->encode_ascii( $content, $protection_text );
+				$content = $this->encodeAscii( $content, $protection_text );
 				break;
 			case 'enc_escape':
 			case 'escape':
-				$content = $this->validate()->encode_escape( $content, $protection_text );
+				$content = $this->encodeEscape( $content, $protection_text );
 				break;
 			case 'enc_html':
 			case 'encode':
@@ -57,7 +57,7 @@ class ProtectContentShortcode {
 
 		 // mark link as successfullly encoded (for admin users)
 		 if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
-			$content .= $this->validate()->get_encoded_email_icon();
+			$content .= $this->getEncodedEmailIcon();
 		}
 
 		return apply_filters( 'eeb/frontend/shortcode/eeb_protect_content', $content, $atts, $original_content );

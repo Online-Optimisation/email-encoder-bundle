@@ -35,11 +35,11 @@ class DisplayEmailImage
 			wp_die( __( 'GD Library Not Enabled. Please enable it first.', 'email-encoder-bundle' ) );
 		}
 
-		if ( $this->validate()->generate_email_signature( $email, $secret ) !== $hash ) {
+		if ( $this->validate()->encoding->generate_email_signature( $email, $secret ) !== $hash ) {
 			wp_die( __( 'Your signture is invalid.', 'email-encoder-bundle' ) );
 		}
 
-		$image = $this->validate()->email_to_image( $email );
+		$image = $this->validate()->encoding->email_to_image( $email );
 
 		if ( empty( $image ) ) {
 			wp_die( __( 'Your email could not be converted.', 'email-encoder-bundle' ) );

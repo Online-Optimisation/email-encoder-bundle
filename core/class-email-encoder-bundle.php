@@ -4,13 +4,15 @@ namespace Legacy\EmailEncoderBundle;
 
 use OnlineOptimisation\EmailEncoderBundle\Admin\Admin;
 use OnlineOptimisation\EmailEncoderBundle\Front\Front;
+use OnlineOptimisation\EmailEncoderBundle\Validate\Validate;
 
 final class Email_Encoder {
 
 	private static ?Email_Encoder $instance = null;
 	public Email_Encoder_Settings $settings;
 	public Email_Encoder_Helpers $helpers;
-	public Email_Encoder_Validate $validate;
+	// public Email_Encoder_Validate $validate;
+	public Validate $validate;
 	public Email_Encoder_Ajax $ajax;
 	public Admin|Front $context;
 
@@ -41,7 +43,9 @@ final class Email_Encoder {
 
 		$this->helpers  = new Email_Encoder_Helpers();
 		$this->settings = new Email_Encoder_Settings();
-		$this->validate = new Email_Encoder_Validate();
+		// $this->validate = new Email_Encoder_Validate();
+        $this->validate = new Validate();
+        $this->validate->boot();
 
 		( new Email_Encoder_Ajax() )->boot();
 

@@ -37,7 +37,7 @@ class AdminMetaBox
         }
 
         $is_form_frontend = (bool) $this->getSetting( 'encoder_form_frontend', true, 'encoder_form' );
-        $encoder_form = $this->validate()->get_encoder_form();
+        $encoder_form = $this->getEncoderForm();
 
         include EEB_PLUGIN_DIR . 'templates/admin/meta-box-content.php';
 	}

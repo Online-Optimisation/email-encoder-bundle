@@ -21,7 +21,7 @@ class EmailEncoderFormShortcode {
 			$this->helper()->is_page( $this->getPageName() )
 			|| (bool) $this->getSetting( 'encoder_form_frontend', true, 'encoder_form' )
 		 ) {
-			return $this->validate()->get_encoder_form();
+			return $this->getEncoderForm();
 		}
 
 		return '';

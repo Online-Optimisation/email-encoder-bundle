@@ -33,7 +33,7 @@ class ProtectEmailsShortcode {
 		//Filter content first
 		$content = wp_kses( html_entity_decode( $content ), $allowed_attr_html );
 
-		$content = $this->validate()->filter_content( $content, $protect_using );
+		$content = $this->filterContent( $content, $protect_using );
 
 		return $content;
 	}

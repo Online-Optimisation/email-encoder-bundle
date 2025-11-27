@@ -2,7 +2,11 @@
 
 namespace Legacy\EmailEncoderBundle;
 
+use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
+
 class Email_Encoder_Ajax{
+
+    use PluginHelper;
 
     public function boot(): void {
 	    add_action( 'init', [ $this, 'register_hooks' ] );
@@ -59,17 +63,18 @@ class Email_Encoder_Ajax{
         $display   = $display ?: $email;
 
         $EEB       = Email_Encoder::instance();
-        $class     = esc_attr( $EEB->settings->get_setting( 'class_name', true ) );
-        $protect   = __( $EEB->settings->get_setting( 'protection_text', true ), 'email-encoder-bundle' );
+
+        $class     = esc_attr( $this->getSetting( 'class_name', true ) );
+        $protect   = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
         $link      = '<a href="mailto:' . $email . '" class="' . $class . '">' . $display . '</a>';
 
         switch ( $method ) {
             case 'rot13':
-                $link = $EEB->validate->encode_ascii($link, $protect);
+                $link = $this->encodeAscii($link, $protect);
                 break;
 
             case 'escape':
-                $link = $EEB->validate->encode_escape($link, $protect);
+                $link = $this->encodeEscape($link, $protect);
                 break;
 
             default:
