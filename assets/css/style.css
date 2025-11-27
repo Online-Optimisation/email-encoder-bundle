@@ -1,0 +1,23 @@
+span.eeb-nodis { 
+    display:none !important; 
+}
+
+span.eeb-rtl { 
+    unicode-bidi:bidi-override !important; 
+    direction:rtl !important; 
+    display:inline !important; 
+}
+span.eeb-rtl span.eeb-sd, span.eeb-nrtl span.eeb-sd{
+	display:inline !important;
+	padding-left:0 !important;
+}
+span.eeb-nrtl { 
+    word-break: break-all !important;
+}
+
+.eeb-encoded { 
+    position:relative; 
+    margin-top:-0.3em; 
+    z-index:1000; 
+    color:green; 
+}

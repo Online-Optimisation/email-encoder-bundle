@@ -4,6 +4,10 @@ namespace Legacy\EmailEncoderBundle;
 
 class Email_Encoder_Settings {
 
+    public const PROTECT_FULL_PAGE    = 1;
+    public const PROTECT_FILTERS_ONLY = 2;
+    public const PROTECT_DISABLED     = 3;
+
 	private string $admin_cap = 'manage_options';
 	private string $page_name = 'email-encoder-bundle-option-page';
 	private string $page_title;
@@ -14,7 +18,7 @@ class Email_Encoder_Settings {
 	private string $image_secret_key = 'email-encoder-bundle-img-key';
 	private string $at_identifier = '##eebAddIdent##';
 	private ?string $previous_version = null;
-	private array $hook_priorities = [
+	private array $hook_priorities = [ // deprecated!
 		'buffer_final_output' => 1000,
 		'setup_single_filter_hooks' => 100,
 		'add_custom_template_tags' => 10,
@@ -48,7 +52,7 @@ class Email_Encoder_Settings {
 	];
 
 	private array $default_values = [
-		'protect' 				   => 1,
+		'protect' 				   => self::PROTECT_FULL_PAGE,
 		'filter_rss' 			   => 1,
 		'powered_by' 			   => 1,
 		'protect_using' 		   => 'with_javascript',
@@ -380,7 +384,7 @@ class Email_Encoder_Settings {
 	 * @param boolean $single - wether you want to return only a single hook priority or not
 	 * @return mixed - An array or string of hook priority(-ies)
 	 */
-	public function get_hook_priorities( $single = false ) {
+	public function get_hook_priorities( $single = false ): mixed {
 
 		$is_single = $single && isset( $this->hook_priorities[ $single ] );
 

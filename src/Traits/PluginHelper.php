@@ -46,6 +46,10 @@ trait PluginHelper
         return $this->plugin()->settings->get_setting( $slug, $single, $group );
     }
 
+    public function getSettingBool( string $slug = '', bool $single = false, string $group = '' ): bool {
+        return filter_var( $this->getSetting( $slug, $single, $group ), FILTER_VALIDATE_BOOLEAN );
+    }
+
     public function getPageName(): string
     {
         return $this->plugin()->settings->get_page_name();
@@ -123,6 +127,16 @@ trait PluginHelper
     public function log( mixed $data ): void
     {
         error_log( print_r( $data, true ) );
+    }
+
+    # USEFUL =================================================================
+
+    private function assetJs( string $filename ): string {
+        return EEB_PLUGIN_URL . 'assets/js/' . $filename;
+    }
+
+    private function assetCss( string $filename ): string {
+        return EEB_PLUGIN_URL . 'assets/css/' . $filename;
     }
 
 }
