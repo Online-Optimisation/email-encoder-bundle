@@ -33,6 +33,7 @@ class Admin
 
 	public function save_settings_admin() {
 
+        $this->log( __METHOD__ );
 		if ( !isset( $_POST[ $this->getPageName() . '_nonce' ] ) ) {
             return;
         };
@@ -45,16 +46,20 @@ class Admin
             wp_die( __( 'You don\'t have permission to update these settings.', 'email-encoder-bundle' ) );
         }
 
-        if ( isset( $_POST[ $this->getSettingsKey() ] ) && is_array( $_POST[ $this->getSettingsKey() ] ) ) {
+        $raw = wp_unslash( $_POST );
+
+        if ( isset( $raw[ $this->getSettingsKey() ] ) && is_array( $raw[ $this->getSettingsKey() ] ) ) {
 
             //Strip duplicate slashes before saving
-            foreach( $_POST[ $this->getSettingsKey() ] as $k => $v ) {
+            foreach( $raw[ $this->getSettingsKey() ] as $k => $v ) {
                 if ( is_string( $v ) ) {
-                    $_POST[ $this->getSettingsKey() ][ $k ] = stripslashes( $v );
+                    $raw[ $this->getSettingsKey() ][ $k ] = $this->sanitise( $v, $k );
+                    $this->log( $raw[ $this->getSettingsKey() ][ $k ] );
                 }
             }
 
-            $check = update_option( $this->getSettingsKey(), $_POST[ $this->getSettingsKey() ] );
+            $this->log( $this->getSettingsKey() );
+            $check = update_option( $this->getSettingsKey(), $raw[ $this->getSettingsKey() ] );
 
             if ( $check ) {
                 $this->reloadSettings();
@@ -68,5 +73,18 @@ class Admin
         }
 
 	}
+
+    protected function sanitise( string $value, ?string $key = null ): string
+    {
+        // if ( $key == 'protection_text' ) {
+            // $this->log( [
+            //     'k' => $key,
+            //     'v' => $value,
+            //     // 'config' => $this->getSetting( $key ),
+            // ] );
+        // }
+
+        return sanitize_text_field( $value );
+    }
 
 }

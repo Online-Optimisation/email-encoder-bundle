@@ -45,7 +45,12 @@ trait PluginHelper
 
     public function getSetting( string $slug = '', bool $single = false, string $group = '' ): mixed
     {
-        return $this->plugin()->settings->get_setting( $slug, $single, $group );
+        $value = $this->plugin()->settings->get_setting( $slug, $single, $group );
+        if ( is_string( $value ) ) {
+            $value = sanitize_text_field( $value );
+        }
+
+        return $value;
     }
 
     public function getSettingBool( string $slug = '', bool $single = false, string $group = '' ): bool {
