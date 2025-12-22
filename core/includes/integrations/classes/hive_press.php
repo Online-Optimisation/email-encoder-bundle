@@ -33,7 +33,7 @@ class HivePress {
         ;
 
         if ( $condition ) {
-            $this->log( 'HivePress: protecting; trait is working :)' );
+            // $this->log( 'HivePress: protecting; trait is working :)' );
             $fields[ 'protect' ]['value'] = $this->settings()::PROTECT_DISABLED;
         }
 

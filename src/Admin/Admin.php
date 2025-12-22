@@ -33,7 +33,7 @@ class Admin
 
 	public function save_settings_admin() {
 
-        $this->log( __METHOD__ );
+        // $this->log( __METHOD__ );
 		if ( !isset( $_POST[ $this->getPageName() . '_nonce' ] ) ) {
             return;
         };
@@ -54,11 +54,11 @@ class Admin
             foreach( $raw[ $this->getSettingsKey() ] as $k => $v ) {
                 if ( is_string( $v ) ) {
                     $raw[ $this->getSettingsKey() ][ $k ] = $this->sanitise( $v, $k );
-                    $this->log( $raw[ $this->getSettingsKey() ][ $k ] );
+                    // $this->log( $raw[ $this->getSettingsKey() ][ $k ] );
                 }
             }
 
-            $this->log( $this->getSettingsKey() );
+            // $this->log( $this->getSettingsKey() );
             $check = update_option( $this->getSettingsKey(), $raw[ $this->getSettingsKey() ] );
 
             if ( $check ) {

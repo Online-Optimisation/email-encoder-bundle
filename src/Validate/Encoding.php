@@ -380,7 +380,7 @@ class Encoding {
     public function encode_email_css( $display ) {
         $deactivate_rtl = (bool) $this->getSetting( 'deactivate_rtl', true, 'filter_body' );
 
-        $this->log( 'display: ' . $display );
+        // $this->log( 'display: ' . $display );
         $stripped_display = strip_tags( $display );
         $stripped_display = html_entity_decode( $stripped_display );
 
