@@ -36,14 +36,14 @@ trait PluginHelper
         return $this->plugin()->settings;
     }
 
-    public function context(): Admin|Front
+    public function context() //: Admin|Front
     {
         return $this->plugin()->context;
     }
 
     # SETTINGS ===============================================================
 
-    public function getSetting( string $slug = '', bool $single = false, string $group = '' ): mixed
+    public function getSetting( string $slug = '', bool $single = false, string $group = '' )
     {
         $value = $this->plugin()->settings->get_setting( $slug, $single, $group );
         if ( is_string( $value ) ) {

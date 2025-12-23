@@ -14,7 +14,9 @@ final class Email_Encoder {
 	// public Email_Encoder_Validate $validate;
 	public Validate $validate;
 	public Email_Encoder_Ajax $ajax;
-	public Admin|Front $context;
+
+    /** @var Admin|Front */
+	public $context;
 
     private array $integrations = [
         'avada_builder'       => Integration\AvadaBuilder::class,

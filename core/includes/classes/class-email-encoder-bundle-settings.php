@@ -384,7 +384,7 @@ class Email_Encoder_Settings {
 	 * @param boolean $single - wether you want to return only a single hook priority or not
 	 * @return mixed - An array or string of hook priority(-ies)
 	 */
-	public function get_hook_priorities( $single = false ): mixed {
+	public function get_hook_priorities( $single = false )  {
 
 		$is_single = $single && isset( $this->hook_priorities[ $single ] );
 
