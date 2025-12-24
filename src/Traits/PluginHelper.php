@@ -190,18 +190,26 @@ trait PluginHelper
 
     # LOG ====================================================================
 
-    public function log( mixed $data ): void
+    public function log( $data ): void
     {
         error_log( print_r( $data, true ) );
     }
 
     # USEFUL =================================================================
 
-    private function assetJs( string $filename ): string {
+    private function assetJsDir( string $filename ): string {
+        return EEB_PLUGIN_DIR . 'assets/js/' . $filename;
+    }
+
+    private function assetCssDir( string $filename ): string {
+        return EEB_PLUGIN_DIR . 'assets/css/' . $filename;
+    }
+
+    private function assetJsUrl( string $filename ): string {
         return EEB_PLUGIN_URL . 'assets/js/' . $filename;
     }
 
-    private function assetCss( string $filename ): string {
+    private function assetCssUrl( string $filename ): string {
         return EEB_PLUGIN_URL . 'assets/css/' . $filename;
     }
 

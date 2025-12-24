@@ -24,10 +24,10 @@ class FrontEnqueue
         # JS
         if ( $protect_using === 'with_javascript' ) {
 
-            $js_version = md5_file( $this->assetJs( 'custom.js' ) );
+            $js_version = md5_file( $this->assetJsDir( 'custom.js' ) );
             wp_enqueue_script(
                 'eeb-js-frontend',
-                $this->assetJs( 'custom.js' ),
+                $this->assetJsUrl( 'custom.js' ),
                 [ 'jquery' ],
                 $js_version,
                 $footer_scripts
@@ -37,10 +37,10 @@ class FrontEnqueue
         # CSS
         if ( in_array( $protect_using, [ 'with_javascript', 'without_javascript' ] ) ) {
 
-            $css_version = md5_file( $this->assetCss( 'style.css' ) );
+            $css_version = md5_file( $this->assetCssDir( 'style.css' ) );
             wp_enqueue_style(
                 'eeb-css-frontend',
-                $this->assetCss( 'style.css' ),
+                $this->assetCssUrl( 'style.css' ),
                 false,
                 $css_version
             );
