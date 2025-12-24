@@ -109,11 +109,11 @@ if (!function_exists('eeb_protect_content')):
         switch( $method ){
 			case 'enc_ascii':
 			case 'rot13':
-				$content = EEB()->validate->encode_ascii( $content, $protection_text );
+				$content = EEB()->validate->encoding->encode_ascii( $content, $protection_text );
 				break;
 			case 'enc_escape':
 			case 'escape':
-				$content = EEB()->validate->encode_escape( $content, $protection_text );
+				$content = EEB()->validate->encoding->encode_escape( $content, $protection_text );
 				break;
 			case 'enc_html':
 			case 'encode':
