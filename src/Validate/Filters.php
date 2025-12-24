@@ -212,7 +212,7 @@ class Filters {
                 $protected_return = $this->dynamicJsEmailEncoding( $matches[0], $protection_text );
             } elseif ( $protection_method === 'use_css' ) {
                 $protection_text = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
-                $protected_return = $this->encode_email_css( $matches[0], $protection_text );
+                $protected_return = $this->validate()->encoding->encode_email_css( $matches[0], $protection_text );
             } elseif ( $protection_method === 'no_encoding' ) {
                 $protected_return = $matches[0];
             } else {
