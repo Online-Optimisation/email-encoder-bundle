@@ -119,7 +119,7 @@ class FrontCore
 	public function filter_rss( string $content ): string {
 
 		$protection_type = (string) $this->getSetting( 'protect_using', true );
-		return $this->validate()->filter_rss( $content, $protection_type );
+		return $this->validate()->filters->filter_rss( $content, $protection_type );
 	}
 
 

@@ -21,7 +21,7 @@ class GoogleSiteKit {
 
             $admin_data['userData']['email'] = $soft_encode
                 ? antispambot( $admin_data['userData']['email'] )
-                : $this->validate()->temp_encode_at_symbol( $admin_data['userData']['email'] )
+                : $this->validate()->encoding->temp_encode_at_symbol( $admin_data['userData']['email'] )
             ;
 
         }

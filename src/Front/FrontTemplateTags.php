@@ -42,7 +42,7 @@ class FrontTemplateTags
 	public function template_tag_eeb_filter( string $content ): string {
 
 		$protect_using = (string) $this->getSetting( 'protect_using', true );
-		return $this->validate()->filter_content( $content, $protect_using );
+		return $this->validate()->filter->filter_content( $content, $protect_using );
 	}
 
 	/**
@@ -65,6 +65,6 @@ class FrontTemplateTags
 			$atts['href'] = 'mailto:'.$email;
 		}
 
-		return $this->validate()->create_protected_mailto( $display, $atts );
+		return $this->validate()->encoding->create_protected_mailto( $display, $atts );
 	}
 }
