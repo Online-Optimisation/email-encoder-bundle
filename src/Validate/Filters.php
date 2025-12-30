@@ -248,7 +248,7 @@ class Filters {
                 $strong_encoding = false;
             }
 
-            return $self->encode_input_field( $input, $email, $strong_encoding );
+            return $this->validate()->encoding->encode_input_field( $input, $email, $strong_encoding );
         };
 
         $regexpInputField = '/<input([^>]*)value=["\'][\s+]*' . $this->settings()->get_email_regex( true ) . '[\s+]*["\']([^>]*)>/is';
