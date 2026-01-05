@@ -9,16 +9,16 @@ class FrontEnqueue
     use PluginHelper;
 
 
-    public function boot(): void {
-
+    public function boot(): void
+    {
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueue' ] );
     }
 
 
-	public function enqueue(): void {
-
-		$protect_using = (string) $this->getSetting( 'protect_using', true );
-		$footer_scripts = (bool) $this->getSetting( 'footer_scripts', true );
+    public function enqueue(): void
+    {
+        $protect_using = (string) $this->getSetting( 'protect_using', true );
+        $footer_scripts = (bool) $this->getSetting( 'footer_scripts', true );
 
 
         # JS
@@ -46,11 +46,9 @@ class FrontEnqueue
             );
         }
 
-		if ( (string) $this->getSetting( 'show_encoded_check', true ) === '1' ) {
-			wp_enqueue_style( 'dashicons' );
-		}
-	}
-
-
+        if ( (string) $this->getSetting( 'show_encoded_check', true ) === '1' ) {
+            wp_enqueue_style( 'dashicons' );
+        }
+    }
 
 }

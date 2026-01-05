@@ -5,9 +5,9 @@ namespace OnlineOptimisation\EmailEncoderBundle;
 class Tester
 {
 
-    function __construct()
+    public function __construct()
     {
         error_log( __METHOD__ );
     }
-}
 
+}

@@ -5,3 +5,4 @@
 /vendor/
 .phpcs-cache
 /release
+*.cache

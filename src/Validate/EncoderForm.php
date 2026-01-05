@@ -4,34 +4,36 @@ namespace OnlineOptimisation\EmailEncoderBundle\Validate;
 
 use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 
-class EncoderForm {
-
+class EncoderForm
+{
     use PluginHelper;
 
-    public function boot(): void {
+    public function boot(): void
+    {
     }
 
 
     /**
-	 * ######################
-	 * ###
-	 * #### ENCODER FORM
-	 * ###
-	 * ######################
-	 */
+     * ######################
+     * ###
+     * #### ENCODER FORM
+     * ###
+     * ######################
+     */
 
     /**
      * Get the encoder form (to use as a demo, like on the options page)
      * @return string
      */
-    public function get_encoder_form() {
+    public function get_encoder_form()
+    {
         $powered_by_setting = (bool) $this->getSetting( 'powered_by', true, 'encoder_form' );
 
         //shorten circle
         if (
             ! $this->helper()->is_page( $this->getPageName() )
             && ! (bool) $this->getSetting( 'encoder_form_frontend', true, 'encoder_form' )
-         ) {
+        ) {
             return apply_filters('eeb_form_content_inactive', '' );
         }
 
@@ -47,7 +49,7 @@ class EncoderForm {
         );
         $method_options = '';
         $selected = false;
-        foreach( $smethods as $method_name => $name ) {
+        foreach ( $smethods as $method_name => $name ) {
             $method_options .= '<option value="' . $method_name . '"' . ( ($selected === false ) ? ' selected="selected"' : '') . '>' . $name . '</option>';
             $selected = true;
         }
@@ -117,11 +119,12 @@ FORM;
     }
 
 
-    public function is_post_excluded( $post_id = null ) {
+    public function is_post_excluded( $post_id = null )
+    {
 
         $return = false;
         $skip_posts = (string) $this->getSetting( 'skip_posts', true );
-		if ( ! empty( $skip_posts ) ) {
+        if ( ! empty( $skip_posts ) ) {
 
             if ( empty( $post_id ) ) {
                 global $post;
@@ -132,22 +135,22 @@ FORM;
                 $post_id = intval( $post_id );
             }
 
-			$exclude_pages = explode( ',', $skip_posts );
+            $exclude_pages = explode( ',', $skip_posts );
 
-			if ( is_array( $exclude_pages ) ) {
-				$exclude_pages_validated = array();
+            if ( is_array( $exclude_pages ) ) {
+                $exclude_pages_validated = array();
 
-				foreach( $exclude_pages as $spost_id ) {
+                foreach ( $exclude_pages as $spost_id ) {
                     $spost_id = trim($spost_id);
-					if ( is_numeric( $spost_id ) ) {
-						$exclude_pages_validated[] = intval( $spost_id );
-					}
-				}
+                    if ( is_numeric( $spost_id ) ) {
+                        $exclude_pages_validated[] = intval( $spost_id );
+                    }
+                }
 
-				if ( in_array( $post_id, $exclude_pages_validated ) ) {
-					$return = true;
-				}
-			}
+                if ( in_array( $post_id, $exclude_pages_validated ) ) {
+                    $return = true;
+                }
+            }
 
         }
 
@@ -161,7 +164,8 @@ FORM;
      * @param array $parameters
      * @return boolean
      */
-    public function is_query_parameter_excluded( $parameters = null ) {
+    public function is_query_parameter_excluded( $parameters = null )
+    {
 
         if ( $parameters === null ) {
             $parameters = $_GET;
@@ -169,22 +173,22 @@ FORM;
 
         $return = false;
         $skip_query_parameters = (string) $this->getSetting( 'skip_query_parameters', true );
-		if ( ! empty( $skip_query_parameters ) && ! empty( $parameters ) ) {
+        if ( ! empty( $skip_query_parameters ) && ! empty( $parameters ) ) {
 
-			$excluded_parameters = explode( ',', $skip_query_parameters );
+            $excluded_parameters = explode( ',', $skip_query_parameters );
 
-			if ( is_array( $excluded_parameters ) ) {
+            if ( is_array( $excluded_parameters ) ) {
 
-				foreach( $excluded_parameters as $param ) {
+                foreach ( $excluded_parameters as $param ) {
                     $param = trim($param);
 
-					if ( isset( $parameters[ $param ] ) ) {
-						$return = true;
+                    if ( isset( $parameters[ $param ] ) ) {
+                        $return = true;
                         break;
-					}
-				}
+                    }
+                }
 
-			}
+            }
 
         }
 

@@ -53,7 +53,8 @@ trait PluginHelper
         return $value;
     }
 
-    public function getSettingBool( string $slug = '', bool $single = false, string $group = '' ): bool {
+    public function getSettingBool( string $slug = '', bool $single = false, string $group = '' ): bool
+    {
         return filter_var( $this->getSetting( $slug, $single, $group ), FILTER_VALIDATE_BOOLEAN );
     }
 
@@ -197,19 +198,23 @@ trait PluginHelper
 
     # USEFUL =================================================================
 
-    private function assetJsDir( string $filename ): string {
+    private function assetJsDir( string $filename ): string
+    {
         return EEB_PLUGIN_DIR . 'assets/js/' . $filename;
     }
 
-    private function assetCssDir( string $filename ): string {
+    private function assetCssDir( string $filename ): string
+    {
         return EEB_PLUGIN_DIR . 'assets/css/' . $filename;
     }
 
-    private function assetJsUrl( string $filename ): string {
+    private function assetJsUrl( string $filename ): string
+    {
         return EEB_PLUGIN_URL . 'assets/js/' . $filename;
     }
 
-    private function assetCssUrl( string $filename ): string {
+    private function assetCssUrl( string $filename ): string
+    {
         return EEB_PLUGIN_URL . 'assets/css/' . $filename;
     }
 

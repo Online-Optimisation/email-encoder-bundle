@@ -8,11 +8,11 @@ class Admin
 {
     use PluginHelper;
 
-	public static array $display_notices = [];
+    public static array $display_notices = [];
 
 
-    public function boot(): void {
-
+    public function boot(): void
+    {
         ( new AdminEnqueue() )->boot();
         ( new AdminMenu() )->boot(); // AdminMetaBox & AdminHelp are added here
         ( new PluginActionLinks() )->boot();
@@ -20,21 +20,21 @@ class Admin
         add_action( 'init', [ $this, 'register_hooks' ] );
     }
 
-	# ADMIN METHODS ============================================================
+    # ADMIN METHODS ============================================================
 
-	public function register_hooks() {
-
+    public function register_hooks()
+    {
         add_action( 'admin_init', [ $this, 'save_settings_admin' ] );
-	}
+    }
 
 
 
 
 
-	public function save_settings_admin() {
-
+    public function save_settings_admin()
+    {
         // $this->log( __METHOD__ );
-		if ( !isset( $_POST[ $this->getPageName() . '_nonce' ] ) ) {
+        if ( !isset( $_POST[ $this->getPageName() . '_nonce' ] ) ) {
             return;
         };
 
@@ -51,7 +51,7 @@ class Admin
         if ( isset( $raw[ $this->getSettingsKey() ] ) && is_array( $raw[ $this->getSettingsKey() ] ) ) {
 
             //Strip duplicate slashes before saving
-            foreach( $raw[ $this->getSettingsKey() ] as $k => $v ) {
+            foreach ( $raw[ $this->getSettingsKey() ] as $k => $v ) {
                 if ( is_string( $v ) ) {
                     $raw[ $this->getSettingsKey() ][ $k ] = $this->sanitise( $v, $k );
                     // $this->log( $raw[ $this->getSettingsKey() ][ $k ] );
@@ -65,14 +65,13 @@ class Admin
                 $this->reloadSettings();
                 $update_notice = $this->helper()->create_admin_notice( 'Settings successfully saved.', 'success', true );
                 self::$display_notices[] = $update_notice;
-            }
-            else {
+            } else {
                 $update_notice = $this->helper()->create_admin_notice( 'No changes were made to your settings with your last save.', 'info', true );
                 self::$display_notices[] = $update_notice;
             }
         }
 
-	}
+    }
 
     protected function sanitise( string $value, ?string $key = null ): string
     {

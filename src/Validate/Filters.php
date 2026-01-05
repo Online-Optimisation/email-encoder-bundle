@@ -5,21 +5,22 @@ namespace OnlineOptimisation\EmailEncoderBundle\Validate;
 use DOMDocument;
 use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 
-class Filters {
-
+class Filters
+{
     use PluginHelper;
 
-    public function boot(): void {
+    public function boot(): void
+    {
     }
 
 
-	/**
-	 * ######################
-	 * ###
-	 * #### FILTERS
-	 * ###
-	 * ######################
-	 */
+    /**
+     * ######################
+     * ###
+     * #### FILTERS
+     * ###
+     * ######################
+     */
 
      /**
       * The main page filter function
@@ -28,7 +29,8 @@ class Filters {
       * @param bool $convertPlainEmails - wether plain emails should be preserved or not
       * @return string - The filtered content
       */
-    public function filter_page( $content, $protect_using ) {
+    public function filter_page( $content, $protect_using )
+    {
 
         //Added in 2.0.6
         $content = apply_filters( 'eeb/validate/filter_page_content', $content, $protect_using );
@@ -41,7 +43,7 @@ class Filters {
             return $content;
         }
 
-        switch( $protect_using ) {
+        switch ( $protect_using ) {
             case 'with_javascript':
             case 'without_javascript':
             case 'char_encode':
@@ -75,7 +77,8 @@ class Filters {
      * @param integer $protect_using
      * @return string
      */
-    public function filter_content( $content, $protect_using ) {
+    public function filter_content( $content, $protect_using )
+    {
         $filtered = $content;
         $self = $this;
         $encode_mailtos = (bool) $this->getSetting( 'encode_mailtos', true, 'filter_body' );
@@ -87,7 +90,7 @@ class Filters {
         //Soft attributes always need to be protected using only the char encode method since otherwise the logic breaks
         $filtered = $this->filter_soft_attributes( $filtered, 'char_encode' );
 
-        switch( $protect_using ) {
+        switch ( $protect_using ) {
             case 'char_encode':
                 $filtered = $this->filter_plain_emails( $filtered, null, 'char_encode' );
                 break;
@@ -158,7 +161,8 @@ class Filters {
      * @param mixed            $show_encoded_check  Optional
      * @return string
      */
-    public function filter_plain_emails( $content, $replace_by = null, $protection_method = 'default', $show_encoded_check = 'default' ) {
+    public function filter_plain_emails( $content, $replace_by = null, $protection_method = 'default', $show_encoded_check = 'default' )
+    {
 
         if ( $show_encoded_check === 'default' ) {
             $show_encoded_check = (bool) $this->getSetting( 'show_encoded_check', true );
@@ -225,7 +229,6 @@ class Filters {
             }
 
             return $protected_return;
-
         }, $content );
     }
 
@@ -235,7 +238,8 @@ class Filters {
      * @param string $content
      * @return string
      */
-    public function filter_input_fields( $content, $encoding_method = 'default' ) {
+    public function filter_input_fields( $content, $encoding_method = 'default' )
+    {
         $self = $this;
         $strong_encoding = (bool) $this->getSetting( 'input_strong_protection', true, 'filter_body' );
 
@@ -260,7 +264,8 @@ class Filters {
      * @param string $content
      * @return string
      */
-    public function filter_mailto_links( $content, $protection_method = null ) {
+    public function filter_mailto_links( $content, $protection_method = null )
+    {
         $self = $this;
 
         $callbackEncodeMailtoLinks = function ( $match ) use ( $self, $protection_method ) {
@@ -277,13 +282,14 @@ class Filters {
      * @param string $content
      * @return string
      */
-    public function filter_custom_links( $content, $protection_method = null ) {
+    public function filter_custom_links( $content, $protection_method = null )
+    {
         $self = $this;
         $custom_href_attr = (string) $this->getSetting( 'custom_href_attr', true );
 
         if ( ! empty( $custom_href_attr ) ) {
             $custom_attr_list = explode( ',', $custom_href_attr );
-            foreach( $custom_attr_list as $s_attr ) {
+            foreach ( $custom_attr_list as $s_attr ) {
                 $attr_name = trim( $s_attr );
 
                 $callbackEncodeCustomLinks = function ( $match ) use ( $self, $protection_method ) {
@@ -306,7 +312,8 @@ class Filters {
      * @param string $content
      * @return string
      */
-    public function filter_rss( $content, $protection_type ) {
+    public function filter_rss( $content, $protection_type )
+    {
 
         if ( $protection_type === 'strong_method' ) {
             $filtered = $this->filter_plain_emails( $content );
@@ -324,16 +331,17 @@ class Filters {
      * @param string $protection_method - The method (E.g. char_encode)
      * @return string
      */
-    public function filter_soft_attributes( $content, $protection_method ) {
+    public function filter_soft_attributes( $content, $protection_method )
+    {
         $soft_attributes = $this->settings()->get_soft_attribute_regex();
 
-        foreach( $soft_attributes as $ident => $regex ) {
+        foreach ( $soft_attributes as $ident => $regex ) {
 
             $attributes = array();
             preg_match_all( $regex, $content, $attributes );
 
             if ( is_array( $attributes ) && isset( $attributes[0] ) ) {
-                foreach( $attributes[0] as $single ) {
+                foreach ( $attributes[0] as $single ) {
 
                     if ( empty( $single ) ) {
                         continue;
@@ -355,7 +363,8 @@ class Filters {
      * @param string $protection_method - The method (E.g. char_encode)
      * @return string
      */
-    public function filter_soft_dom_attributes( $content, $protection_method ) {
+    public function filter_soft_dom_attributes( $content, $protection_method )
+    {
 
         $no_script_tags = (bool) $this->getSetting( 'no_script_tags', true, 'filter_body' );
         $no_attribute_validation = (bool) $this->getSetting( 'no_attribute_validation', true, 'filter_body' );
@@ -369,19 +378,19 @@ class Filters {
                 //Filter html attributes
                 if ( ! $no_attribute_validation ) {
                     $allNodes = $dom->getElementsByTagName('*');
-                    foreach( $allNodes as $snote ) {
+                    foreach ( $allNodes as $snote ) {
                         if ( $snote->hasAttributes() ) {
-                            foreach( $snote->attributes as $attr ) {
+                            foreach ( $snote->attributes as $attr ) {
                                 if ( $attr->nodeName == 'href' || $attr->nodeName == 'src' ) {
                                     continue;
                                 }
 
-                                if ( strpos( $attr->nodeValue, '@' ) !== FALSE ) {
+                                if ( strpos( $attr->nodeValue, '@' ) !== false ) {
                                     $single_tags = array();
                                     preg_match_all( '/' . $attr->nodeName . '=["\']([^"]*)["\']/i', $content, $single_tags );
 
                                     if ( is_array( $single_tags ) && isset( $single_tags[0] ) ) {
-                                        foreach( $single_tags[0] as $single ) {
+                                        foreach ( $single_tags[0] as $single ) {
 
                                             if ( empty( $single ) ) {
                                                 continue;
@@ -423,9 +432,9 @@ class Filters {
             if (
                 isset( $matches[1] )
                 && ! empty( $matches[1] )
-                ) {
+            ) {
                 if ( ! $no_script_tags ) {
-                    foreach( $matches[1] as $key => $item ) {
+                    foreach ( $matches[1] as $key => $item ) {
 
                         //Don't do anything if something doesn't add up
                         if ( ! isset( $matches[0][ $key ] ) ) {
@@ -444,7 +453,7 @@ class Filters {
                         $content = str_replace( $org_script, $validated_script, $content );
                     }
                 } else {
-                    foreach( $matches[1] as $key => $item ) {
+                    foreach ( $matches[1] as $key => $item ) {
 
                         //Don't do anything if something doesn't add up
                         if ( ! isset( $matches[0][ $key ] ) ) {
@@ -460,7 +469,6 @@ class Filters {
             }
 
         }
-
 
         return $content;
     }

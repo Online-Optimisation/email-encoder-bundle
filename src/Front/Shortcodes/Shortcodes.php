@@ -9,14 +9,14 @@ class Shortcodes
     use PluginHelper;
 
 
-    public function boot(): void {
-
-		add_action( 'init', [ $this, 'register' ] );
+    public function boot(): void
+    {
+        add_action( 'init', [ $this, 'register' ] );
     }
 
 
-    public function register(): void {
-
+    public function register(): void
+    {
         $shortcodes = [
             new ProtectContentShortcode(),
             new MailtoShortcode(),
@@ -26,9 +26,9 @@ class Shortcodes
             new EmailShortcode(), // DEPRECATED
         ];
 
-		foreach( $shortcodes as $shortcode ) {
-			add_shortcode( $shortcode->tag(), [ $shortcode, 'handle' ] );
-		}
+        foreach ( $shortcodes as $shortcode ) {
+            add_shortcode( $shortcode->tag(), [ $shortcode, 'handle' ] );
+        }
     }
 
 }

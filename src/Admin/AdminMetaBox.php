@@ -9,9 +9,9 @@ class AdminMetaBox
     use PluginHelper;
 
 
-	public function add_meta_box(): void {
-
-		if ( !$this->helper()->is_page( $this->getPageName() ) ) {
+    public function add_meta_box(): void
+    {
+        if ( !$this->helper()->is_page( $this->getPageName() ) ) {
             return;
         }
 
@@ -24,15 +24,14 @@ class AdminMetaBox
             'core',
             [ 'encode_form' ]
         );
+    }
 
-	}
 
+    public function render( string $post, array $meta_box )
+    {
+        $key = $meta_box['args'][0];
 
-	public function render( string $post, array $meta_box ) {
-
-		$key = $meta_box['args'][0];
-
-		if ( $key !== 'encode_form' ) {
+        if ( $key !== 'encode_form' ) {
             return;
         }
 
@@ -40,5 +39,5 @@ class AdminMetaBox
         $encoder_form = $this->getEncoderForm();
 
         include EEB_PLUGIN_DIR . 'templates/admin/meta-box-content.php';
-	}
+    }
 }
