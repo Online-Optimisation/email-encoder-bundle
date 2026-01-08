@@ -21,7 +21,7 @@ class ProtectContentShortcode
 
         $original_content = $content;
         $allowed_attr_html = $this->getSafeHtmlAttr();
-        $show_encoded_check = (string) $this->getSetting( 'show_encoded_check', true );
+        $show_encoded_check = (bool) $this->getSetting( 'show_encoded_check', true );
 
         if ( ! isset( $atts['protection_text'] ) ) {
             $protection_text = __( $this->getSetting( 'protection_text', true ), 'email-protection-text-eeb-content' );

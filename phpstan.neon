@@ -1,0 +1,47 @@
+parameters:
+    level: 4
+
+    paths:
+        - src
+        - core
+        # - core/includes
+
+    # stubFiles:
+    scanFiles:
+        - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+        - email-encoder-bundle.php
+
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+        - vendor/autoload.php
+
+    # scanDirectories:
+    #     - core/includes/classes
+    #     - core/includes/integrations/classes
+
+    # If your plugin depends on Woo, ACF etc, you'd add their stubs too.
+    # stubFiles:
+    #   - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+    #   - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+
+    # Ignore vendor, tests, generated stuff, etc.
+    excludePaths:
+        analyse:
+            - vendor
+            - tests
+            # - node_modules
+
+    # WP patterns often require this depending on how legacy code is written.
+    reportUnmatchedIgnoredErrors: false
+
+    ignoreErrors:
+        - identifier: empty.notAllowed
+        - identifier: function.strict
+    #     - identifier: equal.notAllowed
+    #       paths:
+    #           - core/includes/*
+
+# includes:
+#     - vendor/phpstan/phpstan-strict-rules/rules.neon
+
+

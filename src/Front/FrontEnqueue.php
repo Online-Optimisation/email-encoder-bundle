@@ -41,7 +41,7 @@ class FrontEnqueue
             wp_enqueue_style(
                 'eeb-css-frontend',
                 $this->assetCssUrl( 'style.css' ),
-                false,
+                [],
                 $css_version
             );
         }

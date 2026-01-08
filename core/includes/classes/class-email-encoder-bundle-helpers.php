@@ -89,11 +89,11 @@ class Email_Encoder_Helpers {
 	 * Formats a specific date to datetime
 	 *
 	 * @param $date
-	 * @return DateTime
+	 * @return \DateTime
 	 */
 	public function get_datetime( $date ) {
 		$date_new = date( 'Y-m-d H:i:s', strtotime( $date ) );
-		$date_new_formatted = new DateTime( $date_new );
+		$date_new_formatted = new \DateTime( $date_new );
 
 		return $date_new_formatted;
 	}
@@ -163,7 +163,7 @@ class Email_Encoder_Helpers {
 	/**
      * This is the opponent of JavaScripts decodeURIComponent()
      * @link http://stackoverflow.com/questions/1734250/what-is-the-equivalent-of-javascripts-encodeuricomponent-in-php
-     * @param string $str
+     * @param string $content
      * @return string
      */
     public function encode_uri_components( $content ) {

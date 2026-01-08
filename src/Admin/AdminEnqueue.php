@@ -36,7 +36,7 @@ class AdminEnqueue
         wp_enqueue_style(
             'eeb-css-backend',
             $this->assetCssUrl( 'style-admin.css' ),
-            false,
+            [],
             $css_version
         );
     }

@@ -3,7 +3,7 @@
 if( ! function_exists( 'eeb_form' ) ){
 
     function eeb_form(){
-        return EEB()->validate->get_encoder_form();
+        return EEB()->validate->form->get_encoder_form();
     }
 
 }
@@ -152,7 +152,7 @@ if (!function_exists('eeb_protect_emails')):
             $protect_using = sanitize_title( $method );
         }
 
-		$content =  EEB()->validate->filter_content( $content, $protect_using );
+		$content =  EEB()->validate->filters->filter_content( $content, $protect_using );
 		return apply_filters( 'eeb/frontend/template_func/eeb_protect_emails', $content, $protect_using );
     }
 endif;

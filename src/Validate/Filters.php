@@ -26,7 +26,7 @@ class Filters
       * The main page filter function
       *
       * @param string $content - the content that needs to be filtered
-      * @param bool $convertPlainEmails - wether plain emails should be preserved or not
+      * @param string $protect_using
       * @return string - The filtered content
       */
     public function filter_page( $content, $protect_using )
@@ -74,7 +74,7 @@ class Filters
      * Filter content
      *
      * @param string  $content
-     * @param integer $protect_using
+     * @param string $protect_using
      * @return string
      */
     public function filter_content( $content, $protect_using )
@@ -216,7 +216,8 @@ class Filters
                 $protected_return = $this->dynamicJsEmailEncoding( $matches[0], $protection_text );
             } elseif ( $protection_method === 'use_css' ) {
                 $protection_text = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
-                $protected_return = $this->validate()->encoding->encode_email_css( $matches[0], $protection_text );
+                // $protected_return = $this->validate()->encoding->encode_email_css( $matches[0], $protection_text );
+                $protected_return = $this->validate()->encoding->encode_email_css( $matches[0] );
             } elseif ( $protection_method === 'no_encoding' ) {
                 $protected_return = $matches[0];
             } else {
@@ -240,10 +241,9 @@ class Filters
      */
     public function filter_input_fields( $content, $encoding_method = 'default' )
     {
-        $self = $this;
         $strong_encoding = (bool) $this->getSetting( 'input_strong_protection', true, 'filter_body' );
 
-        $callback_encode_input_fields = function ( $match ) use ( $self, $encoding_method, $strong_encoding ) {
+        $callback_encode_input_fields = function ( $match ) use ( $encoding_method, $strong_encoding ) {
             $input = $match[0];
             $email = $match[2];
 
@@ -333,7 +333,7 @@ class Filters
      */
     public function filter_soft_attributes( $content, $protection_method )
     {
-        $soft_attributes = $this->settings()->get_soft_attribute_regex();
+        $soft_attributes = (array) $this->settings()->get_soft_attribute_regex();
 
         foreach ( $soft_attributes as $ident => $regex ) {
 

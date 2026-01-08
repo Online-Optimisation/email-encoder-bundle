@@ -1,7 +1,4 @@
 <?php
-/**
- * Main Template
- */
 
 $currentScreen = get_current_screen();
 $columnCount = (1 == $currentScreen->get_columns()) ? 1 : 2;

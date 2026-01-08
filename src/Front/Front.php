@@ -44,7 +44,7 @@ class Front
             $apply_protection = false;
         }
 
-        $apply_protection = apply_filters( 'eeb/frontend/apply_protection', $apply_protection );
+        $apply_protection = (bool) apply_filters( 'eeb/frontend/apply_protection', $apply_protection );
 
         if ( ! $apply_protection ) {
             return $content;

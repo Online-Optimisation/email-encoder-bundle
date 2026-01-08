@@ -93,7 +93,7 @@ class Email_Encoder_Settings {
 	 /**
 	  * Load the settings for our admin settings page
 	  *
-	  * @return array - An array with all available settings and filled values
+	  * @return void
 	  */
 	public function load_settings() {
 
@@ -360,7 +360,7 @@ class Email_Encoder_Settings {
 	/**
 	 * Get Woocommerce variation attribute regex
 	 *
-	 * @param boolean $include
+	 * @param boolean $single
 	 * @return string
 	 */
 	public function get_soft_attribute_regex( $single = null ) {
@@ -439,7 +439,7 @@ class Email_Encoder_Settings {
 	/**
 	 * Helper function to reload the settings
 	 *
-	 * @return array - An array of all available settings
+	 * @return void
 	 */
 	public function reload_settings() {
 		$this->load_settings();

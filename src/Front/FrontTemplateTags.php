@@ -42,7 +42,7 @@ class FrontTemplateTags
     public function template_tag_eeb_filter( string $content ): string
     {
         $protect_using = (string) $this->getSetting( 'protect_using', true );
-        return $this->validate()->filter->filter_content( $content, $protect_using );
+        return $this->validate()->filters->filter_content( $content, $protect_using );
     }
 
     /**
@@ -51,8 +51,6 @@ class FrontTemplateTags
      * This function is called dynamically by add_custom_template_tags
      * using the $this->getTemplateTags() callback.
      *
-     * @param string $content - the default content
-     * @return string - the filtered content
      */
     public function template_tag_eeb_mailto( $email, $display = null, $atts = array() ): string
     {

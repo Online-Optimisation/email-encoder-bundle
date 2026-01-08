@@ -45,7 +45,7 @@ class AdminHelp
 
         $allowed_attr_html = $this->getSafeHtmlAttr();
 
-        include EEB_PLUGIN_DIR . 'templates/help-tabs/' . $args['id'] . '.php';
+        include \EEB_PLUGIN_DIR . 'templates/help-tabs/' . $args['id'] . '.php';
     }
 
 

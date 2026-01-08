@@ -1,6 +1,6 @@
 <?php
+/** @var \OnlineOptimisation\EmailEncoderBundle\Admin\AdminMenu $this */
 
-// $settings = EEB()->settings->get_setting();
 $settings = $this->getSetting();
 $advanced_settings = (bool) $this->getSetting( 'advanced_settings', true );
 

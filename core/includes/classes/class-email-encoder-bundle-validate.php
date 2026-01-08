@@ -34,7 +34,7 @@ class Email_Encoder_Validate {
       * The main page filter function
       *
       * @param string $content - the content that needs to be filtered
-      * @param bool $convertPlainEmails - wether plain emails should be preserved or not
+      * @param string $protect_using
       * @return string - The filtered content
       */
     public function filter_page( $content, $protect_using ) {
@@ -221,7 +221,8 @@ class Email_Encoder_Validate {
                 $protected_return = $this->dynamic_js_email_encoding( $matches[0], $protection_text );
             } elseif ( $protection_method === 'use_css' ) {
                 $protection_text = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
-                $protected_return = $this->encode_email_css( $matches[0], $protection_text );
+                // $protected_return = $this->encode_email_css( $matches[0], $protection_text );
+                $protected_return = $this->encode_email_css( $matches[0] );
             } elseif ( $protection_method === 'no_encoding' ) {
                 $protected_return = $matches[0];
             } else {
@@ -334,7 +335,7 @@ class Email_Encoder_Validate {
      * @return string
      */
     public function filter_soft_attributes( $content, $protection_method ) {
-        $soft_attributes = $this->settings()->get_soft_attribute_regex();
+        $soft_attributes = (array) $this->settings()->get_soft_attribute_regex();
 
         foreach( $soft_attributes as $ident => $regex ) {
 
@@ -637,7 +638,7 @@ class Email_Encoder_Validate {
     /**
      * Get the ebcoded email icon
      *
-     * @param string $email
+     * @param string $text
      * @return string
      */
     public function get_encoded_email_icon( $text = 'Email encoded successfully!' ) {
@@ -815,7 +816,7 @@ class Email_Encoder_Validate {
      *
      * @param string $email
      * @param string $protection_text
-     * @return the encoded email
+     * @return string
      */
     public function dynamic_js_email_encoding( $email, $protection_text = null ) {
         $return = $email;

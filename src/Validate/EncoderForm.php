@@ -137,20 +137,22 @@ FORM;
 
             $exclude_pages = explode( ',', $skip_posts );
 
-            if ( is_array( $exclude_pages ) ) {
-                $exclude_pages_validated = array();
+            // if ( is_array( $exclude_pages ) ) {
 
-                foreach ( $exclude_pages as $spost_id ) {
-                    $spost_id = trim($spost_id);
-                    if ( is_numeric( $spost_id ) ) {
-                        $exclude_pages_validated[] = intval( $spost_id );
-                    }
-                }
+            $exclude_pages_validated = array();
 
-                if ( in_array( $post_id, $exclude_pages_validated ) ) {
-                    $return = true;
+            foreach ( $exclude_pages as $spost_id ) {
+                $spost_id = trim($spost_id);
+                if ( is_numeric( $spost_id ) ) {
+                    $exclude_pages_validated[] = intval( $spost_id );
                 }
             }
+
+            if ( in_array( $post_id, $exclude_pages_validated ) ) {
+                $return = true;
+            }
+
+            // }
 
         }
 
@@ -177,18 +179,18 @@ FORM;
 
             $excluded_parameters = explode( ',', $skip_query_parameters );
 
-            if ( is_array( $excluded_parameters ) ) {
+            // if ( is_array( $excluded_parameters ) ) {
 
-                foreach ( $excluded_parameters as $param ) {
-                    $param = trim($param);
+            foreach ( $excluded_parameters as $param ) {
+                $param = trim($param);
 
-                    if ( isset( $parameters[ $param ] ) ) {
-                        $return = true;
-                        break;
-                    }
+                if ( isset( $parameters[ $param ] ) ) {
+                    $return = true;
+                    break;
                 }
-
             }
+
+            // }
 
         }
 

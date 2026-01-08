@@ -185,7 +185,7 @@ class Encoding
     /**
      * Get the ebcoded email icon
      *
-     * @param string $email
+     * @param string $text
      * @return string
      */
     public function get_encoded_email_icon( $text = 'Email encoded successfully!' )
@@ -211,7 +211,7 @@ class Encoding
         $show_encoded_check = (string) $this->getSetting( 'show_encoded_check', true );
 
         // set user-defined class
-        if ( $custom_class && strpos( $class_ori, $custom_class ) === false ) {
+        if ( $custom_class !== '' && strpos( $class_ori, $custom_class ) === false ) {
             $attrs['class'] = ( empty( $attrs['class'] ) ) ? $custom_class : $attrs['class'] . ' ' . $custom_class;
         }
 
@@ -227,7 +227,7 @@ class Encoding
         $link = '<a ';
 
         foreach ( $attrs as $key => $value ) {
-            if ( strtolower( $key ) == 'href' ) {
+            if ( strtolower( $key ) === 'href' ) {
                 if ( $protection_method === 'without_javascript' ) {
                     $link .= $key . '="' . antispambot( $value ) . '" ';
                 } else {
@@ -262,7 +262,7 @@ class Encoding
         $link = $this->filterPlainEmails( $link, null, 'char_encode' );
 
         // mark link as successfullly encoded (for admin users)
-        if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
+        if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check !== '' ) {
             $link .= $this->get_encoded_email_icon();
         }
 
@@ -285,7 +285,7 @@ class Encoding
         $show_encoded_check = (string) $this->getSetting( 'show_encoded_check', true );
 
         // set user-defined class
-        if ( $custom_class && strpos( $class_ori, $custom_class ) === false ) {
+        if ( $custom_class !== '' && strpos( $class_ori, $custom_class ) === false ) {
             $attrs['class'] = ( empty( $attrs['class'] ) ) ? $custom_class : $attrs['class'] . ' ' . $custom_class;
         }
 
@@ -301,7 +301,7 @@ class Encoding
         $link = '<a ';
 
         foreach ( $attrs as $key => $value ) {
-            if ( strtolower( $key ) == 'href' ) {
+            if ( strtolower( $key ) === 'href' ) {
                 $link .= $key . '="' . antispambot( $value ) . '" ';
             } else {
                 $link .= $key . '="' . $value . '" ';
@@ -366,7 +366,7 @@ class Encoding
      *
      * @param string $email
      * @param string $protection_text
-     * @return the encoded email
+     * @return string the encoded email
      */
     public function dynamic_js_email_encoding( $email, $protection_text = null )
     {

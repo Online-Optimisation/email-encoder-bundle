@@ -52,7 +52,8 @@ class AdminMenu
     public function render_admin_menu_page(): void
     {
         if ( ! current_user_can( $this->getAdminCap('admin-menu-page') ) ) {
-            wp_die( __( $this->settings()->get_default_string( 'insufficient-permissions' ), 'email-encoder-bundle' ) );
+            wp_die( 'Insufficinet permissions.' );
+            // wp_die( __( $this->settings()->get_default_string( 'insufficient-permissions' ), 'email-encoder-bundle' ) );
         }
 
 

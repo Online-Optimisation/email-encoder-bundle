@@ -7,6 +7,7 @@
             "OnlineOptimisation\\EmailEncoderBundle\\": "src/"
         },
         "classmap": [
+            "core",
             "core/includes/classes",
             "core/includes/integrations/classes"
         ]
@@ -19,12 +20,19 @@
         "yoast/phpunit-polyfills": "^2.0",
         "squizlabs/php_codesniffer": "^3.13",
         "wp-coding-standards/wpcs": "^3.3",
-        "dealerdirect/phpcodesniffer-composer-installer": "^1.2"
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.2",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "php-stubs/wordpress-stubs": "^6.9"
     },
     "scripts": {
-        "test": "phpunit -c phpunit.xml.dist"
+        "test": "phpunit -c phpunit.xml.dist",
+        "stan": "phpstan analyse -c phpstan.neon --memory-limit=1G"
     },
     "config": {
+        "platform": {
+            "php": "7.4.0"
+        },
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }

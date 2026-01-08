@@ -103,9 +103,9 @@ trait PluginHelper
         return $this->plugin()->settings->get_hook_priorities( $method );
     }
 
-    public function reloadSettings(): ?array
+    public function reloadSettings(): void
     {
-        return $this->plugin()->settings->reload_settings();
+        $this->plugin()->settings->reload_settings();
     }
 
     # VALIDATE ===============================================================
@@ -216,6 +216,11 @@ trait PluginHelper
     private function assetCssUrl( string $filename ): string
     {
         return EEB_PLUGIN_URL . 'assets/css/' . $filename;
+    }
+
+    private function isEmptyString( string $string ): bool
+    {
+        return $string !== null && $string !== '';
     }
 
 }

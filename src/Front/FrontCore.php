@@ -10,7 +10,7 @@ class FrontCore
 
     private int $protection_method;
     private bool $protect_shortcode_tags;
-    private bool $protect_using;
+    // private bool $protect_using;
 
 
     public function boot(): void

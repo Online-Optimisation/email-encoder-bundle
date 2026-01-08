@@ -1,3 +1,7 @@
+<?php
+/** @var array $allowed_attr_html */
+
+?>
 <h3><?php echo __( 'Shortcodes', 'email-encoder-bundle' ); ?></h3>
 
 <p><?php echo __( 'You can protect those addresses using the following shortcode. Everything you add within these both tags, will be checked for emails automatically.', 'email-encoder-bundle' ); ?></p>
