@@ -77,7 +77,7 @@ class Email_Encoder_Settings {
 		$this->page_title = EEB_NAME;
 		$this->safe_attr_html = require EEB_PLUGIN_DIR . '/config/SafeHtmlConfig.php';
 
-		add_action( 'init', [ $this, 'load_settings' ], 0 );
+		add_action( 'init', [ $this, 'load_settings' ] );
 		add_action( 'init', [ $this, 'load_version' ] );
 		add_action( 'init', [ $this, 'load_email_image_secret' ] );
 	}
@@ -457,8 +457,8 @@ class Email_Encoder_Settings {
 	public function get_setting( $slug = '', $single = false, $group = '' ) {
 
         // temporary fix to resolve calls before class is properly booted
-        if ( empty( $this->settings ) ) {
-            error_log( 'Method get_settings() is accessed too early!' );
+        if ( $this->settings === [] ) {
+            error_log( 'EmailEncoderBundle: Method get_settings() is accessed too early!' );
             $this->load_settings();
         }
         // end of fix
