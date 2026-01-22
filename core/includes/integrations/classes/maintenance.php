@@ -2,6 +2,7 @@
 
 namespace Legacy\EmailEncoderBundle\Integration;
 
+use OnlineOptimisation\EmailEncoderBundle\Integrations\IntegrationInterface;
 use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 
 /**
@@ -15,7 +16,7 @@ use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
  * @author OnlineOptimisation <info@onlineoptimisation.com.au>
  */
 
-class Maintenance {
+class Maintenance implements IntegrationInterface {
 
     use PluginHelper;
 
@@ -30,7 +31,7 @@ class Maintenance {
     }
 
 
-    public function load_custom_styles() {
+    public function load_custom_styles(): void {
 
         if ( ! $this->is_active() ) {
             return;
@@ -46,7 +47,7 @@ class Maintenance {
     }
 
 
-    public function load_custom_scripts() {
+    public function load_custom_scripts(): void {
 
         if ( ! $this->is_active() ) {
             return;

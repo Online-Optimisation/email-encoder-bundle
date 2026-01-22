@@ -8,3 +8,8 @@
 /dist
 *.cache
 dist.sh
+*.tar
+*.bz2
+*.gz
+*.bak
+*.old

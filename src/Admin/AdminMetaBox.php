@@ -27,7 +27,12 @@ class AdminMetaBox
     }
 
 
-    public function render( string $post, array $meta_box )
+    /**
+     * @param string $post
+     * @param array< string, array< string > > $meta_box
+     * @return void
+     */
+    public function render( string $post, array $meta_box ): void
     {
         $key = $meta_box['args'][0];
 

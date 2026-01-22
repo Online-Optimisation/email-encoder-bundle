@@ -5,6 +5,8 @@ namespace Legacy\EmailEncoderBundle;
 use OnlineOptimisation\EmailEncoderBundle\Admin\Admin;
 use OnlineOptimisation\EmailEncoderBundle\Front\Front;
 use OnlineOptimisation\EmailEncoderBundle\Validate\Validate;
+use OnlineOptimisation\EmailEncoderBundle\Functions;
+use OnlineOptimisation\EmailEncoderBundle\Integrations\IntegrationInterface;
 
 final class Email_Encoder {
 
@@ -13,11 +15,13 @@ final class Email_Encoder {
 	public Email_Encoder_Helpers $helpers;
 	// public Email_Encoder_Validate $validate;
 	public Validate $validate;
+	public Functions $functions;
 	public Email_Encoder_Ajax $ajax;
 
     /** @var Admin|Front */
 	public $context;
 
+    /** @var array< string, class-string< IntegrationInterface > > */
     private array $integrations = [
         'avada_builder'       => Integration\AvadaBuilder::class,
         'bricks_builder'      => Integration\BricksBuilder::class,
@@ -55,6 +59,9 @@ final class Email_Encoder {
 
 		$this->context = is_admin() ? new Admin() : new Front();
 		$this->context->boot();
+
+        $this->functions = new Functions();
+        // $this->functions->boot();
 
 		do_action( 'eeb_plugin_loaded', $this );
 	}

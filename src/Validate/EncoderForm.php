@@ -119,7 +119,11 @@ FORM;
     }
 
 
-    public function is_post_excluded( $post_id = null )
+    /**
+     * @param int $post_id
+     * @return bool
+     */
+    public function is_post_excluded( ?int $post_id = null )
     {
 
         $return = false;
@@ -163,7 +167,7 @@ FORM;
      * Filter if to exclude specific URL parameters from filtering
      *
      * @since 2.2.0
-     * @param array $parameters
+     * @param array< string > $parameters
      * @return boolean
      */
     public function is_query_parameter_excluded( $parameters = null )

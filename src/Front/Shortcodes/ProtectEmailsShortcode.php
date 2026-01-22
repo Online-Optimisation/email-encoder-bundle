@@ -17,7 +17,12 @@ class ProtectEmailsShortcode
     }
 
 
-    public function handle( array $atts = [], ?string $content = null ): string
+    /**
+     * @param array< string, string > $atts
+     * @param string $content
+     * @return string
+     */
+    public function handle( array $atts = [], string $content = '' ): string
     {
         $protect = (int) $this->getSetting( 'protect', true );
         $allowed_attr_html = $this->getSafeHtmlAttr();

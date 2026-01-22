@@ -23,7 +23,7 @@ class Front
     }
 
 
-    public function register_hooks()
+    public function register_hooks(): void
     {
         add_action( 'init', 'load_textdomain' );
 
@@ -32,7 +32,7 @@ class Front
 
 
 
-    public function eeb_ready_callback_filter( $content )
+    public function eeb_ready_callback_filter( string $content ): string
     {
         $apply_protection = true;
 
@@ -57,7 +57,7 @@ class Front
 
 
 
-    public function load_textdomain()
+    public function load_textdomain(): void
     {
         load_plugin_textdomain(
             EEB_TEXTDOMAIN,

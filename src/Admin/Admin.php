@@ -8,6 +8,7 @@ class Admin
 {
     use PluginHelper;
 
+    /** @var array< string > $display_notices */
     public static array $display_notices = [];
 
 
@@ -22,7 +23,7 @@ class Admin
 
     # ADMIN METHODS ============================================================
 
-    public function register_hooks()
+    public function register_hooks(): void
     {
         add_action( 'admin_init', [ $this, 'save_settings_admin' ] );
     }
@@ -31,7 +32,7 @@ class Admin
 
 
 
-    public function save_settings_admin()
+    public function save_settings_admin(): void
     {
         // $this->log( __METHOD__ );
         if ( !isset( $_POST[ $this->getPageName() . '_nonce' ] ) ) {

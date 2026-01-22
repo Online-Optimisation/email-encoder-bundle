@@ -2,9 +2,10 @@
 
 namespace Legacy\EmailEncoderBundle\Integration;
 
+use OnlineOptimisation\EmailEncoderBundle\Integrations\IntegrationInterface;
 use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 
-class HivePress {
+class HivePress implements IntegrationInterface {
 
     use PluginHelper;
 
@@ -20,6 +21,10 @@ class HivePress {
     }
 
 
+    /**
+     * @param array< string, array< string, mixed > > $fields
+     * @return array< string, array< string, mixed > >
+     */
     public function deactivate_logic( $fields ) {
 
         $uri = isset( $_SERVER['REQUEST_URI'] )
@@ -28,7 +33,6 @@ class HivePress {
         ;
 
         $condition = preg_match( '#/account/listings/(\d+)/?$#', $uri )
-            && is_array( $fields )
             && isset( $fields['protect']['value'] )
         ;
 

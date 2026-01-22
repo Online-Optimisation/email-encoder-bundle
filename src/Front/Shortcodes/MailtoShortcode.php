@@ -16,6 +16,11 @@ class MailtoShortcode
     }
 
 
+    /**
+     * @param array< string, string > $atts
+     * @param string $content
+     * @return string
+     */
     public function handle( array $atts = [], ?string $content = null ): string
     {
         $allowed_attr_html = $this->getSafeHtmlAttr();

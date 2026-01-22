@@ -2,9 +2,10 @@
 
 namespace Legacy\EmailEncoderBundle\Integration;
 
+use OnlineOptimisation\EmailEncoderBundle\Integrations\IntegrationInterface;
 use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 
-class GoogleSiteKit {
+class GoogleSiteKit implements IntegrationInterface {
 
     use PluginHelper;
 
@@ -13,6 +14,10 @@ class GoogleSiteKit {
     }
 
 
+    /**
+     * @param array< string, array< string, mixed > > $admin_data
+     * @return array< string, array< string, mixed > >
+     */
     public function soft_encode_admin_data( $admin_data ) {
 
         $soft_encode = apply_filters( 'eeb/integrations/google_site_kit/soft_encode', true );

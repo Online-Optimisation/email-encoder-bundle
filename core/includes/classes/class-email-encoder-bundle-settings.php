@@ -18,6 +18,8 @@ class Email_Encoder_Settings {
 	private string $image_secret_key = 'email-encoder-bundle-img-key';
 	private string $at_identifier = '##eebAddIdent##';
 	private ?string $previous_version = null;
+
+    /** @var array< string, int > */
 	private array $hook_priorities = [ // deprecated!
 		'buffer_final_output' => 1000,
 		'setup_single_filter_hooks' => 100,
@@ -35,22 +37,32 @@ class Email_Encoder_Settings {
 		'reload_settings_for_integrations' => 5,
 		// 'eeb_dynamic_sidebar_params' => 100, //deprecated but kept for compatibility
 	];
+
+    /** @var array< string, array< string, mixed > > */
 	private array $safe_attr_html;
+
 	private string $email_regex = '([_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,}))';
+
+    /** @var array< string, string > > */
 	private array $soft_attribute_regex = [
 		'woocommerce_variation_attribute_tag' => '/data-product_variations="([^"]*)"/i',
 		'jetpack_carousel_image_attribute_tag' => '/data-image-meta="([^"]*)"/i',
 		'html_placeholder_tag' => '/placeholder="([^"]*)"/i',
 	];
 
+    /** @var array< string, array< string, mixed > > */
 	private array $settings = [];
+
 	private string $version;
 	private string $email_image_secret;
+
+    /** @var array< string, string > > */
 	private array $template_tags= [
 		'eeb_filter' => 'template_tag_eeb_filter',
 		'eeb_mailto' => 'template_tag_eeb_mailto'
 	];
 
+    /** @var array< string, mixed > > */
 	private array $default_values = [
 		'protect' 				   => self::PROTECT_FULL_PAGE,
 		'filter_rss' 			   => 1,
@@ -82,6 +94,12 @@ class Email_Encoder_Settings {
 		add_action( 'init', [ $this, 'load_email_image_secret' ] );
 	}
 
+    /**
+     * @return array< string, mixed >
+     */
+    public function get_saved(): array {
+        return get_option( $this->settings_key, [] );
+    }
 	/**
 	 * ######################
 	 * ###
@@ -144,6 +162,9 @@ class Email_Encoder_Settings {
 	 * ######################
 	 */
 
+    /**
+     * @return string
+     */
 	public function load_version() {
 
 		$current_version = get_option( $this->get_version_key() );
@@ -169,17 +190,17 @@ class Email_Encoder_Settings {
 	}
 
 
-	public function load_email_image_secret() {
+	public function load_email_image_secret(): void {
 
 		if ( ! (bool) $this->get_setting( 'convert_plain_to_image', true, 'filter_body' ) ) {
-			return false;
+			return;
 		}
 
 		$image_descret = get_option( $this->get_image_secret_key() );
 
 		if ( ! empty( $image_descret ) ) {
 			$this->email_image_secret = $image_descret;
-			return $image_descret;
+			return;
 		}
 
 		$key = '';
@@ -200,7 +221,7 @@ class Email_Encoder_Settings {
 	 *
 	 * @return void
 	 */
-	public function first_version_init() {
+	public function first_version_init(): void {
 		do_action( 'eeb/settings/first_version_init', EEB_VERSION );
 	}
 
@@ -209,7 +230,7 @@ class Email_Encoder_Settings {
 	 *
 	 * @return void
 	 */
-	public function version_update() {
+	public function version_update(): void {
 		do_action( 'eeb/settings/version_update', EEB_VERSION, $this->previous_version );
 	}
 
@@ -308,7 +329,7 @@ class Email_Encoder_Settings {
 	/**
 	 * Return the default template tags
 	 *
-	 * @return array - the template tags
+	 * @return array< string, string > - the template tags
 	 */
 	public function get_template_tags() {
 		return apply_filters( 'eeb/settings/get_template_tags', $this->template_tags );
@@ -360,7 +381,7 @@ class Email_Encoder_Settings {
 	/**
 	 * Get Woocommerce variation attribute regex
 	 *
-	 * @param boolean $single
+	 * @param string $single
 	 * @return string
 	 */
 	public function get_soft_attribute_regex( $single = null ) {
@@ -381,10 +402,10 @@ class Email_Encoder_Settings {
 	/**
 	 * Get hook priorities
 	 *
-	 * @param boolean $single - wether you want to return only a single hook priority or not
+	 * @param string $single - wether you want to return only a single hook priority or not
 	 * @return mixed - An array or string of hook priority(-ies)
 	 */
-	public function get_hook_priorities( $single = false )  {
+	public function get_hook_priorities( ?string $single = null )  {
 
 		$is_single = $single && isset( $this->hook_priorities[ $single ] );
 
@@ -408,11 +429,11 @@ class Email_Encoder_Settings {
 	}
 
 	/**
-	  * Get a collection of safe HTML attributes
-	  *
-	  * @return array
-	  */
-	  public function get_safe_html_attr() {
+	 * Get a collection of safe HTML attributes
+	 *
+	 * @return array< string, array< string, mixed > >
+	 */
+	public function get_safe_html_attr() {
 		return apply_filters( 'eeb/settings/get_safe_html_attr', $this->safe_attr_html );
 	}
 
@@ -446,12 +467,11 @@ class Email_Encoder_Settings {
 	}
 
 	/**
-	 * Return the default strings that are available
-	 * for this plugin.
+	 * Return the default strings that are available for this plugin.
 	 *
-	 * @param $slug - the identifier for your specified setting
-	 * @param $single - wether you only want to return the value or the whole settings element
-	 * @param $group - in case you call a multi-input that contains multiple values (e.g. checkbox), you can set a sub-slug to grab the sub value
+	 * @param string $slug - the identifier for your specified setting
+	 * @param bool $single - wether you only want to return the value or the whole settings element
+	 * @param string $group - in case you call a multi-input that contains multiple values (e.g. checkbox), you can set a sub-slug to grab the sub value
 	 * @return mixed - the default string
 	 */
 	public function get_setting( $slug = '', $single = false, $group = '' ) {

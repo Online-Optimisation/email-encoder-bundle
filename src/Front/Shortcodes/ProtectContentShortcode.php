@@ -16,7 +16,12 @@ class ProtectContentShortcode
     }
 
 
-    public function handle( array $atts = [], ?string $content = null ): string
+    /**
+     * @param array< string, string > $atts
+     * @param string $content
+     * @return string
+     */
+    public function handle( array $atts = [], string $content = '' ): string
     {
 
         $original_content = $content;

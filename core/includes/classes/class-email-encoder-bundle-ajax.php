@@ -42,7 +42,7 @@ class Email_Encoder_Ajax{
             'eeb-js-ajax-ef',
             EEB_PLUGIN_URL . 'core/includes/assets/js/encoder-form.js',
             [ 'jquery' ],
-            $ver,
+            (string) $ver,
             true
         );
 

@@ -3,6 +3,7 @@
 namespace OnlineOptimisation\EmailEncoderBundle\Admin;
 
 use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
+use WP_Screen;
 
 class AdminHelp
 {
@@ -16,6 +17,9 @@ class AdminHelp
     public function add_help_tabs(): void
     {
         $screen = get_current_screen();
+        if ( $screen === null ) {
+            return;
+        }
 
         $defaults = [
             'content'   => '',
@@ -37,7 +41,12 @@ class AdminHelp
     }
 
 
-    public function load_help_tabs( \WP_Screen $screen, array $args ): void
+    /**
+     * @param WP_Screen $screen
+     * @param array< string, string > $args
+     * @return void
+     */
+    public function load_help_tabs( WP_Screen $screen, array $args ): void
     {
         if ( empty( $args['id'] ) ) {
             return;

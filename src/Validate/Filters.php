@@ -39,7 +39,7 @@ class Filters
 
         $htmlSplit = preg_split( '/(<body(([^>]*)>))/is', $content, -1, PREG_SPLIT_DELIM_CAPTURE );
 
-        if ( count( $htmlSplit ) < 4 ) {
+        if ( ! is_array( $htmlSplit) || count( $htmlSplit ) < 4 ) {
             return $content;
         }
 
@@ -230,7 +230,7 @@ class Filters
             }
 
             return $protected_return;
-        }, $content );
+        }, $content ) ?? '';
     }
 
     /**
@@ -239,7 +239,7 @@ class Filters
      * @param string $content
      * @return string
      */
-    public function filter_input_fields( $content, $encoding_method = 'default' )
+    public function filter_input_fields( string $content, string $encoding_method = 'default' )
     {
         $strong_encoding = (bool) $this->getSetting( 'input_strong_protection', true, 'filter_body' );
 
@@ -257,14 +257,15 @@ class Filters
 
         $regexpInputField = '/<input([^>]*)value=["\'][\s+]*' . $this->settings()->get_email_regex( true ) . '[\s+]*["\']([^>]*)>/is';
 
-        return preg_replace_callback( $regexpInputField, $callback_encode_input_fields, $content );
+        return preg_replace_callback( $regexpInputField, $callback_encode_input_fields, $content ) ?? '';
     }
 
     /**
      * @param string $content
+     * @param string $protection_method
      * @return string
      */
-    public function filter_mailto_links( $content, $protection_method = null )
+    public function filter_mailto_links( string $content, ?string $protection_method = null )
     {
         $self = $this;
 
@@ -275,14 +276,15 @@ class Filters
 
         $regexpMailtoLink = '/<a[\s+]*(([^>]*)href=["\']mailto\:([^>]*)["\' ])>(.*?)<\/a[\s+]*>/is';
 
-        return preg_replace_callback( $regexpMailtoLink, $callbackEncodeMailtoLinks, $content );
+        return preg_replace_callback( $regexpMailtoLink, $callbackEncodeMailtoLinks, $content ) ?? '';
     }
 
     /**
      * @param string $content
+     * @param string $protection_method
      * @return string
      */
-    public function filter_custom_links( $content, $protection_method = null )
+    public function filter_custom_links( string $content, ?string $protection_method = null )
     {
         $self = $this;
         $custom_href_attr = (string) $this->getSetting( 'custom_href_attr', true );
@@ -299,7 +301,7 @@ class Filters
 
                 $regexpMailtoLink = '/<a[\s+]*(([^>]*)href=["\']' . addslashes( $attr_name ) . '\:([^>]*)["\' ])>(.*?)<\/a[\s+]*>/is';
 
-                $content = preg_replace_callback( $regexpMailtoLink, $callbackEncodeCustomLinks, $content );
+                $content = preg_replace_callback( $regexpMailtoLink, $callbackEncodeCustomLinks, $content ) ?? '';
             }
         }
 
@@ -310,9 +312,10 @@ class Filters
      * Emails will be replaced by '*protected email*'
      *
      * @param string $content
+     * @param string $protection_type
      * @return string
      */
-    public function filter_rss( $content, $protection_type )
+    public function filter_rss( string $content, ?string $protection_type )
     {
 
         if ( $protection_type === 'strong_method' ) {
@@ -331,25 +334,25 @@ class Filters
      * @param string $protection_method - The method (E.g. char_encode)
      * @return string
      */
-    public function filter_soft_attributes( $content, $protection_method )
+    public function filter_soft_attributes( string $content, string $protection_method )
     {
         $soft_attributes = (array) $this->settings()->get_soft_attribute_regex();
 
         foreach ( $soft_attributes as $ident => $regex ) {
 
-            $attributes = array();
+            // $attributes = array();
             preg_match_all( $regex, $content, $attributes );
 
-            if ( is_array( $attributes ) && isset( $attributes[0] ) ) {
-                foreach ( $attributes[0] as $single ) {
+            // if ( is_array( $attributes ) && isset( $attributes[0] ) ) {
+            foreach ( $attributes[0] as $single ) {
 
-                    if ( empty( $single ) ) {
-                        continue;
-                    }
-
-                    $content = str_replace( $single, $this->filter_plain_emails( $single, null, $protection_method, false ), $content );
+                if ( empty( $single ) ) {
+                    continue;
                 }
+
+                $content = str_replace( $single, $this->filter_plain_emails( $single, null, $protection_method, false ), $content );
             }
+            // }
 
         }
 
@@ -365,11 +368,12 @@ class Filters
      */
     public function filter_soft_dom_attributes( $content, $protection_method )
     {
+        $content = (string) $content;
 
         $no_script_tags = (bool) $this->getSetting( 'no_script_tags', true, 'filter_body' );
         $no_attribute_validation = (bool) $this->getSetting( 'no_attribute_validation', true, 'filter_body' );
 
-        if ( ! empty( $content ) && is_string( $content ) ) {
+        if ( $content !== '' ) {
 
             if ( class_exists( 'DOMDocument' ) ) {
                 $dom = new DOMDocument();
@@ -385,20 +389,20 @@ class Filters
                                     continue;
                                 }
 
-                                if ( strpos( $attr->nodeValue, '@' ) !== false ) {
-                                    $single_tags = array();
+                                if ( $attr->nodeValue !== null && strpos( $attr->nodeValue, '@' ) !== false ) {
+                                    // $single_tags = array();
                                     preg_match_all( '/' . $attr->nodeName . '=["\']([^"]*)["\']/i', $content, $single_tags );
 
-                                    if ( is_array( $single_tags ) && isset( $single_tags[0] ) ) {
-                                        foreach ( $single_tags[0] as $single ) {
+                                    // if ( is_array( $single_tags ) && isset( $single_tags[0] ) ) {
+                                    foreach ( $single_tags[0] as $single ) {
 
-                                            if ( empty( $single ) ) {
-                                                continue;
-                                            }
-
-                                            $content = str_replace( $single, $this->filter_plain_emails( $single, null, $protection_method, false ), $content );
+                                        if ( empty( $single ) ) {
+                                            continue;
                                         }
+
+                                        $content = str_replace( $single, $this->filter_plain_emails( $single, null, $protection_method, false ), $content );
                                     }
+                                    // }
 
                                 }
                             }
@@ -429,10 +433,7 @@ class Filters
             $pattern = '/<script\b[^>]*>(.*?)<\/script>/is';
 
             preg_match_all($pattern, $content, $matches);
-            if (
-                isset( $matches[1] )
-                && ! empty( $matches[1] )
-            ) {
+            if ( ! empty( $matches[1] ) ) {
                 if ( ! $no_script_tags ) {
                     foreach ( $matches[1] as $key => $item ) {
 

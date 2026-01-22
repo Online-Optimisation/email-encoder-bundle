@@ -1,5 +1,5 @@
 <?php
-/** @var array $allowed_attr_html */
+/** @var array< string, array< string > > $allowed_attr_html */
 
 ?>
 <h3><?php echo __( 'Shortcodes', 'email-encoder-bundle' ); ?></h3>

@@ -26,13 +26,17 @@ $mulsitie_slug = ( is_multisite() ) ? 'network/' : '';
             <div id="post-body" class="metabox-holder columns-<?php echo $columnCount; ?>">
                 <?php include( 'widgets/main.php' ); ?>
 
-                <div id="postbox-container-1" class="postbox-container">
-                    <?php include( 'widgets/sidebar.php' ); ?>
+                <div id="postbox-container-1" >
+                    <div class="postbox-container">
+                        <?php include( 'widgets/sidebar.php' ); ?>
+                        <?php include( 'widgets/support.php' ); ?>
+                    </div>
                 </div>
 
                 <div id="postbox-container-2" class="postbox-container">
                     <?php do_meta_boxes('', 'normal', ''); ?>
                 </div>
+
             </div>
         </div>
     </form>

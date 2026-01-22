@@ -27,6 +27,8 @@ class Shortcodes
         ];
 
         foreach ( $shortcodes as $shortcode ) {
+            if ( $shortcode->tag() === '' ) continue;
+
             add_shortcode( $shortcode->tag(), [ $shortcode, 'handle' ] );
         }
     }

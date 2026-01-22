@@ -18,7 +18,12 @@ class ContentShortcode
     }
 
 
-    public function handle( array $atts = [], ?string $content = null ): string
+    /**
+     * @param array< string, string > $atts
+     * @param string $content
+     * @return string
+     */
+    public function handle( array $atts = [], string $content = '' ): string
     {
         _doing_it_wrong(
             __METHOD__,

@@ -36,6 +36,9 @@ trait PluginHelper
         return $this->plugin()->settings;
     }
 
+    /**
+     * @return Admin|Front
+     */
     public function context() //: Admin|Front
     {
         return $this->plugin()->context;
@@ -43,6 +46,9 @@ trait PluginHelper
 
     # SETTINGS ===============================================================
 
+    /**
+     * @return mixed
+     */
     public function getSetting( string $slug = '', bool $single = false, string $group = '' )
     {
         $value = $this->plugin()->settings->get_setting( $slug, $single, $group );
@@ -83,11 +89,17 @@ trait PluginHelper
         return $this->plugin()->settings->get_widget_callback_hook();
     }
 
+    /**
+     * @return array< string, string >
+     */
     public function getTemplateTags(): array
     {
         return $this->plugin()->settings->get_template_tags();
     }
 
+    /**
+     * @return array< string, array< string, array< string > > >
+     */
     public function getSafeHtmlAttr(): array
     {
         return $this->plugin()->settings->get_safe_html_attr();
@@ -131,58 +143,91 @@ trait PluginHelper
         return $this->validate()->filters->filter_page( $content, $protect_using );
     }
 
+    /**
+     * @param mixed $args
+     */
     public function filterPlainEmails( ...$args ): string
     {
         return $this->validate()->filters->filter_plain_emails( ...$args );
     }
 
 
+    /**
+     * @param mixed $args
+     */
     public function dynamicJsEmailEncoding( ...$args ): string
     {
         return $this->validate()->encoding->dynamic_js_email_encoding( ...$args );
     }
 
+    /**
+     * @param mixed $args
+     */
     public function tempEncodeAtSymbol( ...$args ): string
     {
         return $this->validate()->encoding->temp_encode_at_symbol( ...$args );
     }
 
+    /**
+     * @param mixed $args
+     */
     public function encodeAscii( ...$args ): string
     {
         return $this->validate()->encoding->encode_ascii( ...$args );
     }
 
+    /**
+     * @param mixed $args
+     */
     public function encodeEscape( ...$args ): string
     {
         return $this->validate()->encoding->encode_escape( ...$args );
     }
 
+    /**
+     * @param mixed $args
+     */
     public function encodeEmailCss( ...$args ): string
     {
         return $this->validate()->encoding->encode_email_css( ...$args );
     }
 
+    /**
+     * @param mixed $args
+     */
     public function createProtectedMailto( ...$args ): string
     {
         return $this->validate()->encoding->create_protected_mailto( ...$args );
     }
 
+    /**
+     * @param mixed $args
+     */
     public function createProtectedHrefAtt( ...$args ): string
     {
         return $this->validate()->encoding->create_protected_href_att( ...$args );
     }
 
+    /**
+     * @param mixed $args
+     */
     public function getEncodedEmailIcon( ...$args ): string
     {
         return $this->validate()->encoding->get_encoded_email_icon( ...$args );
     }
 
-    public function generateEmailImageUrl( ...$args ): string
+    /**
+     * @param mixed $args
+     * @return string|bool
+     */
+    public function generateEmailImageUrl( ...$args )
     {
         return $this->validate()->encoding->generate_email_image_url( ...$args );
     }
 
-
+    /**
+     * @param mixed $args
+     */
     public function getEncoderForm( ...$args ): string
     {
         return $this->validate()->form->get_encoder_form( ...$args );
@@ -191,6 +236,9 @@ trait PluginHelper
 
     # LOG ====================================================================
 
+    /**
+     * @param mixed $data
+     */
     public function log( $data ): void
     {
         error_log( print_r( $data, true ) );
@@ -218,7 +266,7 @@ trait PluginHelper
         return EEB_PLUGIN_URL . 'assets/css/' . $filename;
     }
 
-    private function isEmptyString( string $string ): bool
+    private function isEmptyString( ?string $string ): bool
     {
         return $string !== null && $string !== '';
     }

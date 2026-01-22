@@ -23,7 +23,7 @@ class FrontTemplateTags
         foreach ( $template_tags as $hook => $callback ) {
 
             //Make sure we only call our own custom template tags
-            if ( is_callable( array( $this, $callback ) ) ) {
+            if ( $hook !== '' && is_callable( array( $this, $callback ) ) ) {
                 apply_filters( $hook, array( $this, $callback ), 10 );
             }
 
@@ -51,8 +51,11 @@ class FrontTemplateTags
      * This function is called dynamically by add_custom_template_tags
      * using the $this->getTemplateTags() callback.
      *
+     * @param string $email
+     * @param string|array< string > $display
+     * @param array< string, string > $atts
      */
-    public function template_tag_eeb_mailto( $email, $display = null, $atts = array() ): string
+    public function template_tag_eeb_mailto( $email, $display = '', $atts = array() ): string
     {
         if ( is_array( $display ) ) {
             // backwards compatibility (old params: $display, $attrs = array())

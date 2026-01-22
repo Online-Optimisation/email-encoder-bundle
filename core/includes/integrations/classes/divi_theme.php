@@ -2,7 +2,9 @@
 
 namespace Legacy\EmailEncoderBundle\Integration;
 
-class DiviTheme {
+use OnlineOptimisation\EmailEncoderBundle\Integrations\IntegrationInterface;
+
+class DiviTheme implements IntegrationInterface {
 
     public function boot(): void {
         add_filter( 'eeb/settings/fields', [ $this, 'deactivate_logic' ], 10 );
@@ -14,6 +16,10 @@ class DiviTheme {
     }
 
 
+    /**
+     * @param array< string, array< string, mixed > > $fields
+     * @return array< string, array< string, mixed > >
+     */
     public function deactivate_logic( $fields ) {
 
         if ( ! $this->is_active() ) {
@@ -21,11 +27,9 @@ class DiviTheme {
         }
 
         if ( isset( $_GET['et_fb'] ) && $_GET['et_fb'] == '1' ) {
-            if ( is_array( $fields ) ) {
-                if ( isset( $fields['protect'] ) ) {
-                    if ( isset( $fields['protect']['value'] ) ) {
-                        $fields['protect']['value'] = 3;
-                    }
+            if ( isset( $fields['protect'] ) ) {
+                if ( isset( $fields['protect']['value'] ) ) {
+                    $fields['protect']['value'] = 3;
                 }
             }
         }

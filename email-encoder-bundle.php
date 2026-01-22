@@ -2,7 +2,8 @@
  /**
  * Plugin Name:    Email Encoder - Protect Email Addresses
  * Version:        2.4.2
- * Plugin URI:     https://wordpress.org/plugins/email-encoder-bundle/
+ * Requires PHP:   7.4
+ * Plugin URI:     https://wpemailencoder.com/
  * Description:    Protect email addresses on your site and hide them from spambots. Easy to use & flexible.
  * Author:         Online Optimisation
  * Author URI:     https://wpemailencoder.com/

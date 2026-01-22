@@ -1,5 +1,5 @@
 parameters:
-    level: 4
+    level: 8
 
     paths:
         - src
@@ -34,6 +34,7 @@ parameters:
     # WP patterns often require this depending on how legacy code is written.
     reportUnmatchedIgnoredErrors: false
 
+    treatPhpDocTypesAsCertain: true
     ignoreErrors:
         - identifier: empty.notAllowed
         - identifier: function.strict
