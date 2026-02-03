@@ -29,7 +29,7 @@ $mulsitie_slug = ( is_multisite() ) ? 'network/' : '';
                 <div id="postbox-container-1" >
                     <div class="postbox-container">
                         <?php include( 'widgets/sidebar.php' ); ?>
-                        <?php include( 'widgets/support.php' ); ?>
+                        <?php // include( 'widgets/support.php' ); ?>
                     </div>
                 </div>
 

@@ -211,7 +211,7 @@ class Encoding
      * @param string $protection_method
      * @return string
      */
-    public function create_protected_mailto( $display, $attrs = array(), $protection_method = null )
+    public function create_protected_mailto( $display, $attrs = [], $protection_method = null )
     {
         $email     = '';
         $class_ori = ( empty( $attrs['class'] ) ) ? '' : $attrs['class'];
@@ -286,7 +286,7 @@ class Encoding
      * @param string $protection_method
      * @return string
      */
-    public function create_protected_href_att( $display, $attrs = array(), $protection_method = null )
+    public function create_protected_href_att( $display, $attrs = [], $protection_method = null )
     {
         $email     = '';
         $class_ori = ( empty( $attrs['class'] ) ) ? '' : $attrs['class'];

@@ -126,13 +126,18 @@ Yes, since version 1.3.0 also special characters are supported.
 
 == Changelog ==
 
-= 2.4.2: January 16, 2025 =
+= 2.4.3: February 3, 2026 =
+* Change: Significant internal improvements for long-term stability and maintainability
+* Fix: Reduced potential edge-case errors
+* Tweak: Improved consistency of internal validation logic
+
+= 2.4.2: January 16, 2026 =
 * Fix: Bug with pulling settings too early in the init hook that can cause compatibility issues with other plugins
 
-= 2.4.1: January 15, 2025 =
+= 2.4.1: January 15, 2026 =
 * Fix: Fixed bug where get_settings() method can fail under special conditions
 
-= 2.4.0: January 8, 2025 =
+= 2.4.0: January 8, 2026 =
 * Fix: Bug fixes
 
 = 2.3.9: December 30, 2025 =

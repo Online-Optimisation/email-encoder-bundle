@@ -55,7 +55,7 @@ class FrontTemplateTags
      * @param string|array< string > $display
      * @param array< string, string > $atts
      */
-    public function template_tag_eeb_mailto( $email, $display = '', $atts = array() ): string
+    public function template_tag_eeb_mailto( $email, $display = '', $atts = [] ): string
     {
         if ( is_array( $display ) ) {
             // backwards compatibility (old params: $display, $attrs = array())

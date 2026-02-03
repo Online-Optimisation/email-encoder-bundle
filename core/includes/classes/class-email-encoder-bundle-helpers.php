@@ -206,7 +206,7 @@ class Email_Encoder_Helpers {
 							$index = array_search( $ak , array_keys( $attributes ) );
 
 							// Create a new array with the updated key and value.
-							$new_array = array();
+							$new_array = [];
 							$i = 0;
 							foreach( $attributes as $key => $value ) {
 								if ($i == $index) {
@@ -243,7 +243,7 @@ class Email_Encoder_Helpers {
 		// Use a regular expression to match attributes and their values
 		preg_match_all('/(\w+)=("[^"]*"|\'[^\']*\')/', $extra_attrs, $matches, PREG_SET_ORDER);
 
-		$sanitized_attrs = array();
+		$sanitized_attrs = [];
 
 		foreach ( $matches as $match ) {
 

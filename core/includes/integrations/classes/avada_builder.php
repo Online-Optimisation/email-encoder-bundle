@@ -3,8 +3,11 @@
 namespace Legacy\EmailEncoderBundle\Integration;
 
 use OnlineOptimisation\EmailEncoderBundle\Integrations\IntegrationInterface;
+use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 
 class AvadaBuilder implements IntegrationInterface {
+
+    use PluginHelper;
 
     public function boot(): void {
         add_filter( 'eeb/settings/fields', [ $this, 'deactivate_logic' ], 10 );
@@ -25,7 +28,7 @@ class AvadaBuilder implements IntegrationInterface {
             return $fields;
         }
 
-        $condition = isset( $_GET['fb-edit'] )
+        $condition = ( $this->isEdit() || $this->isBuilder() )
             && isset( $fields[ 'protect' ]['value'] )
         ;
 
@@ -34,6 +37,14 @@ class AvadaBuilder implements IntegrationInterface {
         }
 
         return $fields;
+    }
+
+    private function isEdit(): bool {
+        return isset( $_GET['fb-edit'] );
+    }
+
+    private function isBuilder(): bool {
+        return isset( $_GET['builder'] );
     }
 
 }
