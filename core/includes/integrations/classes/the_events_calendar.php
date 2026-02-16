@@ -11,7 +11,12 @@ class EventsCalendar implements IntegrationInterface {
     }
 
 
-    public function deactivate_logic( string $filtered_email, string $unfiltered_email ): string {
+    /**
+     * @param string|null $filtered_email
+     * @param string $unfiltered_email
+     * @return string
+     */
+    public function deactivate_logic( $filtered_email, $unfiltered_email ): string {
         return $unfiltered_email;
     }
 
