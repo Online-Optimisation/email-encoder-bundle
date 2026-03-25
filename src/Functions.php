@@ -20,7 +20,7 @@ class Functions
     }
 
 
-    public function eeb_mailto( string $email, ?string $display = null, string $extra_attrs = '', string $method = null ): string
+    public function eeb_mailto( string $email, ?string $display = null, string $extra_attrs = '', ?string $method = null ): string
     {
         $email = sanitize_email( $email );
         $custom_class = (string) EEB()->settings->get_setting( 'class_name', true );
