@@ -35,7 +35,7 @@ class AdminHelp
         foreach ( $tabs as $tab ) {
             $screen->add_help_tab( wp_parse_args( [
                 'id'        => $tab['id'],
-                'title'     => __( $tab['title'], 'email-encoder-bundle' ),
+                'title'     => $tab['title'],
             ], $defaults ) );
         }
     }

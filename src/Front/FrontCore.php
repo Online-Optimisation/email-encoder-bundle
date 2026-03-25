@@ -2,6 +2,8 @@
 
 namespace OnlineOptimisation\EmailEncoderBundle\Front;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 
 class FrontCore

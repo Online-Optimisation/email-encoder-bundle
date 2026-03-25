@@ -2,6 +2,8 @@
 
 namespace Legacy\EmailEncoderBundle;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Email_Encoder_Settings {
 
     public const PROTECT_FULL_PAGE    = 1;
@@ -206,7 +208,7 @@ class Email_Encoder_Settings {
 		$key = '';
 
 		for ( $i = 0; $i < 265; $i++ ) {
-			$key .= chr( mt_rand( 33, 126 ) );
+			$key .= chr( wp_rand( 33, 126 ) );
 		}
 
 		update_option( $this->get_image_secret_key(), $key );

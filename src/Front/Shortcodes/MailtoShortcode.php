@@ -25,7 +25,7 @@ class MailtoShortcode
     {
         $allowed_attr_html = $this->getSafeHtmlAttr();
         $show_encoded_check = (bool) $this->getSetting( 'show_encoded_check', true );
-        $protection_text = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
+        $protection_text = (string) $this->getSetting( 'protection_text', true );
 
         if ( empty( $atts['email'] ) ) {
             return '';

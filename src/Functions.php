@@ -85,7 +85,7 @@ class Functions
     public function eeb_protect_content( string $content, ?string $method = null, ?string $protection_text = null ): string
     {
         if( empty( $protection_text ) ){
-			$protection_text = __( EEB()->settings->get_setting( 'protection_text', true ), 'email-encoder-bundle' );
+			$protection_text = (string) EEB()->settings->get_setting( 'protection_text', true );
 		} else {
 			$protection_text = wp_kses_post( $protection_text  );
 		}

@@ -2,6 +2,8 @@
 
 namespace OnlineOptimisation\EmailEncoderBundle\Admin;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 
 class AdminMenu
@@ -26,16 +28,16 @@ class AdminMenu
         if ( (string) $this->getSetting( 'own_admin_menu', true ) !== '1' ) {
             $pagehook = add_submenu_page(
                 'options-general.php',
-                __( $this->getPageTitle(), 'email-encoder-bundle' ),
-                __( $this->getPageTitle(), 'email-encoder-bundle' ),
+                $this->getPageTitle(),
+                $this->getPageTitle(),
                 $this->getAdminCap( 'admin-add-submenu-page-item' ),
                 $this->getPageName(),
                 [ $this, 'render_admin_menu_page' ]
             );
         } else {
             $pagehook = add_menu_page(
-                __( $this->getPageTitle(), 'email-encoder-bundle' ),
-                __( $this->getPageTitle(), 'email-encoder-bundle' ),
+                $this->getPageTitle(),
+                $this->getPageTitle(),
                 $this->getAdminCap( 'admin-add-menu-page-item' ),
                 $this->getPageName(),
                 [ $this, 'render_admin_menu_page' ],

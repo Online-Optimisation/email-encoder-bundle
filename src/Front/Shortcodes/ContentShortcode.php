@@ -27,7 +27,7 @@ class ContentShortcode
     {
         _doing_it_wrong(
             __METHOD__,
-            sprintf( 'The [%s] shortcode is deprecated. Use [%s] instead.', $this->tag, $this->newTag ),
+            sprintf( 'The [%s] shortcode is deprecated. Use [%s] instead.', esc_html( $this->tag ), esc_html( $this->newTag ) ),
             '2.3.0'
         );
 

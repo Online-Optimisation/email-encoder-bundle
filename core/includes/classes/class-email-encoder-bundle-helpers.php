@@ -69,15 +69,15 @@ class Email_Encoder_Helpers {
 		}
 
 		if( is_array( $content ) ) {
-			$validated_content = sprintf( __( $content[0], 'email-encoder-bundle' ), $content[1] );
+			$validated_content = sprintf( $content[0], $content[1] );
         } else {
-			$validated_content = __( $content, 'email-encoder-bundle' );
+			$validated_content = $content;
         }
 
 		ob_start();
 		?>
-		<div class="notice <?php echo $notice; ?> <?php echo $isit; ?>">
-			<p><?php echo $validated_content; ?></p>
+		<div class="notice <?php echo esc_attr( $notice ); ?> <?php echo esc_attr( $isit ); ?>">
+			<p><?php echo wp_kses_post( $validated_content ); ?></p>
 		</div>
 		<?php
 		$res = ob_get_clean();
@@ -92,7 +92,7 @@ class Email_Encoder_Helpers {
 	 * @return \DateTime
 	 */
 	public function get_datetime( $date ) {
-		$date_new = date( 'Y-m-d H:i:s', (int) strtotime( $date ) );
+		$date_new = gmdate( 'Y-m-d H:i:s', (int) strtotime( $date ) );
 		$date_new_formatted = new \DateTime( $date_new );
 
 		return $date_new_formatted;
@@ -121,7 +121,7 @@ class Email_Encoder_Helpers {
 	 */
 	public function get_parameters_from_url( $url ) {
 
-		$parts = parse_url( $url );
+		$parts = wp_parse_url( $url );
         $url_parameter = [];
 
         if ( ! empty( $parts['query'] ) ) {
@@ -177,7 +177,7 @@ class Email_Encoder_Helpers {
 	 * @return bool
 	 */
 	public function get_random_bool() {
-		return ( rand( 0, 1 ) == 1 ) ? true : false;
+		return ( wp_rand( 0, 1 ) == 1 ) ? true : false;
 	}
 
 	/**

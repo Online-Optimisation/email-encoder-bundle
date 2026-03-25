@@ -7,13 +7,12 @@
  * Description:    Protect email addresses on your site and hide them from spambots. Easy to use & flexible.
  * Author:         Online Optimisation
  * Author URI:     https://wpemailencoder.com/
- * License:        Dual licensed under the MIT and GPL licenses
+ * License:        GPLv2 or later
+ * License URI:    http://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:    email-encoder-bundle
  *
- * License: GPL2
- *
  * You should have received a copy of the GNU General Public License
- * along with TMG User Filter. If not, see <http://www.gnu.org/licenses/>.
+ * along with this plugin. If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Exit if accessed directly.

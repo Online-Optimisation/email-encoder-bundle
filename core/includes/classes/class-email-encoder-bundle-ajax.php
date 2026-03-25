@@ -2,6 +2,8 @@
 
 namespace Legacy\EmailEncoderBundle;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 
 class Email_Encoder_Ajax{
@@ -65,7 +67,7 @@ class Email_Encoder_Ajax{
         $EEB       = Email_Encoder::instance();
 
         $class     = esc_attr( $this->getSetting( 'class_name', true ) );
-        $protect   = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
+        $protect   = (string) $this->getSetting( 'protection_text', true );
         $link      = '<a href="mailto:' . $email . '" class="' . $class . '">' . $display . '</a>';
 
         switch ( $method ) {
@@ -85,6 +87,7 @@ class Email_Encoder_Ajax{
         // wp_send_json_success( apply_filters('eeb/ajax/encoder_form_response', $link) );
 
         # @TODO: Old way
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is encoded email HTML built with antispambot/rot13/escape encoding; escaping would break the protection.
         echo apply_filters('eeb/ajax/encoder_form_response', $link);
         exit;
     }
