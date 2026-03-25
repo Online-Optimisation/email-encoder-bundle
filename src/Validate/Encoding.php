@@ -88,7 +88,7 @@ class Encoding
                 . '}document.getElementById("' . $element_id . '").innerHTML = decodeURIComponent(o);' // decode at the end, this way special chars can be supported
                 . '}());'
                 . '</script><noscript>'
-                . $protection_text
+                . esc_html( $protection_text )
                 . '</noscript>'
         ;
     }
@@ -103,15 +103,15 @@ class Encoding
     public function encode_escape( $value, $protection_text )
     {
         $element_id = 'eeb-' . mt_rand( 0, 1000000 ) . '-' . mt_rand( 0, 1000000 );
-        $string = '\'' . $value . '\'';
 
         //Validate escape sequences
-        $string = preg_replace('/\s+/S', " ", $string) ?? '';
+        $string = preg_replace('/\s+/S', " ", $value) ?? '';
 
         // break string into array of characters, we can't use string_split because its php5 only
         $split = preg_split( '||', $string );
-        $out = '<span id="' . $element_id . '"></span>'
-            . '<script type="text/javascript">' . 'document.getElementById("' . $element_id . '").innerHTML = ev' . 'al(decodeURIComponent("';
+        $out = '<span id="' . esc_attr( $element_id ) . '"></span>'
+            . '<script type="text/javascript">'
+            . 'document.getElementById("' . $element_id . '").innerHTML = decodeURIComponent("';
 
         if ( is_array( $split ) )
         foreach ( $split as $c ) {
@@ -121,8 +121,9 @@ class Encoding
             }
         }
 
-        $out .= '"))' . '</script><noscript>'
-             . $protection_text
+        $out .= '");'
+             . '</script><noscript>'
+             . esc_html( $protection_text )
              . '</noscript>';
 
         return $out;
@@ -250,7 +251,7 @@ class Encoding
                 }
 
             } else {
-                $link .= $key . '="' . $value . '" ';
+                $link .= esc_attr( $key ) . '="' . esc_attr( $value ) . '" ';
             }
         }
 
@@ -313,7 +314,7 @@ class Encoding
             if ( strtolower( $key ) === 'href' ) {
                 $link .= $key . '="' . antispambot( $value ) . '" ';
             } else {
-                $link .= $key . '="' . $value . '" ';
+                $link .= esc_attr( $key ) . '="' . esc_attr( $value ) . '" ';
             }
         }
 

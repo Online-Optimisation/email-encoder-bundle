@@ -22,12 +22,13 @@ class Functions
 
     public function eeb_mailto( string $email, ?string $display = null, string $extra_attrs = '', string $method = null ): string
     {
+        $email = sanitize_email( $email );
         $custom_class = (string) EEB()->settings->get_setting( 'class_name', true );
 
         if( empty( $display ) ) {
 			$display = $email;
         } else {
-            $display = html_entity_decode($display);
+            $display = wp_kses( html_entity_decode( $display ), [] );
 		}
 
         $class_name = ' ' . EEB()->helpers->sanitize_html_attributes( $extra_attrs );

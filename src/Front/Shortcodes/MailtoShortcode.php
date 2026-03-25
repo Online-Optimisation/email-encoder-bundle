@@ -56,14 +56,12 @@ class MailtoShortcode
             $display = $email;
         } else {
             $display = wp_kses( html_entity_decode( $atts['display'] ), $allowed_attr_html );
-            $display = str_replace( '\\', '', $display ); //Additionally sanitize unicode
         }
 
         if ( empty( $atts['noscript'] ) ) {
             $noscript = $protection_text;
         } else {
             $noscript = wp_kses( html_entity_decode( $atts['noscript'] ), $allowed_attr_html );
-            $noscript = str_replace( '\\', '', $noscript ); //Additionally sanitize unicode
         }
 
         $class_name = ' ' . $this->helper()->sanitize_html_attributes( $extra_attrs );

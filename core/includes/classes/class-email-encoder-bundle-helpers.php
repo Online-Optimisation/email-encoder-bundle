@@ -255,7 +255,6 @@ class Email_Encoder_Helpers {
 			// $match[1] is the attribute name, $match[2] is the attribute value including quotes
 			$sanitized_name = sanitize_key( $match[1] ); // Sanitize the attribute name
 			$sanitized_value = esc_attr( trim( $match[2], '"\'' ) ); // Remove quotes and escape the value
-			$sanitized_value = str_replace( '\\', '', $sanitized_value ); // Remove quotes and escape the value
 
 			// Reconstruct the attribute
 			$sanitized_attrs[] = $sanitized_name . '="' . $sanitized_value . '"';
