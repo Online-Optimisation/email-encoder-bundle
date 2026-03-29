@@ -200,7 +200,7 @@ class Encoding
     public function get_encoded_email_icon( $text = 'Email encoded successfully!' )
     {
 
-        $html = '<i class="eeb-encoded dashicons-before dashicons-lock" title="' . $text . '"></i>';
+        $html = '<i class="eeb-encoded dashicons-before dashicons-lock" title="' . esc_attr( $text ) . '"></i>';
 
         return apply_filters( 'eeb/validate/get_encoded_email_icon', $html, $text );
     }

@@ -31,6 +31,7 @@ class Functions
             $display = wp_kses( html_entity_decode( $display ), [] );
 		}
 
+        $protection_text = (string) EEB()->settings->get_setting( 'protection_text', true );
         $class_name = ' ' . EEB()->helpers->sanitize_html_attributes( $extra_attrs );
 		$class_name .= ' class="' . esc_attr( $custom_class ) . '"';
 		$mailto = '<a href="mailto:' . $email . '"'. $class_name . '>' . $display . '</a>';
@@ -45,14 +46,14 @@ class Functions
 		switch( $method ){
 			case 'enc_ascii':
 			case 'rot13':
-				$mailto = EEB()->validate->encoding->encode_ascii( $mailto, $display );
+				$mailto = EEB()->validate->encoding->encode_ascii( $mailto, $protection_text );
 				break;
 			case 'enc_escape':
 			case 'escape':
-				$mailto = EEB()->validate->encoding->encode_escape( $mailto, $display );
+				$mailto = EEB()->validate->encoding->encode_escape( $mailto, $protection_text );
 				break;
 			case 'with_javascript':
-				$mailto = EEB()->validate->encoding->dynamic_js_email_encoding( $mailto, $display );
+				$mailto = EEB()->validate->encoding->dynamic_js_email_encoding( $mailto, $protection_text );
 				break;
 			case 'without_javascript':
 				$mailto = EEB()->validate->encoding->encode_email_css( $mailto );
