@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 $settings = $this->getSetting();
 $advanced_settings = (bool) $this->getSetting( 'advanced_settings', true );
@@ -28,12 +29,13 @@ $advanced_settings = (bool) $this->getSetting( 'advanced_settings', true );
                     }
 
                     $is_checked = ( $setting['type'] == 'checkbox' && ( $main_settings_value === 1 || $main_settings_value === '1' ) ) ? 'checked' : '';
-                    $value = ( $setting['type'] != 'checkbox' && $setting['type'] != 'multi-input' ) ? htmlspecialchars( $main_settings_value ) : '1';
+                    $value = ( $setting['type'] != 'checkbox' && $setting['type'] != 'multi-input' ) ? $main_settings_value : '1';
 
                     ?>
+                        <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $hide_main_layer is a controlled inline style string built internally. ?>
                         <tr valign="top" <?php echo $hide_main_layer; ?>>
                             <th scope="row">
-                                <?php echo $setting['title']; ?>
+                                <?php echo esc_html( $setting['title'] ); ?>
                             </th>
                             <td scope="row" valign="top">
                                 <p>
@@ -51,7 +53,7 @@ $advanced_settings = (bool) $this->getSetting( 'advanced_settings', true );
                                             }
 
                                             $mi_is_checked = ( $setting['input-type'] == 'checkbox' && ( isset( $data['value'] ) && ( $data['value'] === 1 || $data['value'] === '1' ) ) ) ? 'checked' : '';
-                                            $mi_value = ( $setting['input-type'] != 'checkbox' ) ? htmlspecialchars( $data['value'] ) : '1';
+                                            $mi_value = ( $setting['input-type'] != 'checkbox' ) ? $data['value'] : '1';
                                             $si_name = $si_key;
 
                                             //Re-validate for radio inputs
@@ -64,33 +66,35 @@ $advanced_settings = (bool) $this->getSetting( 'advanced_settings', true );
                                                 }
                                             }
                                             ?>
+                                            <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $hide_sub_layer is a controlled inline style string built internally. ?>
                                             <p <?php echo $hide_sub_layer; ?>>
-                                                <input id="<?php echo $si_name . '_' . $si_key; ?>" name="<?php echo $this->getSettingsKey(); ?>[<?php echo $si_name; ?>]" type="<?php echo $setting['input-type']; ?>" class="regular-text" value="<?php echo $mi_value; ?>" <?php echo $mi_is_checked; ?> />
-                                                <label for="<?php echo $si_name . '_' . $si_key; ?>">
-                                                    <?php echo $data['label']; ?>
+                                                <input id="<?php echo esc_attr( $si_name . '_' . $si_key ); ?>" name="<?php echo esc_attr( $this->getSettingsKey() ); ?>[<?php echo esc_attr( $si_name ); ?>]" type="<?php echo esc_attr( $setting['input-type'] ); ?>" class="regular-text" value="<?php echo esc_attr( $mi_value ); ?>" <?php echo esc_attr( $mi_is_checked ); ?> />
+                                                <label for="<?php echo esc_attr( $si_name . '_' . $si_key ); ?>">
+                                                    <?php echo wp_kses_post( $data['label'] ); ?>
                                                 </label>
                                             </p>
                                             <?php if( isset( $data['description'] ) ) : ?>
+                                            <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $hide_sub_layer is a controlled inline style string built internally. ?>
                                             <p class="description" <?php echo $hide_sub_layer; ?>>
                                                 <?php if( in_array( $setting['input-type'], array( 'checkbox', 'radio' ) ) ) : ?>
                                                     <input name="email-encoder-bundle-hidden-margin" type="radio" class="regular-text" value="" style="visibility:hidden !important;pointer-events:none !important;"/>
                                                 <?php endif; ?>
-                                                <?php echo $data['description']; ?>
+                                                <?php echo wp_kses_post( $data['description'] ); ?>
                                             </p>
                                             <?php endif; ?>
                                         <?php endforeach; ?>
                                     <?php else : ?>
-                                        <input id="<?php echo $setting['id']; ?>" name="<?php echo $this->getSettingsKey(); ?>[<?php echo $setting_name; ?>]" type="<?php echo $setting['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
+                                        <input id="<?php echo esc_attr( $setting['id'] ); ?>" name="<?php echo esc_attr( $this->getSettingsKey() ); ?>[<?php echo esc_attr( $setting_name ); ?>]" type="<?php echo esc_attr( $setting['type'] ); ?>" class="regular-text" value="<?php echo esc_attr( $value ); ?>" <?php echo esc_attr( $is_checked ); ?> />
                                         <?php if( isset( $setting['label'] ) ) : ?>
-                                            <label for="<?php echo $setting_name; ?>">
-                                                <?php echo $setting['label']; ?>
+                                            <label for="<?php echo esc_attr( $setting_name ); ?>">
+                                                <?php echo wp_kses_post( $setting['label'] ); ?>
                                             </label>
                                         <?php endif; ?>
                                     <?php endif; ?>
                                 </p>
                                 <?php if( isset( $setting['description'] ) ) : ?>
                                     <p class="description">
-                                        <?php echo $setting['description']; ?>
+                                        <?php echo wp_kses_post( $setting['description'] ); ?>
                                     </p>
                                 <?php endif; ?>
                             </td>

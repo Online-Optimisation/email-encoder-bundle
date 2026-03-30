@@ -2,6 +2,8 @@
 
 namespace Legacy\EmailEncoderBundle\Integration;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 use OnlineOptimisation\EmailEncoderBundle\Integrations\IntegrationInterface;
 use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 
@@ -41,7 +43,8 @@ class Maintenance implements IntegrationInterface {
 
         if ( $protection_activated === 2 || $protection_activated === 1 ) {
 
-            echo '<link rel="stylesheet" id="eeb-css-frontend"  href="' . EEB_PLUGIN_URL . 'core/includes/assets/css/style.css' . '" type="text/css" media="all" />';
+            // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- required for maintenance mode integration
+            echo '<link rel="stylesheet" id="eeb-css-frontend"  href="' . esc_url( EEB_PLUGIN_URL . 'core/includes/assets/css/style.css' ) . '" type="text/css" media="all" />';
 
         }
     }
@@ -59,7 +62,8 @@ class Maintenance implements IntegrationInterface {
         if ( $protection_activated === 2 || $protection_activated === 1 ) {
 
             if ( $without_javascript !== 'without_javascript' ) {
-                echo '<script type="text/javascript" src="' . EEB_PLUGIN_URL . 'core/includes/assets/js/custom.js' . '"></script>';
+                // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- required for maintenance mode integration
+                echo '<script type="text/javascript" src="' . esc_url( EEB_PLUGIN_URL . 'core/includes/assets/js/custom.js' ) . '"></script>';
             }
 
         }

@@ -17,7 +17,7 @@ class AdminMetaBox
 
         add_meta_box(
             'encode_form',
-            __( $this->getPageTitle(), 'email-encoder-bundle' ),
+            $this->getPageTitle(),
             [ $this, 'render' ],
             null,
             'normal',

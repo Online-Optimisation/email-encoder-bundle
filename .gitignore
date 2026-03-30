@@ -1,6 +1,8 @@
 .DS_Store
 /.idea
 /.vscode
+/.claude
+phpunit.xml
 
 /vendor/
 .phpcs-cache

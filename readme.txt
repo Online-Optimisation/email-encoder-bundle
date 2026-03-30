@@ -4,7 +4,7 @@ Tags: anti spam, protect, encode, encrypt, hide, antispam, phone number, spambot
 Requires at least: 4.7
 Requires PHP: 7.4
 Tested up to: 6.9
-Stable tag: 2.4.4
+Stable tag: 2.4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Author URI: https://wpemailencoder.com/
@@ -125,6 +125,17 @@ Yes, since version 1.3.0 also special characters are supported.
 * Title icon on Admin Options Page was made by [Jack Cai](http://www.doublejdesign.co.uk/)
 
 == Changelog ==
+
+= 2.4.5: March 30, 2026 =
+* Security: Fixed stored XSS vulnerability in eeb_mailto shortcode (CVE-2026-2840)
+* Security: Replaced unsafe JavaScript execution with innerHTML in escape encoding method
+* Security: Added output escaping for protection text in noscript blocks
+* Security: Added attribute escaping in link construction methods
+* Security: Improved input sanitization in template functions
+* Fix: Fixed PHP 8.4 deprecation warning for implicit nullable parameter
+* Fix: Fixed license mismatch between plugin header and readme
+* Tweak: Resolved all WordPress Plugin Check issues
+* Tweak: Replaced deprecated PHP functions with WordPress equivalents
 
 = 2.4.4: February 16, 2026 =
 * Fix: Fixed bug with Events Calendar integration when filtered email is not defined

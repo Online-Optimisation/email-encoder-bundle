@@ -58,7 +58,7 @@ class Encoding
             $l = substr($mail_link, $i, 1);
 
             if (strpos($mail_letters, $l) === false) {
-                $p = rand(0, strlen($mail_letters));
+                $p = wp_rand(0, strlen($mail_letters));
                 $mail_letters = substr($mail_letters, 0, $p) .
                 $l . substr($mail_letters, $p, strlen($mail_letters));
             }
@@ -77,7 +77,7 @@ class Encoding
         $mail_indices = str_replace("\\", "\\\\", $mail_indices);
         $mail_indices = str_replace("\"", "\\\"", $mail_indices);
 
-        $element_id = 'eeb-' . mt_rand( 0, 1000000 ) . '-' . mt_rand(0, 1000000);
+        $element_id = 'eeb-' . wp_rand( 0, 1000000 ) . '-' . wp_rand(0, 1000000);
 
         return '<span id="' . $element_id . '"></span>'
                 . '<script type="text/javascript">'
@@ -88,7 +88,7 @@ class Encoding
                 . '}document.getElementById("' . $element_id . '").innerHTML = decodeURIComponent(o);' // decode at the end, this way special chars can be supported
                 . '}());'
                 . '</script><noscript>'
-                . $protection_text
+                . esc_html( $protection_text )
                 . '</noscript>'
         ;
     }
@@ -102,16 +102,16 @@ class Encoding
      */
     public function encode_escape( $value, $protection_text )
     {
-        $element_id = 'eeb-' . mt_rand( 0, 1000000 ) . '-' . mt_rand( 0, 1000000 );
-        $string = '\'' . $value . '\'';
+        $element_id = 'eeb-' . wp_rand( 0, 1000000 ) . '-' . wp_rand( 0, 1000000 );
 
         //Validate escape sequences
-        $string = preg_replace('/\s+/S', " ", $string) ?? '';
+        $string = preg_replace('/\s+/S', " ", $value) ?? '';
 
         // break string into array of characters, we can't use string_split because its php5 only
         $split = preg_split( '||', $string );
-        $out = '<span id="' . $element_id . '"></span>'
-            . '<script type="text/javascript">' . 'document.getElementById("' . $element_id . '").innerHTML = ev' . 'al(decodeURIComponent("';
+        $out = '<span id="' . esc_attr( $element_id ) . '"></span>'
+            . '<script type="text/javascript">'
+            . 'document.getElementById("' . $element_id . '").innerHTML = decodeURIComponent("';
 
         if ( is_array( $split ) )
         foreach ( $split as $c ) {
@@ -121,8 +121,9 @@ class Encoding
             }
         }
 
-        $out .= '"))' . '</script><noscript>'
-             . $protection_text
+        $out .= '");'
+             . '</script><noscript>'
+             . esc_html( $protection_text )
              . '</noscript>';
 
         return $out;
@@ -181,6 +182,7 @@ class Encoding
         $encEmail = html_entity_decode( $encEmail );
 
         // rot13 encoding
+        // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found -- str_rot13 is intentional for email obfuscation
         $encEmail = str_rot13( $encEmail );
 
         // replace @
@@ -198,7 +200,7 @@ class Encoding
     public function get_encoded_email_icon( $text = 'Email encoded successfully!' )
     {
 
-        $html = '<i class="eeb-encoded dashicons-before dashicons-lock" title="' . __( $text, 'email-encoder-bundle' ) . '"></i>';
+        $html = '<i class="eeb-encoded dashicons-before dashicons-lock" title="' . esc_attr( $text ) . '"></i>';
 
         return apply_filters( 'eeb/validate/get_encoded_email_icon', $html, $text );
     }
@@ -250,7 +252,7 @@ class Encoding
                 }
 
             } else {
-                $link .= $key . '="' . $value . '" ';
+                $link .= esc_attr( $key ) . '="' . esc_attr( $value ) . '" ';
             }
         }
 
@@ -313,7 +315,7 @@ class Encoding
             if ( strtolower( $key ) === 'href' ) {
                 $link .= $key . '="' . antispambot( $value ) . '" ';
             } else {
-                $link .= $key . '="' . $value . '" ';
+                $link .= esc_attr( $key ) . '="' . esc_attr( $value ) . '" ';
             }
         }
 
@@ -352,7 +354,7 @@ class Encoding
     {
 
         $convert_plain_to_image = (bool) $this->getSetting( 'convert_plain_to_image', true, 'filter_body' );
-        $protection_text = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
+        $protection_text = (string) $this->getSetting( 'protection_text', true );
         $raw_display = $display;
 
         // get display out of array (result of preg callback)
@@ -381,7 +383,7 @@ class Encoding
     public function dynamic_js_email_encoding( $email, $protection_text = '' )
     {
         $return = $email;
-        $rand = apply_filters( 'eeb/validate/random_encoding', rand( 0, 2 ), $email, $protection_text );
+        $rand = apply_filters( 'eeb/validate/random_encoding', wp_rand( 0, 2 ), $email, $protection_text );
 
         switch ( $rand ) {
             case 2:
@@ -407,7 +409,7 @@ class Encoding
         $deactivate_rtl = (bool) $this->getSetting( 'deactivate_rtl', true, 'filter_body' );
 
         // $this->log( 'display: ' . $display );
-        $stripped_display = strip_tags( $display );
+        $stripped_display = wp_strip_all_tags( $display );
         $stripped_display = html_entity_decode( $stripped_display );
 
         $length = strlen( $stripped_display );

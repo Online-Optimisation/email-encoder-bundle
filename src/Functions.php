@@ -20,16 +20,18 @@ class Functions
     }
 
 
-    public function eeb_mailto( string $email, ?string $display = null, string $extra_attrs = '', string $method = null ): string
+    public function eeb_mailto( string $email, ?string $display = null, string $extra_attrs = '', ?string $method = null ): string
     {
+        $email = sanitize_email( $email );
         $custom_class = (string) EEB()->settings->get_setting( 'class_name', true );
 
         if( empty( $display ) ) {
 			$display = $email;
         } else {
-            $display = html_entity_decode($display);
+            $display = wp_kses( html_entity_decode( $display ), [] );
 		}
 
+        $protection_text = (string) EEB()->settings->get_setting( 'protection_text', true );
         $class_name = ' ' . EEB()->helpers->sanitize_html_attributes( $extra_attrs );
 		$class_name .= ' class="' . esc_attr( $custom_class ) . '"';
 		$mailto = '<a href="mailto:' . $email . '"'. $class_name . '>' . $display . '</a>';
@@ -44,14 +46,14 @@ class Functions
 		switch( $method ){
 			case 'enc_ascii':
 			case 'rot13':
-				$mailto = EEB()->validate->encoding->encode_ascii( $mailto, $display );
+				$mailto = EEB()->validate->encoding->encode_ascii( $mailto, $protection_text );
 				break;
 			case 'enc_escape':
 			case 'escape':
-				$mailto = EEB()->validate->encoding->encode_escape( $mailto, $display );
+				$mailto = EEB()->validate->encoding->encode_escape( $mailto, $protection_text );
 				break;
 			case 'with_javascript':
-				$mailto = EEB()->validate->encoding->dynamic_js_email_encoding( $mailto, $display );
+				$mailto = EEB()->validate->encoding->dynamic_js_email_encoding( $mailto, $protection_text );
 				break;
 			case 'without_javascript':
 				$mailto = EEB()->validate->encoding->encode_email_css( $mailto );
@@ -84,7 +86,7 @@ class Functions
     public function eeb_protect_content( string $content, ?string $method = null, ?string $protection_text = null ): string
     {
         if( empty( $protection_text ) ){
-			$protection_text = __( EEB()->settings->get_setting( 'protection_text', true ), 'email-encoder-bundle' );
+			$protection_text = (string) EEB()->settings->get_setting( 'protection_text', true );
 		} else {
 			$protection_text = wp_kses_post( $protection_text  );
 		}

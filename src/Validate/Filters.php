@@ -169,7 +169,7 @@ class Filters
         }
 
         if ( $replace_by === null ) {
-            $replace_by = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
+            $replace_by = (string) $this->getSetting( 'protection_text', true );
         }
 
         $self = $this;
@@ -212,10 +212,10 @@ class Filters
                 }
 
             } elseif ( $protection_method === 'use_javascript' ) {
-                $protection_text = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
+                $protection_text = (string) $this->getSetting( 'protection_text', true );
                 $protected_return = $this->dynamicJsEmailEncoding( $matches[0], $protection_text );
             } elseif ( $protection_method === 'use_css' ) {
-                $protection_text = __( $this->getSetting( 'protection_text', true ), 'email-encoder-bundle' );
+                $protection_text = (string) $this->getSetting( 'protection_text', true );
                 // $protected_return = $this->validate()->encoding->encode_email_css( $matches[0], $protection_text );
                 $protected_return = $this->validate()->encoding->encode_email_css( $matches[0] );
             } elseif ( $protection_method === 'no_encoding' ) {

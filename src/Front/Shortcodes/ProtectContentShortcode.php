@@ -29,7 +29,7 @@ class ProtectContentShortcode
         $show_encoded_check = (bool) $this->getSetting( 'show_encoded_check', true );
 
         if ( ! isset( $atts['protection_text'] ) ) {
-            $protection_text = __( $this->getSetting( 'protection_text', true ), 'email-protection-text-eeb-content' );
+            $protection_text = (string) $this->getSetting( 'protection_text', true );
         } else {
             $protection_text = wp_kses_post( $atts['protection_text'] );
         }

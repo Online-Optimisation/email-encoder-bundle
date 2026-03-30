@@ -87,14 +87,14 @@ final class Email_Encoder {
 	 */
 	public function __clone() {
 		_doing_it_wrong( __FUNCTION__,
-			__( 'Cheatin&#8217; huh?', 'email-encoder-bundle' ),
+			esc_html__( 'Cheatin&#8217; huh?', 'email-encoder-bundle' ),
 			'2.0.0'
 		);
 	}
 
 	public function __wakeup() {
 		_doing_it_wrong( __FUNCTION__,
-			__( 'Cheatin&#8217; huh?', 'email-encoder-bundle' ),
+			esc_html__( 'Cheatin&#8217; huh?', 'email-encoder-bundle' ),
 			'2.0.0'
 		);
 	}

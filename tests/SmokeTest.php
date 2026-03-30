@@ -12,10 +12,10 @@ final class SmokeTest extends TestCase {
         $this->assertTrue ( defined ( 'ABSPATH' ) );
     }
 
-    public function test_plugin_entrypoint() : void 
+    public function test_plugin_entrypoint() : void
     {
         $this->assertTrue (
-            class_exists ( \OnlineOptimisation\EmailEncoderBundle\Tester::class )
+            class_exists ( \Legacy\EmailEncoderBundle\Email_Encoder::class )
         );
     }
 

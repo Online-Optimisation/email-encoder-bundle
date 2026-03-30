@@ -2,6 +2,8 @@
 
 namespace Legacy\EmailEncoderBundle\Integration;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 use OnlineOptimisation\EmailEncoderBundle\Integrations\IntegrationInterface;
 use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 

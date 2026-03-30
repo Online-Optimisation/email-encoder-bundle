@@ -66,51 +66,49 @@ class EncoderForm
 
         extract( $labels );
 
-        $form = <<<FORM
-<div class="eeb-form">
-    <form>
-        <fieldset>
-            <div class="input">
-                <table>
-                <tbody>
-                    <tr>
-                        <th><label for="eeb-email">{$email}</label></th>
-                        <td><input type="text" class="regular-text" id="eeb-email" name="eeb-email" /></td>
-                    </tr>
-                    <tr>
-                        <th><label for="eeb-display">{$display}</label></th>
-                        <td><input type="text" class="regular-text" id="eeb-display" name="eeb-display" /></td>
-                    </tr>
-                    <tr>
-                        <th>{$mailto}</th>
-                        <td><span class="eeb-example"></span></td>
-                    </tr>
-                    <tr>
-                        <th><label for="eeb-encode-method">{$method}</label></th>
-                        <td><select id="eeb-encode-method" name="eeb-encode-method" class="postform">
-                                {$method_options}
-                            </select>
-                            <input type="button" id="eeb-ajax-encode" name="eeb-ajax-encode" value="{$create_link}" />
-                        </td>
-                    </tr>
-                </tbody>
-                </table>
-            </div>
-            <div class="eeb-output">
-                <table>
-                <tbody>
-                    <tr>
-                        <th><label for="eeb-encoded-output">{$output}</label></th>
-                        <td><textarea class="large-text node" id="eeb-encoded-output" name="eeb-encoded-output" cols="50" rows="4"></textarea></td>
-                    </tr>
-                </tbody>
-                </table>
-            </div>
-            {$powered_by}
-        </fieldset>
-    </form>
-</div>
-FORM;
+        $form = '<div class="eeb-form">'
+            . '<form>'
+            . '<fieldset>'
+            . '<div class="input">'
+            . '<table>'
+            . '<tbody>'
+            . '<tr>'
+            . '<th><label for="eeb-email">' . $email . '</label></th>'
+            . '<td><input type="text" class="regular-text" id="eeb-email" name="eeb-email" /></td>'
+            . '</tr>'
+            . '<tr>'
+            . '<th><label for="eeb-display">' . $display . '</label></th>'
+            . '<td><input type="text" class="regular-text" id="eeb-display" name="eeb-display" /></td>'
+            . '</tr>'
+            . '<tr>'
+            . '<th>' . $mailto . '</th>'
+            . '<td><span class="eeb-example"></span></td>'
+            . '</tr>'
+            . '<tr>'
+            . '<th><label for="eeb-encode-method">' . $method . '</label></th>'
+            . '<td><select id="eeb-encode-method" name="eeb-encode-method" class="postform">'
+            . $method_options
+            . '</select>'
+            . '<input type="button" id="eeb-ajax-encode" name="eeb-ajax-encode" value="' . $create_link . '" />'
+            . '</td>'
+            . '</tr>'
+            . '</tbody>'
+            . '</table>'
+            . '</div>'
+            . '<div class="eeb-output">'
+            . '<table>'
+            . '<tbody>'
+            . '<tr>'
+            . '<th><label for="eeb-encoded-output">' . $output . '</label></th>'
+            . '<td><textarea class="large-text node" id="eeb-encoded-output" name="eeb-encoded-output" cols="50" rows="4"></textarea></td>'
+            . '</tr>'
+            . '</tbody>'
+            . '</table>'
+            . '</div>'
+            . $powered_by
+            . '</fieldset>'
+            . '</form>'
+            . '</div>';
 
          // apply filters
         $form = apply_filters('eeb_form_content', $form, $labels, $powered_by_setting );

@@ -2,6 +2,8 @@
 
 namespace OnlineOptimisation\EmailEncoderBundle\Admin;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 use OnlineOptimisation\EmailEncoderBundle\Traits\PluginHelper;
 
 class Admin
@@ -40,11 +42,11 @@ class Admin
         };
 
         if ( ! wp_verify_nonce( $_POST[ $this->getPageName() . '_nonce' ], $this->getPageName() ) ) {
-            wp_die( __( 'You don\'t have permission to update these settings.', 'email-encoder-bundle' ) );
+            wp_die( esc_html__( 'You don\'t have permission to update these settings.', 'email-encoder-bundle' ) );
         }
 
         if ( ! current_user_can( $this->getAdminCap( 'admin-update-settings' ) ) ) {
-            wp_die( __( 'You don\'t have permission to update these settings.', 'email-encoder-bundle' ) );
+            wp_die( esc_html__( 'You don\'t have permission to update these settings.', 'email-encoder-bundle' ) );
         }
 
         $raw = wp_unslash( $_POST );
