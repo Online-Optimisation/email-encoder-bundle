@@ -17,7 +17,7 @@ class Admin
     public function boot(): void
     {
         ( new AdminEnqueue() )->boot();
-        ( new AdminMenu() )->boot(); // AdminMetaBox & AdminHelp are added here
+        ( new AdminMenu() )->boot(); // AdminHelp is added here
         ( new PluginActionLinks() )->boot();
 
         add_action( 'init', [ $this, 'register_hooks' ] );
