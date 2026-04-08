@@ -26,7 +26,7 @@ class SupportExport
         $lines[] = 'Theme: ' . $theme->get( 'Name' ) . ' (' . $theme->get( 'Version' ) . ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ? ', block theme' : ', classic theme' ) . ')';
         $lines[] = 'Multisite: ' . ( is_multisite() ? 'Yes' : 'No' );
         $lines[] = 'GD Library: ' . ( extension_loaded( 'gd' ) ? 'Yes' : 'No' );
-        $lines[] = 'Memory Limit: ' . ini_get( 'memory_limit' );
+        $lines[] = 'Memory Limit: ' . ( ini_get( 'memory_limit' ) ?: 'Unknown' );
 
         // Settings
         $lines[] = '';
@@ -48,13 +48,26 @@ class SupportExport
         $lines[] = 'Security Check: ' . $this->on_off( $saved['show_encoded_check'] ?? '' );
 
         // Active plugins
+        if ( ! function_exists( 'get_plugins' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
         $plugins = get_plugins();
-        $active = get_option( 'active_plugins', [] );
+        $active = (array) get_option( 'active_plugins', [] );
         $active_plugins = [];
 
         foreach ( $active as $plugin_path ) {
             if ( isset( $plugins[ $plugin_path ] ) ) {
                 $active_plugins[] = $plugins[ $plugin_path ]['Name'] . ' (' . $plugins[ $plugin_path ]['Version'] . ')';
+            }
+        }
+
+        if ( is_multisite() ) {
+            $network_plugins = get_site_option( 'active_sitewide_plugins', [] );
+            foreach ( array_keys( (array) $network_plugins ) as $plugin_path ) {
+                if ( isset( $plugins[ $plugin_path ] ) ) {
+                    $active_plugins[] = $plugins[ $plugin_path ]['Name'] . ' (' . $plugins[ $plugin_path ]['Version'] . ') [network]';
+                }
             }
         }
 

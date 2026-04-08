@@ -7,24 +7,36 @@ jQuery(function ($) {
     $('.eeb-form table').addClass('form-table');
 
     // Copy support info to clipboard
-    $('#eeb-copy-support-info').on('click', function (e) {
-        e.preventDefault();
-        var $btn = $(this);
-        var text = $btn.data('support-text');
+    var $btn = $('#eeb-copy-support-info');
+    if ($btn.length) {
         var original = $btn.html();
+        var copying = false;
 
-        var onCopied = function () {
-            $btn.text('Copied!');
-            setTimeout(function () { $btn.html(original); }, 2000);
-        };
+        $btn.on('click', function (e) {
+            e.preventDefault();
+            if (copying) return;
+            copying = true;
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(onCopied).catch(function () {
+            var text = $btn.data('support-text');
+
+            var onCopied = function () {
+                $btn.text('Copied!');
+                setTimeout(function () {
+                    $btn.html(original);
+                    copying = false;
+                }, 2000);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(onCopied).catch(function () {
+                    prompt('Copy this text:', text);
+                    copying = false;
+                });
+            } else {
                 prompt('Copy this text:', text);
-            });
-        } else {
-            prompt('Copy this text:', text);
-        }
-    });
+                copying = false;
+            }
+        });
+    }
 
 });
