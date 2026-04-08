@@ -27,11 +27,8 @@ class Front
 
     public function register_hooks(): void
     {
-        add_action( 'init', 'load_textdomain' );
-
         do_action( 'eeb_ready', [ $this, 'eeb_ready_callback_filter' ], $this );
     }
-
 
 
     public function eeb_ready_callback_filter( string $content ): string
@@ -55,17 +52,6 @@ class Front
         $protect_using = (string) $this->getSetting( 'protect_using', true );
 
         return $this->filterContent( $content, $protect_using );
-    }
-
-
-
-    public function load_textdomain(): void
-    {
-        load_plugin_textdomain(
-            EEB_TEXTDOMAIN,
-            false,
-            dirname( plugin_basename( EEB_PLUGIN_FILE ) ) . '/languages/'
-        );
     }
 
 }
