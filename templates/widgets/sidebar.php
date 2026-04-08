@@ -36,6 +36,15 @@
             </a>
         </p>
 
+        <hr>
+        <?php $support_text = ( new \OnlineOptimisation\EmailEncoderBundle\Admin\SupportExport() )->generate(); ?>
+        <p>
+            <a href="#" id="eeb-copy-support-info" data-support-text="<?php echo esc_attr( $support_text ); ?>">
+                <i class="dashicons-before dashicons-clipboard"></i>
+                <strong><?php esc_html_e( 'Copy Support Info', 'email-encoder-bundle' ); ?></strong>
+            </a>
+        </p>
+
     </div>
 
 </div>
