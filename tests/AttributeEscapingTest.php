@@ -79,6 +79,75 @@ final class AttributeEscapingTest extends TestCase
     }
 
     // =========================================================
+    // WPScan CVE PoC — regression test for the exact reported attack
+    // =========================================================
+
+    /**
+     * WPScan PoC payload (2026-04-09):
+     *   <a href="mailto:test&quot;fglyr=qvfcynl:oybpx;...@g.com">stealthcopter</a>
+     *
+     * The href value contains a &quot; entity and ROT13-encoded CSS/JS.
+     * After html_entity_decode() inside get_encoded_email(), &quot; becomes a
+     * literal " that used to break out of the data-enc-email attribute.
+     *
+     * esc_attr() on the output converts " back to &quot; in the final HTML,
+     * keeping the payload trapped inside the attribute value.
+     */
+    public function test_mailto_blocks_wpscan_poc_attribute_breakout(): void
+    {
+        // Attacker-controlled href as it appears in comment HTML. The &quot;
+        // entity survives regex-based extraction and then html_entity_decode()
+        // inside get_encoded_email() converts it to a literal ". str_rot13()
+        // preserves non-alpha characters so the " reaches the output intact.
+        $poc_href = 'mailto:test&quot;fglyr=qvfcynl:oybpx;pbagrag-ivfvovyvgl:nhgb'
+                  . 'bapbagragivfvovyvglnhgbfgngrpunatr=nyreg(qbphzrag.qbznva)//@g.com';
+
+        $result = $this->encoding->create_protected_mailto(
+            'stealthcopter',
+            [ 'href' => $poc_href ]
+        );
+
+        // The decoded quote (`"` between the ROT13 fragments `grfg` and `style=`)
+        // must be entity-encoded in the final HTML, not left as a literal that
+        // terminates the data-enc-email attribute early.
+        $this->assertStringNotContainsString(
+            'grfg"style=',
+            $result,
+            'Attribute breakout: literal " leaked into data-enc-email, turning style= into a real anchor attribute'
+        );
+        $this->assertStringContainsString(
+            'grfg&quot;style=',
+            $result,
+            'Expected " to be escaped to &quot; inside data-enc-email'
+        );
+
+        // Belt and braces: parse the anchor and confirm the only attributes
+        // present are the ones the encoder is supposed to emit. No style,
+        // onload, oncontentvisibilitystatechange, etc.
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors( true );
+        $dom->loadHTML( '<?xml encoding="UTF-8"><div>' . $result . '</div>' );
+        libxml_clear_errors();
+        $anchors = $dom->getElementsByTagName( 'a' );
+        $this->assertGreaterThan( 0, $anchors->length, 'No anchor in output' );
+        $anchor = $anchors->item( 0 );
+
+        $attr_names = [];
+        foreach ( $anchor->attributes as $attr ) {
+            $attr_names[] = strtolower( $attr->name );
+        }
+
+        $allowed = [ 'href', 'data-enc-email', 'class', 'data-wpel-link', 'title' ];
+        foreach ( $attr_names as $name ) {
+            $this->assertContains(
+                $name,
+                $allowed,
+                'Unexpected attribute "' . $name . '" on anchor — likely attribute breakout'
+            );
+        }
+    }
+
+    // =========================================================
     // create_protected_href_att() — attribute escaping
     // =========================================================
 
