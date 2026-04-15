@@ -154,7 +154,7 @@ class Encoding
 
         // add data-enc-email after "<input"
         $inputWithDataAttr = substr( $input, 0, 6 );
-        $inputWithDataAttr .= ' data-enc-email="' . $this->get_encoded_email( $email ) . '"';
+        $inputWithDataAttr .= ' data-enc-email="' . esc_attr( $this->get_encoded_email( $email ) ) . '"';
         $inputWithDataAttr .= substr( $input, 6 );
 
         // mark link as successfullly encoded (for admin users)
@@ -248,7 +248,7 @@ class Encoding
 
                     // set attrs
                     $link .= 'href="javascript:;" ';
-                    $link .= 'data-enc-email="' . $encoded_email . '" ';
+                    $link .= 'data-enc-email="' . esc_attr( $encoded_email ) . '" ';
                 }
 
             } else {
