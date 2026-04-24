@@ -220,6 +220,10 @@ class Encoding
         $custom_class = (string) $this->getSetting( 'class_name', true );
         $show_encoded_check = (string) $this->getSetting( 'show_encoded_check', true );
 
+        if ( ! empty( $attrs['href'] ) && stripos( $attrs['href'], 'mailto:' ) === 0 ) {
+            $email = substr( $attrs['href'], 7 );
+        }
+
         // set user-defined class
         if ( $custom_class !== '' && strpos( $class_ori, $custom_class ) === false ) {
             $attrs['class'] = ( empty( $attrs['class'] ) ) ? $custom_class : $attrs['class'] . ' ' . $custom_class;
@@ -241,9 +245,6 @@ class Encoding
                 if ( $protection_method === 'without_javascript' ) {
                     $link .= $key . '="' . antispambot( $value ) . '" ';
                 } else {
-                    // get email from href
-                    $email = substr($value, 7);
-
                     $encoded_email = $this->get_encoded_email( $email );
 
                     // set attrs
@@ -261,7 +262,17 @@ class Encoding
 
         $link .= '>';
 
-        $link .= ( preg_match( $this->settings()->get_email_regex(), $display) > 0 ) ? $this->get_protected_display( $display, $protection_method ) : $display;
+        // Only scramble the display when it IS the email (classic <a href="mailto:x">x</a> shape).
+        // When the display holds richer content (e.g. a builder-wrapped <span>Email us at x</span>),
+        // keep the markup intact — the final filterPlainEmails pass below entity-encodes any emails
+        // still embedded in it so bots can't harvest them.
+        $display_is_just_email = ( $email !== '' && trim( strip_tags( (string) $display ) ) === $email );
+
+        if ( $display_is_just_email ) {
+            $link .= $this->get_protected_display( $display, $protection_method );
+        } else {
+            $link .= $display;
+        }
 
         $link .= '</a>';
 
