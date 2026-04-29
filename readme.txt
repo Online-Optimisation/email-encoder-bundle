@@ -4,7 +4,7 @@ Tags: anti spam, protect, encode, encrypt, hide, antispam, phone number, spambot
 Requires at least: 4.7
 Requires PHP: 7.4
 Tested up to: 6.9
-Stable tag: 2.4.7
+Stable tag: 2.4.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Author URI: https://wpemailencoder.com/
@@ -125,6 +125,12 @@ Yes, since version 1.3.0 also special characters are supported.
 * Title icon on Admin Options Page was made by [Jack Cai](http://www.doublejdesign.co.uk/)
 
 == Changelog ==
+
+= 2.4.8: April 29, 2026 =
+* Fix: Emails inside `<select>` dropdown options now display correctly in Firefox (and consistently across all browsers)
+* Fix: Rich-text and styled markup inside mailto links (Divi 4 Text modules, Divi 5 Link blocks, etc.) is now preserved instead of being replaced with the encoded email
+* Fix: Emails with mailto links now render correctly in image-encoding mode when used with page builders such as WPForms and Elementor
+* Fix: Encoded emails using "best method (JavaScript disabled)" no longer show stray timestamp characters when the plugin's stylesheet is deferred or stripped by caching/builder layers
 
 = 2.4.7: April 22, 2026 =
 * Security: Escaped `data-enc-email` attribute output to close XSS bypass reported by WPScan (CVE-2026-2840 follow-up)
