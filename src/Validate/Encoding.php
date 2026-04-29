@@ -456,12 +456,22 @@ class Encoding
         while ( $offset < $length ) {
             $protected .= '<span class="eeb-sd">' . antispambot( substr( $rev, $offset, $interval ) ) . '</span>';
 
-            // setup dummy content
-            $protected .= '<span class="eeb-nodis">' . $dummy_data . '</span>';
+            // Dummy content between real segments confuses scrapers. It's kept hidden from
+            // humans via CSS, but we also inline display:none so it never leaks as visible
+            // text if the plugin's stylesheet fails to load (page builders that defer/strip
+            // CSS, caching layers, or other plugins dropping the eeb-css-frontend handle).
+            $protected .= '<span class="eeb-nodis" style="display:none">' . $dummy_data . '</span>';
             $offset += $interval;
         }
 
-        $protected = '<span class="' . $protection_classes . '">' . $protected . '</span>';
+        // Inline the bidi-override / word-break styles for the same reason the dummy spans
+        // inline display:none — the email must still render correctly (forward, not reversed)
+        // when the stylesheet isn't loaded.
+        $wrapper_style = $deactivate_rtl
+            ? 'word-break:break-all'
+            : 'unicode-bidi:bidi-override;direction:rtl';
+
+        $protected = '<span class="' . $protection_classes . '" style="' . $wrapper_style . '">' . $protected . '</span>';
 
         return $protected;
     }
