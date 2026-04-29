@@ -90,6 +90,16 @@ class Filters
         //Soft attributes always need to be protected using only the char encode method since otherwise the logic breaks
         $filtered = $this->filter_soft_attributes( $filtered, 'char_encode' );
 
+        // <option>, <textarea>, <title> can only contain text — any <span>/<script>/<img> inside
+        // them is stripped or rendered inconsistently across browsers (Firefox dropdowns show only
+        // the noscript fallback). For modes that emit HTML wrappers, pre-encode emails in those
+        // zones as entities and stash them behind placeholders so the main filter pass skips them.
+        $text_only_tokens = [];
+        $guard_text_only_zones = in_array( $protect_using, [ 'with_javascript', 'without_javascript' ], true );
+        if ( $guard_text_only_zones ) {
+            $filtered = $this->isolate_text_only_zones( $filtered, $text_only_tokens );
+        }
+
         switch ( $protect_using ) {
             case 'char_encode':
                 $filtered = $this->filter_plain_emails( $filtered, null, 'char_encode' );
@@ -150,7 +160,37 @@ class Filters
         //Revalidate filtered emails that should not be encoded
         $filtered = $this->tempEncodeAtSymbol( $filtered, true );
 
+        if ( $guard_text_only_zones && ! empty( $text_only_tokens ) ) {
+            $filtered = strtr( $filtered, $text_only_tokens );
+        }
+
         return $filtered;
+    }
+
+    /**
+     * Pre-encode emails inside text-only HTML zones (<option>, <textarea>, <title>) using
+     * entity encoding and replace each zone with an opaque placeholder. The main filter pass
+     * leaves the placeholders alone; the caller restores them at the end.
+     *
+     * @param string                $content
+     * @param array<string, string> $tokens  Populated with placeholder => replacement pairs.
+     * @return string Content with text-only zones replaced by placeholder tokens.
+     */
+    private function isolate_text_only_zones( string $content, array &$tokens ): string
+    {
+        $result = preg_replace_callback(
+            '/(<(option|textarea|title)\b[^>]*>)(.*?)(<\/\2\s*>)/is',
+            function ( array $match ) use ( &$tokens ) {
+                $inner_encoded = $this->filter_plain_emails( $match[3], null, 'char_encode', false );
+                $token         = "\x00EEB_TEXT_ONLY_" . count( $tokens ) . "\x00";
+                $tokens[ $token ] = $match[1] . $inner_encoded . $match[4];
+
+                return $token;
+            },
+            $content
+        );
+
+        return $result ?? $content;
     }
 
     /**
