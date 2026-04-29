@@ -374,7 +374,20 @@ class Encoding
         }
 
         if ( $convert_plain_to_image ) {
-            $display = '<img src="' . $this->generate_email_image_url( $display ) . '" />';
+            // generate_email_image_url() requires a bare email address (it runs is_email()
+            // on its input and returns false otherwise). Page builders like WPForms, Divi,
+            // and Elementor commonly wrap the email in HTML (<span>x</span>) or surround
+            // it with copy ("Contact us at x"), which previously produced <img src="">
+            // — the broken image rendered invisibly on the frontend.
+            $email_for_image = $display;
+            if ( ! is_email( (string) $display ) ) {
+                $stripped = wp_strip_all_tags( (string) $display );
+                $email_match = [];
+                if ( preg_match( $this->settings()->get_email_regex(), $stripped, $email_match ) ) {
+                    $email_for_image = $email_match[0];
+                }
+            }
+            $display = '<img src="' . $this->generate_email_image_url( $email_for_image ) . '" />';
         } elseif ( $protection_method !== 'without_javascript' ) {
             $display = $this->dynamic_js_email_encoding( $display, $protection_text );
         } else {
