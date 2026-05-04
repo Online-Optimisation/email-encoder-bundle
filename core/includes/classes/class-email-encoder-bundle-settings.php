@@ -71,7 +71,6 @@ class Email_Encoder_Settings {
 	private array $default_values = [
 		'protect' 				   => self::PROTECT_FULL_PAGE,
 		'filter_rss' 			   => 1,
-		'powered_by' 			   => 1,
 		'protect_using' 		   => 'with_javascript',
 		'class_name' 			   => 'mail-link',
 		'protection_text' 		   => '*protected email*',
@@ -135,7 +134,18 @@ class Email_Encoder_Settings {
 	 */
 	public function load_values(): void {
 		$saved_values = get_option( $this->settings_key, [] );
+
+		// Fresh install: opt new sites into the top-level admin menu.
+		// Existing installs (non-empty saved options) keep whatever they had
+		// — historically the absence of this key meant "submenu under Settings",
+		// and silently flipping that on update would surprise active users.
+		$is_fresh_install = empty( $saved_values );
+
 		$this->values = array_replace_recursive( $this->default_values, $saved_values );
+
+		if ( $is_fresh_install ) {
+			$this->values['own_admin_menu'] = 1;
+		}
 
 		if ( $this->values != $saved_values ) {
 			update_option( $this->settings_key, $this->values );

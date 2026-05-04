@@ -4,7 +4,7 @@ Tags: anti spam, protect, encode, encrypt, hide, antispam, phone number, spambot
 Requires at least: 4.7
 Requires PHP: 7.4
 Tested up to: 6.9
-Stable tag: 2.4.8
+Stable tag: 2.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Author URI: https://wpemailencoder.com/
@@ -125,6 +125,18 @@ Yes, since version 1.3.0 also special characters are supported.
 * Title icon on Admin Options Page was made by [Jack Cai](http://www.doublejdesign.co.uk/)
 
 == Changelog ==
+
+= 2.5.0: May 4, 2026 =
+* Feature: Redesigned settings page — branded header with logo and version, modern layout, friendlier form controls
+* Feature: Reorganised settings into clearer tabs, including a dedicated Exclusions tab and a tidied-up Tools tab housing the Manual Email Encoder
+* Feature: Active tab now persists in the URL so refreshes and shared links land in the right place
+* Feature: Save confirmations now appear as a centered toast instead of a top-of-page banner
+* Feature: Header action buttons for Email Protection Checker, Documentation, Report a Problem, Copy Support Info, and Leave a Review, each with hover tooltips
+* Feature: Help content moved inline into a dedicated Help tab
+* Fix: Toggling the "Show this page in the main menu item" setting no longer triggers a PHP deprecation notice from WordPress core
+* Fix: Unchecked checkboxes now persist their off state correctly
+* Fix: Insufficient-permissions message is now translatable
+* Fix: Several minor accessibility, focus-state, and translation polish items across the admin UI
 
 = 2.4.8: April 29, 2026 =
 * Fix: Emails inside `<select>` dropdown options now display correctly in Firefox (and consistently across all browsers)

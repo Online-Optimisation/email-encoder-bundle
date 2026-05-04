@@ -28,10 +28,13 @@ class Email_Encoder_Ajax{
             add_action( 'wp_ajax_eeb_get_email_form_output', [ $this, 'handle' ] );
         }
 
-        if ( (bool) $EEB->settings->get_setting( 'encoder_form_frontend', true, 'encoder_form' ) ) {
-            add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
-            add_action( 'wp_ajax_nopriv_eeb_get_email_form_output', [ $this, 'handle' ] );
-        }
+        // The [eeb_form] shortcode and eeb_form() template tag are always
+        // available on the frontend; the public AJAX endpoint always
+        // listens. The form JS is enqueued lazily by EncoderForm itself
+        // when the form actually renders — covers shortcodes in widgets,
+        // FSE blocks, theme files, and template-tag calls without
+        // scanning post_content site-wide.
+        add_action( 'wp_ajax_nopriv_eeb_get_email_form_output', [ $this, 'handle' ] );
     }
 
 

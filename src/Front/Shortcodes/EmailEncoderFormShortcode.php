@@ -23,14 +23,7 @@ class EmailEncoderFormShortcode
      */
     public function handle( array $atts = [], ?string $content = null ): string
     {
-        if (
-            $this->helper()->is_page( $this->getPageName() )
-            || (bool) $this->getSetting( 'encoder_form_frontend', true, 'encoder_form' )
-        ) {
-            return $this->getEncoderForm();
-        }
-
-        return '';
+        return $this->getEncoderForm();
     }
 
 }

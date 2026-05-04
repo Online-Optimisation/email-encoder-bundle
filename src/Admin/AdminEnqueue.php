@@ -33,6 +33,10 @@ class AdminEnqueue
             true
         );
 
+        wp_localize_script( 'eeb-admin-scripts', 'eebAdmin', [
+            'copyFallbackPrompt' => __( 'Copy this text:', 'email-encoder-bundle' ),
+        ] );
+
         # CSS
         $css_version = md5_file( $this->assetCssDir( 'style-admin.css' ) );
         wp_enqueue_style(

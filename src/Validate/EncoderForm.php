@@ -27,20 +27,7 @@ class EncoderForm
      */
     public function get_encoder_form()
     {
-        $powered_by_setting = (bool) $this->getSetting( 'powered_by', true, 'encoder_form' );
-
-        //shorten circle
-        if (
-            ! $this->helper()->is_page( $this->getPageName() )
-            && ! (bool) $this->getSetting( 'encoder_form_frontend', true, 'encoder_form' )
-        ) {
-            return (string) apply_filters('eeb_form_content_inactive', '' );
-        }
-
-        $powered_by = '';
-        if ($powered_by_setting) {
-            $powered_by .= '<p class="powered-by">' . __('Powered by free', 'email-encoder-bundle') . ' <a rel="external" href="https://wordpress.org/plugins/email-encoder-bundle/">Email Encoder</a></p>';
-        }
+        $powered_by = '<p class="powered-by">' . __('Powered by free', 'email-encoder-bundle') . ' <a rel="external" href="https://wordpress.org/plugins/email-encoder-bundle/">Email Encoder</a></p>';
 
         $smethods = array(
             'rot13' => __( 'Rot13 (Javascript)', 'email-encoder-bundle' ),
@@ -110,10 +97,40 @@ class EncoderForm
             . '</form>'
             . '</div>';
 
-         // apply filters
-        $form = apply_filters('eeb_form_content', $form, $labels, $powered_by_setting );
+         // apply filters — third arg kept as `true` for back-compat with existing
+         // `eeb_form_content` filter callbacks that read it as the powered_by toggle.
+        $form = apply_filters('eeb_form_content', $form, $labels, true );
+
+        $this->enqueue_form_script();
 
         return $form;
+    }
+
+
+    /**
+     * Lazy-enqueue the encoder form's submit-handler script. Called from
+     * get_encoder_form() so the script loads exactly when the form
+     * renders — no matter the surface (shortcode in a widget, FSE block,
+     * eeb_form() in a theme file, etc.). wp_enqueue_script is idempotent,
+     * so the admin-side admin_enqueue_scripts path still works fine.
+     */
+    private function enqueue_form_script(): void
+    {
+        $file = EEB_PLUGIN_DIR . 'core/includes/assets/js/encoder-form.js';
+        $ver  = file_exists( $file ) ? filemtime( $file ) : false;
+
+        wp_enqueue_script(
+            'eeb-js-ajax-ef',
+            EEB_PLUGIN_URL . 'core/includes/assets/js/encoder-form.js',
+            [ 'jquery' ],
+            (string) $ver,
+            true
+        );
+
+        wp_localize_script( 'eeb-js-ajax-ef', 'eeb_ef', [
+            'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+            'security' => wp_create_nonce( 'eeb_form' ),
+        ] );
     }
 
 

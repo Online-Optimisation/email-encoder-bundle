@@ -1,6 +1,973 @@
-#other_plugins img {
-    vertical-align: middle;
-    height: 24px;
-    width: auto;
-    padding: 0 5px 0 0;
+/* Email Encoder — Modern Admin Settings */
+
+:root {
+	--eeb-primary: #3858e9;
+	--eeb-primary-hover: #2d47c0;
+	--eeb-primary-light: rgba(56, 88, 233, 0.08);
+	--eeb-card: #ffffff;
+	--eeb-border: #e2e4e7;
+	--eeb-border-light: #f0f0f1;
+	--eeb-text: #1d2327;
+	--eeb-text-secondary: #646970;
+	--eeb-text-muted: #8c8f94;
+	--eeb-radius: 10px;
+	--eeb-radius-sm: 6px;
+	--eeb-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+	--eeb-focus-ring: 0 0 0 3px var(--eeb-primary-light);
+	--eeb-transition: 0.2s ease;
+}
+
+.eeb-wrap {
+	max-width: none;
+	margin: 20px 20px 0 2px;
+}
+
+/* Page header — logo + name + version pill on the left, action icons on the right */
+
+.eeb-page-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 24px;
+}
+
+.eeb-brand {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	min-width: 0;
+}
+
+.eeb-brand-meta {
+	min-width: 0;
+}
+
+.eeb-brand-logo {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border-radius: 12px;
+	background: var(--eeb-card);
+	box-shadow: var(--eeb-shadow);
+	flex-shrink: 0;
+}
+
+.eeb-brand-logo img {
+	width: 32px;
+	height: 32px;
+	object-fit: contain;
+}
+
+.eeb-page-header h1 {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 24px;
+	font-weight: 700;
+	color: var(--eeb-text);
+	margin: 0 0 2px;
+	padding: 0;
+	letter-spacing: -0.3px;
+	line-height: 1.2;
+}
+
+.eeb-page-header p {
+	font-size: 13px;
+	color: var(--eeb-text-secondary);
+	margin: 0;
+}
+
+.eeb-brand-version {
+	display: inline-flex;
+	align-items: center;
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--eeb-text-secondary);
+	background: var(--eeb-border-light);
+	padding: 3px 8px;
+	border-radius: 999px;
+	letter-spacing: 0.2px;
+}
+
+/* Header action buttons (Email Checker, Docs, Copy Support Info, etc) */
+
+.eeb-header-actions {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+}
+
+.eeb-action-btn {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 38px;
+	height: 38px;
+	border-radius: 10px;
+	background: var(--eeb-card);
+	border: 1px solid var(--eeb-border);
+	box-shadow: var(--eeb-shadow);
+	color: var(--eeb-text-secondary);
+	text-decoration: none;
+	cursor: pointer;
+	transition: color var(--eeb-transition), border-color var(--eeb-transition), background var(--eeb-transition);
+}
+
+.eeb-action-btn:hover,
+.eeb-action-btn:focus-visible {
+	color: var(--eeb-primary);
+	border-color: var(--eeb-primary);
+	background: var(--eeb-primary-light);
+	outline: none;
+}
+
+/* Dashicon sizing for the larger 18px icons (header buttons + tab nav).
+   Tooltip (i) icons are smaller and styled separately with the .eeb-tooltip block. */
+.eeb-action-btn .dashicons,
+.eeb-tab .dashicons {
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+	line-height: 18px;
+}
+
+.eeb-tab .dashicons {
+	flex-shrink: 0;
+}
+
+.eeb-action-btn--review {
+	color: #f59e0b;
+}
+
+.eeb-action-btn--review:hover,
+.eeb-action-btn--review:focus-visible {
+	color: #f59e0b;
+	border-color: #f59e0b;
+	background: rgba(245, 158, 11, 0.08);
+}
+
+/* Brief success state after Copy Support Info — swaps to a check icon */
+.eeb-action-btn--copied,
+.eeb-action-btn--copied:hover,
+.eeb-action-btn--copied:focus-visible {
+	color: #2e7d32;
+	border-color: #2e7d32;
+	background: #f1f8f3;
+}
+
+/* Action button tooltip styles live with the .eeb-tooltip-text block below
+   (they share the same dark-pill look — only padding + max-width differ). */
+
+/* Save / status toast — Divi-style centered overlay that briefly confirms
+   a save (or error) and fades out. Replaces the top-of-page banner. */
+
+.eeb-save-toast {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 99999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+	opacity: 0;
+	pointer-events: none;
+	background: #e8f3ea;
+	color: #2e7d32;
+	animation: eeb-save-toast 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.eeb-save-toast[data-status="info"]    { background: #e6f0fa; color: #1976d2; }
+.eeb-save-toast[data-status="warning"] { background: #fdf1dd; color: #f57c00; }
+.eeb-save-toast[data-status="error"]   { background: #fbe3e2; color: #c62828; }
+
+.eeb-save-toast .dashicons {
+	font-size: 40px;
+	width: 40px;
+	height: 40px;
+	line-height: 40px;
+}
+
+@keyframes eeb-save-toast {
+	0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+	18%  { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+	30%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+	75%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+	100% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+}
+
+/* WP-injected admin notices that slip past .wp-header-end (rare but possible
+   for warnings/errors from other plugins) — render them as flat cards below
+   the header instead of WP's default thin strip. */
+.eeb-wrap > .notice {
+	display: flex !important;
+	align-items: center !important;
+	gap: 12px !important;
+	background: var(--eeb-card) !important;
+	border: 1px solid var(--eeb-border) !important;
+	border-left-width: 4px !important;
+	border-radius: var(--eeb-radius) !important;
+	box-shadow: var(--eeb-shadow) !important;
+	padding: 14px 18px !important;
+	margin: 0 0 20px !important;
+}
+
+/* Layout — single full-width column (sidebar widgets moved to header) */
+
+.eeb-layout {
+	display: block;
+}
+
+.eeb-main {
+	min-width: 0;
+}
+
+/* Settings shell — sidebar nav + content area */
+
+.eeb-settings-shell {
+	display: flex;
+	background: var(--eeb-card);
+	border: 1px solid var(--eeb-border);
+	border-radius: var(--eeb-radius);
+	box-shadow: var(--eeb-shadow);
+	margin-bottom: 24px;
+}
+
+.eeb-settings-nav {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	flex-shrink: 0;
+	width: 220px;
+	padding: 16px 12px;
+	border-right: 1px solid var(--eeb-border);
+	border-radius: var(--eeb-radius) 0 0 var(--eeb-radius);
+	background: var(--eeb-card);
+}
+
+.eeb-settings-content {
+	flex: 1;
+	min-width: 0;
+}
+
+/* Tab nav items (kept .eeb-tab class for JS compatibility) */
+
+.eeb-tab {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 11px 14px;
+	color: var(--eeb-text-secondary);
+	font-size: 13px;
+	font-weight: 500;
+	text-decoration: none;
+	cursor: pointer;
+	border-radius: var(--eeb-radius-sm);
+	white-space: nowrap;
+	transition: all var(--eeb-transition);
+}
+
+.eeb-tab:hover {
+	color: var(--eeb-text);
+	background: var(--eeb-primary-light);
+}
+
+.eeb-tab:focus {
+	outline: none;
+	box-shadow: none;
+}
+
+.eeb-tab.eeb-tab-active,
+.eeb-tab.eeb-tab-active:hover {
+	color: #fff;
+	background: var(--eeb-text);
+}
+
+.eeb-nav-label {
+	flex: 1;
+}
+
+@media (max-width: 782px) {
+	.eeb-settings-shell {
+		flex-direction: column;
+	}
+
+	.eeb-settings-nav {
+		flex-direction: row;
+		width: auto;
+		padding: 8px;
+		border-right: none;
+		border-bottom: 1px solid var(--eeb-border);
+		overflow-x: auto;
+	}
+}
+
+/* Tab panels */
+
+.eeb-panel {
+	padding: 28px;
+}
+
+/* Settings list + per-setting layout. All single rows (.eeb-setting--bool,
+   .eeb-setting--text, including text rows nested inside .eeb-setting--multi)
+   share the same row chrome and flex-row layout. */
+
+.eeb-settings-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.eeb-setting {
+	padding: 18px 0;
+	border-bottom: 1px solid var(--eeb-border-light);
+}
+
+.eeb-setting:first-child {
+	padding-top: 0;
+}
+
+.eeb-setting:last-child {
+	padding-bottom: 0;
+	border-bottom: none;
+}
+
+/* Single-bool / single-text rows: title left, control right */
+.eeb-setting--bool,
+.eeb-setting--text {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+}
+
+/* Whole bool row is clickable (JS forwards the click to the toggle). */
+.eeb-setting--bool {
+	cursor: pointer;
+}
+
+.eeb-setting--bool .eeb-setting-header,
+.eeb-setting--text .eeb-setting-header {
+	flex: 1;
+	min-width: 0;
+}
+
+.eeb-setting--bool .eeb-setting-body,
+.eeb-setting--text .eeb-setting-body {
+	flex-shrink: 0;
+	margin-top: 0;
+}
+
+.eeb-setting--text .eeb-setting-body {
+	width: 280px;
+	max-width: 50%;
+}
+
+.eeb-setting-header h4 {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--eeb-text);
+	margin: 0;
+}
+
+.eeb-setting-header h4 label {
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+}
+
+.eeb-setting-sublabel {
+	font-size: 12px;
+	color: var(--eeb-text-secondary);
+	line-height: 1.5;
+	margin: 4px 0 0;
+}
+
+/* Common baseline for all .eeb-option label wrappers */
+.eeb-option {
+	display: inline-flex;
+	align-items: center;
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
+}
+
+/* Multi-input: title on top, options stacked below */
+
+.eeb-setting--multi .eeb-setting-body {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-top: 12px;
+}
+
+/* Nested text rows already supply their own padding + dividers,
+   so the parent's gap (intended for toggle rows) becomes redundant. */
+.eeb-setting--multi .eeb-setting-body:has(> .eeb-setting--text) {
+	gap: 0;
+}
+
+/* Multi-input rows: text label + optional (i) tooltip + toggle/radio */
+
+.eeb-setting--multi .eeb-option-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 14px;
+	margin: 0;
+	border-radius: var(--eeb-radius-sm);
+	cursor: pointer;
+	transition: background var(--eeb-transition);
+}
+
+.eeb-setting--multi .eeb-option-row:hover {
+	background: var(--eeb-primary-light);
+}
+
+.eeb-setting--multi .eeb-option-label {
+	font-size: 13px;
+	color: var(--eeb-text);
+	line-height: 1.5;
+	cursor: pointer;
+	margin: 0;
+}
+
+.eeb-setting--multi .eeb-option-row .eeb-tooltip {
+	flex-shrink: 0;
+}
+
+.eeb-setting--multi .eeb-option-row .eeb-option {
+	flex-shrink: 0;
+	margin-left: auto;
+}
+
+/* Radio cards — horizontal grid of icon + title + description for mutually
+   exclusive choices. Selected card gets a primary-colored border + tinted
+   background; native radio is hidden in favor of the whole-card visual. */
+
+.eeb-setting--multi .eeb-setting-body:has(> .eeb-radio-card) {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 16px;
+}
+
+.eeb-radio-card {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 14px;
+	padding: 20px;
+	margin: 0;
+	border: 1px solid var(--eeb-border);
+	border-radius: var(--eeb-radius);
+	background: var(--eeb-card);
+	cursor: pointer;
+	transition: border-color var(--eeb-transition), background var(--eeb-transition), box-shadow var(--eeb-transition);
+}
+
+.eeb-radio-card:hover {
+	border-color: var(--eeb-primary);
+	background: var(--eeb-primary-light);
+}
+
+.eeb-radio-card:has(input:checked) {
+	border-color: var(--eeb-primary);
+	background: var(--eeb-primary-light);
+}
+
+/* Hide the native radio — the card itself is the visual + click target. */
+.eeb-radio-card-input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.eeb-radio-card-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: var(--eeb-radius-sm);
+	background: var(--eeb-border-light);
+	color: var(--eeb-text-secondary);
+	transition: background var(--eeb-transition), color var(--eeb-transition);
+}
+
+.eeb-radio-card:has(input:checked) .eeb-radio-card-icon {
+	background: var(--eeb-primary);
+	color: #fff;
+}
+
+.eeb-radio-card-icon .dashicons,
+.eeb-radio-card-svg {
+	font-size: 22px;
+	width: 22px;
+	height: 22px;
+	line-height: 22px;
+}
+
+/* Radio-card groups don't need the row divider — the cards themselves
+   already provide enough visual separation between the two settings. */
+.eeb-setting:has(> .eeb-setting-body > .eeb-radio-card) {
+	border-bottom: none;
+}
+
+.eeb-radio-card-body {
+	min-width: 0;
+}
+
+.eeb-radio-card-title {
+	display: block;
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--eeb-text);
+	line-height: 1.4;
+}
+
+.eeb-radio-card-desc {
+	display: block;
+	font-size: 12px;
+	color: var(--eeb-text-secondary);
+	line-height: 1.55;
+	margin-top: 6px;
+}
+
+/* Keyboard-only focus indicator on the visually hidden radio.
+   Uses a single soft ring via box-shadow so it composes cleanly with the
+   :checked card highlight (no doubled outline + ring). */
+.eeb-radio-card:has(input:focus-visible) {
+	box-shadow: var(--eeb-focus-ring);
+}
+
+/* Wrapper-title hidden for multi-input groups whose children are self-titling */
+
+.eeb-setting[data-setting="image_settings"] > .eeb-setting-header {
+	display: none;
+}
+
+.eeb-setting[data-setting="image_settings"] .eeb-setting-body {
+	margin-top: 0;
+}
+
+/* Tooltips — (i) icon next to setting titles */
+
+.eeb-tooltip {
+	position: relative;
+	display: inline-flex;
+	cursor: help;
+}
+
+.eeb-tooltip .dashicons {
+	font-size: 15px;
+	width: 15px;
+	height: 15px;
+	line-height: 15px;
+	color: var(--eeb-text-muted);
+	transition: color var(--eeb-transition);
+}
+
+.eeb-tooltip:hover .dashicons,
+.eeb-tooltip:focus-visible .dashicons {
+	color: var(--eeb-primary);
+}
+
+/* Dark-pill tooltip — used by setting (i) tooltips and header action
+   button tooltips. The action-button variant is scoped via parent. */
+.eeb-tooltip-text {
+	display: none;
+	position: absolute;
+	left: 50%;
+	top: calc(100% + 8px);
+	transform: translateX(-50%);
+	width: max-content;
+	max-width: 280px;
+	background: var(--eeb-text);
+	color: #fff;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 1.5;
+	padding: 8px 12px;
+	border-radius: var(--eeb-radius-sm);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	z-index: 100;
+	pointer-events: none;
+	white-space: normal;
+}
+
+.eeb-action-btn .eeb-tooltip-text {
+	max-width: none;
+	padding: 6px 10px;
+	white-space: nowrap;
+}
+
+.eeb-tooltip-text::after {
+	content: '';
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	border: 5px solid transparent;
+	border-bottom-color: var(--eeb-text);
+}
+
+.eeb-tooltip:hover .eeb-tooltip-text,
+.eeb-tooltip:focus-visible .eeb-tooltip-text,
+.eeb-action-btn:hover .eeb-tooltip-text,
+.eeb-action-btn:focus-visible .eeb-tooltip-text {
+	display: block;
+}
+
+/* Toggle switch — replaces native checkbox visual via SVG background-image
+   (background-position animates; pseudo-elements on input are unreliable) */
+
+.eeb-option input[type="checkbox"] {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	width: 38px;
+	height: 22px;
+	margin: 0;
+	border: none;
+	border-radius: 11px;
+	background-color: #d0d2d6;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'><circle cx='9' cy='9' r='9' fill='white'/></svg>");
+	background-repeat: no-repeat;
+	background-position: 2px center;
+	background-size: 18px 18px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) inset;
+	filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15));
+	cursor: pointer;
+	flex-shrink: 0;
+	color: transparent;
+	font-size: 0;
+	transition: background-color 0.18s ease, background-position 0.18s ease;
+}
+
+.eeb-option input[type="checkbox"]:checked {
+	background-color: var(--eeb-primary);
+	background-position: 18px center;
+}
+
+.eeb-option input[type="checkbox"]:focus-visible {
+	outline: 2px solid var(--eeb-primary);
+	outline-offset: 2px;
+}
+
+/* Suppress native checkmark glyphs from WP core forms.css and platform browsers */
+.eeb-option input[type="checkbox"]::before,
+.eeb-option input[type="checkbox"]:checked::before,
+.eeb-option input[type="checkbox"]::after,
+.eeb-option input[type="checkbox"]:checked::after {
+	content: none !important;
+	display: none !important;
+}
+
+/* Radios stay native — accent-colored dot, mutually exclusive choice */
+
+.eeb-option input[type="radio"] {
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	accent-color: var(--eeb-primary);
+	flex-shrink: 0;
+}
+
+/* Text inputs — single shared rule. Sizing comes from .eeb-setting--text
+   .eeb-setting-body; the input fills it. */
+
+.eeb-input {
+	width: 100% !important;
+	max-width: 100% !important;
+	padding: 8px 12px !important;
+	border: 1px solid var(--eeb-border) !important;
+	border-radius: var(--eeb-radius-sm) !important;
+	font-size: 13px !important;
+	background: var(--eeb-card) !important;
+	box-sizing: border-box;
+	transition: border-color var(--eeb-transition), box-shadow var(--eeb-transition);
+}
+
+.eeb-input:focus {
+	outline: none !important;
+	border-color: var(--eeb-primary) !important;
+	box-shadow: var(--eeb-focus-ring) !important;
+}
+
+/* Panel footer + Save Settings button */
+
+.eeb-panel-footer {
+	margin-top: 28px;
+	padding-top: 20px;
+	border-top: 1px solid var(--eeb-border-light);
+}
+
+.eeb-save-btn.button.button-primary {
+	background: var(--eeb-primary) !important;
+	border-color: var(--eeb-primary) !important;
+	border-radius: var(--eeb-radius-sm) !important;
+	padding: 8px 24px !important;
+	height: auto !important;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	letter-spacing: 0.2px;
+	box-shadow: 0 1px 2px rgba(56, 88, 233, 0.3) !important;
+	transition: all var(--eeb-transition);
+}
+
+.eeb-save-btn.button.button-primary:hover {
+	background: var(--eeb-primary-hover) !important;
+	border-color: var(--eeb-primary-hover) !important;
+	box-shadow: 0 2px 6px rgba(56, 88, 233, 0.4) !important;
+	transform: translateY(-1px);
+}
+
+.eeb-save-btn.button.button-primary:focus {
+	box-shadow: var(--eeb-focus-ring) !important;
+}
+
+/* Help tab content (rendered from legacy help-tab partials) */
+
+.eeb-help-content {
+	font-size: 13px;
+	line-height: 1.6;
+	color: var(--eeb-text);
+}
+
+.eeb-help-content h3 {
+	font-size: 16px;
+	font-weight: 600;
+	margin: 0 0 12px;
+}
+
+.eeb-help-content p {
+	margin: 0 0 12px;
+}
+
+.eeb-help-content ul {
+	list-style: disc;
+	margin: 0 0 12px 20px;
+}
+
+.eeb-help-content li {
+	margin: 0 0 4px;
+}
+
+.eeb-help-content code {
+	font-size: 12px;
+	padding: 2px 6px;
+	border-radius: 4px;
+	background: var(--eeb-border-light);
+	color: var(--eeb-text);
+}
+
+.eeb-help-content a {
+	color: var(--eeb-primary);
+	text-decoration: none;
+}
+
+.eeb-help-content a:hover {
+	text-decoration: underline;
+}
+
+.eeb-help-divider {
+	border: none;
+	border-top: 1px solid var(--eeb-border-light);
+	margin: 28px 0;
+}
+
+/* Manual Email Encoder block (Tools tab) */
+
+.eeb-encoder-tool {
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+.eeb-encoder-tool h3 {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--eeb-text);
+	margin: 0 0 6px;
+}
+
+.eeb-encoder-tool > .eeb-setting-sublabel {
+	margin-bottom: 20px;
+	font-size: 13px;
+	color: var(--eeb-text-secondary);
+}
+
+.eeb-encoder-tool .eeb-form {
+	margin-top: 18px;
+}
+
+.eeb-encoder-tool .eeb-form table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.eeb-encoder-tool .eeb-form th {
+	width: 140px;
+	padding: 14px 16px 14px 0;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--eeb-text-secondary);
+	text-align: left;
+	white-space: nowrap;
+	vertical-align: middle;
+}
+
+.eeb-encoder-tool .eeb-form td {
+	padding: 8px 0;
+}
+
+/* Hide preview row + output area until JS populates them (avoids flash on load) */
+.eeb-encoder-tool .eeb-form tr:has(.eeb-example:empty),
+.eeb-encoder-tool .eeb-form .eeb-output {
+	display: none;
+}
+
+/* Encoder form controls — share 38px height and matching radius */
+
+.eeb-encoder-tool .eeb-form input[type="text"],
+.eeb-encoder-tool .eeb-form select,
+.eeb-encoder-tool .eeb-form input[type="button"] {
+	box-sizing: border-box;
+	height: 38px;
+	font-size: 13px;
+	border-radius: var(--eeb-radius-sm);
+	vertical-align: middle;
+}
+
+.eeb-encoder-tool .eeb-form input[type="text"] {
+	width: 100%;
+	max-width: 380px;
+	padding: 0 12px;
+	border: 1px solid var(--eeb-border);
+	background: var(--eeb-card);
+	transition: border-color var(--eeb-transition), box-shadow var(--eeb-transition);
+}
+
+.eeb-encoder-tool .eeb-form input[type="text"]:focus,
+.eeb-encoder-tool .eeb-form textarea:focus {
+	outline: none;
+	border-color: var(--eeb-primary);
+	box-shadow: var(--eeb-focus-ring);
+}
+
+.eeb-encoder-tool .eeb-form select {
+	padding: 0 12px;
+	border: 1px solid var(--eeb-border);
+	background: var(--eeb-card);
+	cursor: pointer;
+}
+
+.eeb-encoder-tool .eeb-form input[type="button"] {
+	padding: 0 16px;
+	margin-left: 8px;
+	border: 1px solid var(--eeb-primary);
+	background: var(--eeb-primary);
+	color: #fff;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background var(--eeb-transition);
+}
+
+.eeb-encoder-tool .eeb-form input[type="button"]:hover {
+	background: var(--eeb-primary-hover);
+}
+
+.eeb-encoder-tool .eeb-form textarea {
+	width: 100%;
+	max-width: 100%;
+	padding: 10px 12px;
+	border: 1px solid var(--eeb-border);
+	border-radius: var(--eeb-radius-sm);
+	font-size: 13px;
+	font-family: monospace;
+	background: var(--eeb-card);
+	resize: vertical;
+	box-sizing: border-box;
+}
+
+.eeb-encoder-tool .eeb-form .eeb-example a {
+	color: var(--eeb-primary);
+}
+
+.eeb-encoder-tool .eeb-form .powered-by {
+	font-size: 12px;
+	color: var(--eeb-text-muted);
+	margin: 16px 0 0;
+}
+
+/* Embed-anywhere callout below the encoder form */
+
+.eeb-embed-callout {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	margin-top: 24px;
+	padding: 14px 18px;
+	background: var(--eeb-border-light);
+	border: 1px solid var(--eeb-border);
+	border-radius: var(--eeb-radius-sm);
+}
+
+.eeb-embed-callout > .dashicons {
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	margin-top: 1px;
+	font-size: 20px;
+	color: var(--eeb-text-secondary);
+}
+
+.eeb-embed-callout-body {
+	flex: 1;
+	min-width: 0;
+}
+
+.eeb-embed-callout-body strong {
+	display: block;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--eeb-text);
+	margin-bottom: 6px;
+}
+
+.eeb-embed-snippets {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	font-size: 12px;
+	color: var(--eeb-text-secondary);
+}
+
+.eeb-embed-snippets code {
+	margin-left: 4px;
+	padding: 2px 6px;
+	font-size: 12px;
+	border: 1px solid var(--eeb-border);
+	border-radius: 4px;
+	background: var(--eeb-card);
+	color: var(--eeb-text);
 }

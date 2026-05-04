@@ -8,20 +8,23 @@ return [
 		'id'          => 'protect',
 		'type'        => 'multi-input',
 		'input-type'  => 'radio',
-		'title'       => __( 'Protect emails', 'email-encoder-bundle' ),
+		'title'       => __( 'Protection mode', 'email-encoder-bundle' ),
 		'inputs' 	  => [
 			1 => [
-				'label' => __( 'Full-page scan', 'email-encoder-bundle' ),
-				'description' => __('This will check the whole page against any mails and secures them.', 'email-encoder-bundle' )
+				'label' => __( 'Full protection', 'email-encoder-bundle' ),
+				'icon'  => 'shield',
+				'description' => __( 'Recommended. Scans every page on your site and protects every email address it finds.', 'email-encoder-bundle' )
 			],
 			2 => [
-				'label' => __( 'Wordpress filters', 'email-encoder-bundle' ),
-				'description' => __('Secure only mails that occur within WordPress filters. (Not recommended)', 'email-encoder-bundle' ),
+				'label' => __( 'Standard protection', 'email-encoder-bundle' ),
+				'icon'  => 'shield-alt',
+				'description' => __( 'Lighter option that only secures emails passed through WordPress filter hooks. May miss emails in custom templates or third-party plugins.', 'email-encoder-bundle' ),
 				'advanced' 	  => true,
 			],
 			3 => [
-				'label' => __( 'Don\'t do anything.', 'email-encoder-bundle' ),
-				'description' => __('This turns off the protection for emails. (Not recommended)', 'email-encoder-bundle')
+				'label' => __( 'Off', 'email-encoder-bundle' ),
+				'icon'  => 'shield-off',
+				'description' => __( 'Disables email protection entirely. Not recommended — your emails will be exposed to spam bots.', 'email-encoder-bundle' )
 			],
 		],
 		'required'    => false
@@ -32,21 +35,27 @@ return [
 		'id'          => 'protect_using',
 		'type'        => 'multi-input',
 		'input-type'  => 'radio',
-		'title'       => __( 'Protect emails using', 'email-encoder-bundle' ),
+		'title'       => __( 'Protection method', 'email-encoder-bundle' ),
 		'inputs' 	  => [
 			'with_javascript' => [
-				'label' => __( 'automatically the best method (including javascript)', 'email-encoder-bundle' )
+				'label' => __( 'Automatic', 'email-encoder-bundle' ),
+				'icon'  => 'yes-alt',
+				'description' => __( 'Recommended. Picks the strongest method available, using JavaScript so visitors still see the email address.', 'email-encoder-bundle' )
 			],
 			'without_javascript' => [
-				'label' => __( 'automatically the best method (excluding javascript)', 'email-encoder-bundle' ),
+				'label' => __( 'Automatic (no JavaScript)', 'email-encoder-bundle' ),
+				'icon'  => 'lock',
+				'description' => __( 'Picks the strongest method that works without JavaScript. Slightly weaker but more compatible with older browsers.', 'email-encoder-bundle' ),
 			],
 			'strong_method' => [
-				'label' => __( 'a strong method that replaces all emails with a "*protection text*".', 'email-encoder-bundle' ),
-				'description' => __('You can configure the protection text within the advanced settings.', 'email-encoder-bundle')
+				'label' => __( 'Hide entirely', 'email-encoder-bundle' ),
+				'icon'  => 'hidden',
+				'description' => __( 'Replaces every email address with the protection text. Visitors won\'t see the actual address — useful for hiding emails completely from page content.', 'email-encoder-bundle' )
 			],
 			'char_encode' => [
-				'label' => __( 'simple HTML character encoding.', 'email-encoder-bundle' ),
-				'description' => __('Offers good (but not the best) protection, which saves you in most scenarios.', 'email-encoder-bundle')
+				'label' => __( 'Basic', 'email-encoder-bundle' ),
+				'icon'  => 'editor-code',
+				'description' => __( 'Simple HTML character encoding. Lightweight and works without JavaScript, but easier for advanced spam bots to bypass.', 'email-encoder-bundle' )
 			],
 		],
 		'required'    => false
@@ -83,43 +92,43 @@ return [
 			],
 			'input_strong_protection' => [
 				'advanced' 	  => true,
-				'label' => __( 'input form email fields using strong protection.', 'email-encoder-bundle' ),
+				'label' => __( 'Input form email fields using strong protection', 'email-encoder-bundle' ),
 				'description' => __( 'Warning: this option could conflict with certain form plugins. Test it first. (Requires javascript)', 'email-encoder-bundle' )
 			],
 			'encode_mailtos' => [
 				'advanced' 	  => true,
-				'label' => __( 'plain emails by converting them to mailto links', 'email-encoder-bundle' ),
+				'label' => __( 'Plain emails by converting them to mailto links', 'email-encoder-bundle' ),
 				'description' => __( 'Plain emails will be automatically converted to mailto links where possible.', 'email-encoder-bundle' )
 			],
 			'convert_plain_to_image' => [
 				'advanced' 	  => true,
-				'label' => __( 'plain emails by converting them to png images', 'email-encoder-bundle' ),
-				'description' => __( 'Plain emails will be automatically converted to png images where possible.', 'email-encoder-bundle' )
+				'label' => __( 'Plain emails by converting them to PNG images', 'email-encoder-bundle' ),
+				'description' => __( 'Plain emails will be automatically converted to PNG images where possible.', 'email-encoder-bundle' )
 			],
 			'protect_shortcode_tags' => [
 				'advanced' 	  => true,
-				'label' => __( 'shortcode content', 'email-encoder-bundle' ),
-				'description' => __( 'Protect every shortcode content separately. (This may slows down your site)', 'email-encoder-bundle' )
+				'label' => __( 'Shortcode content', 'email-encoder-bundle' ),
+				'description' => __( 'Protect every shortcode content separately. (This may slow down your site)', 'email-encoder-bundle' )
 			],
 			'filter_hook' => [
 				'advanced' 	  => true,
-				'label' => __( 'emails from "init" hook', 'email-encoder-bundle' ),
+				'label' => __( 'Emails from "init" hook', 'email-encoder-bundle' ),
 				'description' => __( 'Check this option if you want to register the email filters on the "init" hook instead of the "wp" hook.', 'email-encoder-bundle' )
 			],
 			'deactivate_rtl' => [
 				'advanced' 	  => true,
-				'label' => __( 'mailto links without CSS direction', 'email-encoder-bundle' ),
+				'label' => __( 'Mailto links without CSS direction', 'email-encoder-bundle' ),
 				'description' => __( 'Check this option if your site does not support CSS directions.', 'email-encoder-bundle' )
 			],
 			'no_script_tags' => [
 				'advanced' 	  => true,
-				'label' => __( 'no script tags', 'email-encoder-bundle' ),
+				'label' => __( 'No script tags', 'email-encoder-bundle' ),
 				'description' => __( 'Check this option if you face issues with encoded script tags. This will deactivate protection for script tags.', 'email-encoder-bundle' )
 			],
 			'no_attribute_validation' => [
 				'advanced' 	  => true,
-				'label' => __( 'html attributes without soft encoding.', 'email-encoder-bundle' ),
-				'description' => __( 'Do not soft-filter all html attributes. This might optimizes the performance, but can break the site if other plugins use your email in attribute tags.', 'email-encoder-bundle' )
+				'label' => __( 'HTML attributes without soft encoding', 'email-encoder-bundle' ),
+				'description' => __( 'Do not soft-filter all HTML attributes. This might optimize performance, but can break the site if other plugins use your email in attribute tags.', 'email-encoder-bundle' )
 			],
 		],
 		'required'    => false,
@@ -137,31 +146,37 @@ return [
 			'image_color' => [
 				'advanced' 	  => true,
 				'label' => __( 'Image Colors', 'email-encoder-bundle' ),
+				'placeholder' => '0,0,0',
 				'description' => __( 'Please include RGB colors, comme saparated. E.g.: 0,0,255', 'email-encoder-bundle' )
 			],
 			'image_background_color' => [
 				'advanced' 	  => true,
 				'label' => __( 'Image Background Colors', 'email-encoder-bundle' ),
+				'placeholder' => '255,255,255',
 				'description' => __( 'Please include RGB colors, comme saparated. E.g.: 0,0,255', 'email-encoder-bundle' )
 			],
 			'image_text_opacity' => [
 				'advanced' 	  => true,
 				'label' => __( 'Text Opacity', 'email-encoder-bundle' ),
+				'placeholder' => '0',
 				'description' => __( 'Change the text opacity for the created images. 0 = not transparent - 127 = completely transprent', 'email-encoder-bundle' )
 			],
 			'image_background_opacity' => [
 				'advanced' 	  => true,
 				'label' => __( 'Background Opacity', 'email-encoder-bundle' ),
+				'placeholder' => '127',
 				'description' => __( 'Change the background opacity for the created images. 0 = not transparent - 127 = completely transprent', 'email-encoder-bundle' )
 			],
 			'image_font_size' => [
 				'advanced' 	  => true,
 				'label' => __( 'Font Size', 'email-encoder-bundle' ),
+				'placeholder' => '4',
 				'description' => __( 'Change the font size of the image text. Default: 4 - You can choose from 1 - 5', 'email-encoder-bundle' )
 			],
 			'image_underline' => [
 				'advanced' 	  => true,
 				'label' => __( 'Text Underline', 'email-encoder-bundle' ),
+				'placeholder' => '1',
 				'description' => __( 'Adds a line beneath the text to highlight it as a link. empty or 0 deactivates the border. 1 = 1px', 'email-encoder-bundle' )
 			],
 		],
@@ -174,7 +189,7 @@ return [
 		'type'        => 'text',
 		'advanced' 	  => true,
 		'title'       => __('Exclude post id\'s from protection', 'email-encoder-bundle'),
-		'placeholder' => '',
+		'placeholder' => '123,456,789',
 		'required'    => false,
 		'description' => __('By comma separating post id\'s ( e.g. 123,4535,643), you are able to exclude these posts from the logic protection.', 'email-encoder-bundle')
 	],
@@ -185,7 +200,7 @@ return [
 		'type'        => 'text',
 		'advanced' 	  => true,
 		'title'       => __('Exclude URL parameters from protection', 'email-encoder-bundle'),
-		'placeholder' => '',
+		'placeholder' => 'param1,param2',
 		'required'    => false,
 		'description' => __('By comma separating URL (Query) parameters ( e.g. param1,param2), you are able to exclude URLs with these parameters from the protection. URL or Query parameters are found at the end of your URL (e.g. domain.com?param1=test)', 'email-encoder-bundle')
 	],
@@ -196,7 +211,7 @@ return [
 		'type'        => 'text',
 		'advanced' 	  => true,
 		'title'       => __('Set protection text *', 'email-encoder-bundle'),
-		'placeholder' => '',
+		'placeholder' => __( '*protected email*', 'email-encoder-bundle' ),
 		'required'    => false,
 		'description' => __('This text will be shown for protected email addresses and within noscript tags.', 'email-encoder-bundle')
 	],
@@ -208,7 +223,7 @@ return [
 		'advanced' 	  => true,
 		'title'       => __('Additional classes', 'email-encoder-bundle'),
 		'label'       => __('Add extra classes to mailto links.', 'email-encoder-bundle'),
-		'placeholder' => '',
+		'placeholder' => 'my-class another-class',
 		'required'    => false,
 		'description' => __('Leave blank for none', 'email-encoder-bundle')
 	],
@@ -220,7 +235,7 @@ return [
 		'advanced' 	  => true,
 		'title'       => __('Protect custom href attributes', 'email-encoder-bundle'),
 		'label'       => __('Protect href atrributes such as tel:, ftp:, file:, etc.', 'email-encoder-bundle'),
-		'placeholder' => '',
+		'placeholder' => 'tel,ftp,file',
 		'required'    => false,
 		'description' => __('Add the href attributes you want to protect as a comme-separated list. E.g. tel,file,ftp', 'email-encoder-bundle')
 	],
@@ -259,25 +274,6 @@ return [
 		'required'    => false,
 		'description' => __('Otherwise it will be shown in "Settings"-menu.', 'email-encoder-bundle')
 		],
-
-	'encoder_form' => [
-		'fieldset'    => [ 'slug' => 'main', 'label' => 'Label' ],
-		'id'          => 'encoder_form',
-		'type'        => 'multi-input',
-		'input-type'  => 'checkbox',
-		'advanced' 	  => true,
-		'title'       => __( 'Encoder form settings', 'email-encoder-bundle' ),
-		'inputs' 	  => [
-			'encoder_form_frontend' => [
-				'label' => __( 'Encoder form frontend', 'email-encoder-bundle' ),
-				'description' => __( 'Activate this to use the [eeb_form] shortcode or the PHP template function eeb_form() within the frontend.', 'email-encoder-bundle' )
-			],
-			'powered_by' => [
-				'label' => __( 'Show a "powered by" link on bottom of the encoder form', 'email-encoder-bundle' ),
-			],
-		],
-		'required'    => false
-	],
 
 	'advanced_settings' => [
 		'fieldset'    => [ 'slug' => 'main', 'label' => 'Label' ],

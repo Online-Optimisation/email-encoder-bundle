@@ -16,27 +16,19 @@ class AdminHelp
 
     public function add_help_tabs(): void
     {
+        // Help content is now rendered inline as the 'Help' panel inside our
+        // custom settings page. WP's top-right Help dropdown is removed to
+        // avoid duplication and to keep all plugin help in one place.
         $screen = get_current_screen();
         if ( $screen === null ) {
             return;
         }
 
-        $defaults = [
-            'content'   => '',
-            'callback'  => [ $this, 'load_help_tabs' ],
-        ];
-
-        $tabs = [
-            [ 'id' => 'general',       'title' => 'General'       ],
-            [ 'id' => 'shortcodes',    'title' => 'Shortcodes'    ],
-            [ 'id' => 'template-tags', 'title' => 'Template Tags' ],
-        ];
-
-        foreach ( $tabs as $tab ) {
-            $screen->add_help_tab( wp_parse_args( [
-                'id'        => $tab['id'],
-                'title'     => $tab['title'],
-            ], $defaults ) );
+        // Remove the WP-default tabs that may have been registered by other
+        // sources (e.g. core's "Overview" tab on settings screens) so the
+        // Help dropdown disappears from the corner of the page.
+        foreach ( $screen->get_help_tabs() as $tab ) {
+            $screen->remove_help_tab( $tab['id'] );
         }
     }
 
