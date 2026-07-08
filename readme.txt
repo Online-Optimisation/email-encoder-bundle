@@ -4,7 +4,7 @@ Tags: anti spam, protect, encode, encrypt, hide, antispam, phone number, spambot
 Requires at least: 4.7
 Requires PHP: 7.4
 Tested up to: 6.9
-Stable tag: 2.5.0
+Stable tag: 2.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Author URI: https://wpemailencoder.com/
@@ -125,6 +125,9 @@ Yes, since version 1.3.0 also special characters are supported.
 * Title icon on Admin Options Page was made by [Jack Cai](http://www.doublejdesign.co.uk/)
 
 == Changelog ==
+
+= 2.5.1: July 9, 2026 =
+* Fix: On large pages, a plain email inside another plugin's inline script data (for example the Helpie FAQ list) could be encoded there and break that script, spilling raw content into the space below the footer — inline scripts are now reliably skipped
 
 = 2.5.0: May 4, 2026 =
 * Feature: Redesigned settings page — branded header with logo and version, modern layout, friendlier form controls
