@@ -8,6 +8,7 @@ phpunit.xml
 .phpcs-cache
 /release
 /dist
+/docs/
 *.cache
 dist.sh
 *.tar
