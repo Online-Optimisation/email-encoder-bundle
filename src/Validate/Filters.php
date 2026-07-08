@@ -472,7 +472,17 @@ class Filters
             //Validate script tags for better encoding
             $pattern = '/<script\b[^>]*>(.*?)<\/script>/is';
 
-            preg_match_all($pattern, $content, $matches);
+            // On very large pages — or hosts with a low pcre.backtrack_limit — this
+            // lazy regex can bail out with PREG_BACKTRACK_LIMIT_ERROR and return no
+            // matches. That silently disables @-masking inside <script> blocks, so the
+            // encoder later injects a raw </script> into inline JSON data blobs (e.g. a
+            // page builder's FAQ/search payload), prematurely closing the host script
+            // and dumping its contents as visible text below the page. Fall back to a
+            // linear, backtrack-free scan so the guard keeps working on those pages.
+            if ( preg_match_all( $pattern, $content, $matches ) === false || preg_last_error() !== PREG_NO_ERROR ) {
+                $matches = $this->extract_script_blocks( $content );
+            }
+
             if ( ! empty( $matches[1] ) ) {
                 if ( ! $no_script_tags ) {
                     foreach ( $matches[1] as $key => $item ) {
@@ -512,5 +522,57 @@ class Filters
         }
 
         return $content;
+    }
+
+    /**
+     * Linear, backtrack-free extraction of <script>…</script> blocks.
+     *
+     * Mirrors the capture shape of preg_match_all( '/<script\b[^>]*>(.*?)<\/script>/is' )
+     * — index 0 holds the full tags, index 1 the bodies — but without the lazy
+     * quantifier, so it cannot hit pcre.backtrack_limit on very large pages. Used as a
+     * fallback when that regex errors out (see filter_soft_dom_attributes).
+     *
+     * @param string $content
+     * @return array{0: array<int, string>, 1: array<int, string>}
+     */
+    private function extract_script_blocks( string $content )
+    {
+        $full   = array();
+        $bodies = array();
+        $length = strlen( $content );
+        $offset = 0;
+
+        while ( ( $open = stripos( $content, '<script', $offset ) ) !== false ) {
+
+            // Enforce the regex's \b: the char after "script" must be a non-word char,
+            // so tags like <scripting> are not treated as <script>.
+            $after    = $open + 7; // strlen( '<script' )
+            $boundary = ( $after < $length ) ? $content[ $after ] : '';
+            if ( $boundary !== '' && ( ctype_alnum( $boundary ) || $boundary === '_' ) ) {
+                $offset = $after;
+                continue;
+            }
+
+            // End of the opening tag ( first '>' — matches the regex's [^>]*> ).
+            $tag_end = strpos( $content, '>', $open );
+            if ( $tag_end === false ) {
+                break;
+            }
+            $body_start = $tag_end + 1;
+
+            // First literal </script> ( matches the lazy .*? up to <\/script> ).
+            $close = stripos( $content, '</script>', $body_start );
+            if ( $close === false ) {
+                break;
+            }
+            $full_end = $close + 9; // strlen( '</script>' )
+
+            $full[]   = substr( $content, $open, $full_end - $open );
+            $bodies[] = substr( $content, $body_start, $close - $body_start );
+
+            $offset = $full_end;
+        }
+
+        return array( $full, $bodies );
     }
 }
