@@ -3,8 +3,8 @@ Contributors: onlineoptimisation
 Tags: anti spam, protect, encode, encrypt, hide, antispam, phone number, spambot, secure, e-mail, email, mail
 Requires at least: 4.7
 Requires PHP: 7.4
-Tested up to: 6.9
-Stable tag: 2.5.1
+Tested up to: 7.0
+Stable tag: 2.5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Author URI: https://wpemailencoder.com/
@@ -125,6 +125,9 @@ Yes, since version 1.3.0 also special characters are supported.
 * Title icon on Admin Options Page was made by [Jack Cai](http://www.doublejdesign.co.uk/)
 
 == Changelog ==
+
+= 2.5.2: July 14, 2026 =
+* Fix: On iPhone/iPad, an email link set to open in a new tab (or opened via "Open Link in New Tab") could show a Safari "cannot run the script" error — email links are now real links that open the mail app cleanly in every case
 
 = 2.5.1: July 9, 2026 =
 * Fix: On large pages, a plain email inside another plugin's inline script data (for example the Helpie FAQ list) could be encoded there and break that script, spilling raw content into the space below the footer — inline scripts are now reliably skipped
