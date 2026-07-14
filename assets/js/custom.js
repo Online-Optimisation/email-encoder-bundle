@@ -53,7 +53,7 @@ jQuery(function ($) {
         }
     }
 
-    // open mailto link
+    // open mailto link (fallback for links that were never hydrated)
     function mailto(el) {
         var email = fetchEmail(el);
 
@@ -61,7 +61,24 @@ jQuery(function ($) {
             window.location.href = 'mailto:' + email;
         }
     }
-    
+
+    // Build the real "mailto:" href from data-enc-email, lazily — only once the
+    // visitor engages with the link (mousedown / touch / focus), which always
+    // happens before a click, middle-click or "open in new tab". Doing it lazily
+    // rather than on page load keeps the plaintext address out of the rendered
+    // DOM for agents that run JS but never interact (search-engine renderers,
+    // headless harvesters), while still giving real navigations a genuine link.
+    // It also replaces the inert "javascript:;" placeholder before any navigation,
+    // so iOS Safari never tries to open a javascript: URL in a new tab (which
+    // throws "cannot run script").
+    function hydrateMailto(el) {
+        var email = fetchEmail(el);
+
+        if (email && el.getAttribute('href') !== 'mailto:' + email) {
+            el.setAttribute('href', 'mailto:' + email);
+        }
+    }
+
     // revert
     function revert(el, rtl) {
         var email = fetchEmail(el);
@@ -84,12 +101,24 @@ jQuery(function ($) {
         console.log('copy');
     });
 
+    // hydrate the mailto href the moment the visitor engages with the link,
+    // before any click / middle-click / "open in new tab" navigation resolves
+    $('body').on('mousedown touchstart focusin', 'a[data-enc-email]', function () {
+        hydrateMailto(this);
+    });
+
     // set mailto click
     $('body').on('click', 'a[data-enc-email]', function () {
+        // Already hydrated to a real mailto (on mousedown/touch/focus): let the
+        // browser handle it natively. Otherwise open it ourselves.
+        if ((this.getAttribute('href') || '').indexOf('mailto:') === 0) {
+            return;
+        }
+
         mailto(this);
     });
 
-    // parse title attirbute
+    // parse title attribute
     $('a[data-enc-email]').each(function () {
         parseTitle(this);
     });
