@@ -417,7 +417,18 @@ class Filters
 
             if ( class_exists( 'DOMDocument' ) ) {
                 $dom = new DOMDocument();
-                @$dom->loadHTML($content);
+
+                // DOMDocument uses an HTML4 parser, so modern/third-party markup
+                // (inline SVG such as <defs>/<linearGradient>, HTML5 elements) makes
+                // libxml emit "Tag X invalid in Entity" warnings. The page still
+                // renders fine, so route those into libxml's internal buffer instead
+                // of PHP's error stream — otherwise Query Monitor (which surfaces even
+                // @-silenced errors) and debug.log fill up with harmless noise. Restore
+                // the previous state afterwards so we don't affect other code.
+                $libxml_previous = libxml_use_internal_errors( true );
+                $dom->loadHTML( $content );
+                libxml_clear_errors();
+                libxml_use_internal_errors( $libxml_previous );
 
                 //Filter html attributes
                 if ( ! $no_attribute_validation ) {
