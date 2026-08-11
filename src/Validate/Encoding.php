@@ -218,7 +218,7 @@ class Encoding
         $email     = '';
         $class_ori = ( empty( $attrs['class'] ) ) ? '' : $attrs['class'];
         $custom_class = (string) $this->getSetting( 'class_name', true );
-        $show_encoded_check = (string) $this->getSetting( 'show_encoded_check', true );
+        $show_encoded_check = $this->getSettingBool( 'show_encoded_check', true );
 
         if ( ! empty( $attrs['href'] ) && stripos( $attrs['href'], 'mailto:' ) === 0 ) {
             $email = substr( $attrs['href'], 7 );
@@ -283,7 +283,7 @@ class Encoding
         $link = $this->filterPlainEmails( $link, null, 'char_encode' );
 
         // mark link as successfullly encoded (for admin users)
-        if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check !== '' ) {
+        if ( current_user_can( $this->getAdminCap( 'frontend-display-security-check' ) ) && $show_encoded_check ) {
             $link .= $this->get_encoded_email_icon();
         }
 
@@ -304,7 +304,7 @@ class Encoding
         $email     = '';
         $class_ori = ( empty( $attrs['class'] ) ) ? '' : $attrs['class'];
         $custom_class = (string) $this->getSetting( 'class_name', true );
-        $show_encoded_check = (string) $this->getSetting( 'show_encoded_check', true );
+        $show_encoded_check = $this->getSettingBool( 'show_encoded_check', true );
 
         // set user-defined class
         if ( $custom_class !== '' && strpos( $class_ori, $custom_class ) === false ) {
