@@ -4,7 +4,7 @@ Tags: anti spam, protect, encode, encrypt, hide, antispam, phone number, spambot
 Requires at least: 4.7
 Requires PHP: 7.4
 Tested up to: 7.0
-Stable tag: 2.5.3
+Stable tag: 2.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Author URI: https://wpemailencoder.com/
@@ -125,6 +125,10 @@ Yes, since version 1.3.0 also special characters are supported.
 * Title icon on Admin Options Page was made by [Jack Cai](http://www.doublejdesign.co.uk/)
 
 == Changelog ==
+
+= 2.5.4: September 18, 2026 =
+* Fix: The admin-only "encoded successfully" padlock icon kept showing next to protected emails even with the Security Check setting turned off (since 2.5.0)
+* Fix: Icon-only phone links (for example the phone icon in a Team or social block) lost their icon when "tel" was added to Protect custom href attributes — the icon is now kept and the phone number is still encoded
 
 = 2.5.3: August 4, 2026 =
 * Fix: Prevented harmless "DOMDocument::loadHTML(): Tag ... invalid" PHP warnings (visible in Query Monitor and debug logs) on pages containing inline SVG, for example sites built with Elementor or HivePress
