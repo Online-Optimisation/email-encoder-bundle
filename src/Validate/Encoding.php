@@ -335,7 +335,18 @@ class Encoding
 
         $link .= '>';
 
-        $link .= $this->get_protected_display( $display, $protection_method );
+        // Only scramble the display when it's plain text (classic <a href="tel:x">x</a> shape).
+        // Builder/block icons (<a href="tel:x"><img>/<svg></a>) must be kept intact: the CSS
+        // method strips tags (icon vanishes) and the image method can't derive an email from
+        // markup (broken <img src="">). The href itself is still entity-encoded above.
+        // Mirrors the same guard in create_protected_mailto().
+        $display_is_plain_text = ( trim( (string) $display ) === trim( wp_strip_all_tags( (string) $display ) ) );
+
+        if ( $display_is_plain_text ) {
+            $link .= $this->get_protected_display( $display, $protection_method );
+        } else {
+            $link .= $display;
+        }
 
         $link .= '</a>';
 
