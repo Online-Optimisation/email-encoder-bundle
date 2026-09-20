@@ -328,9 +328,12 @@ class Encoding
             $attrs['class'] = ( empty( $attrs['class'] ) ) ? $custom_class : $attrs['class'] . ' ' . $custom_class;
         }
 
-        // check title for email address
-        if ( ! empty( $attrs['title'] ) ) {
-            $attrs['title'] = antispambot( $attrs['title'] );
+        // Entity-encode attributes that repeat the protected value. Elementor's Icon Box copies
+        // the title (the phone number) into aria-label on its icon link.
+        foreach ( [ 'title', 'aria-label' ] as $text_attr ) {
+            if ( ! empty( $attrs[ $text_attr ] ) ) {
+                $attrs[ $text_attr ] = antispambot( $attrs[ $text_attr ] );
+            }
         }
 
         // set ignore to data-attribute to prevent being processed by WPEL plugin
@@ -352,17 +355,17 @@ class Encoding
 
         $link .= '>';
 
-        // Only scramble the display when it's plain text (classic <a href="tel:x">x</a> shape).
-        // Builder/block icons (<a href="tel:x"><img>/<svg></a>) must be kept intact: the CSS
-        // method strips tags (icon vanishes) and the image method can't derive an email from
-        // markup (broken <img src="">). The href itself is still entity-encoded above.
-        // Mirrors the same guard in create_protected_mailto().
+        // Plain text display (classic <a href="tel:x">x</a>) is scrambled whole. When the display
+        // holds markup — a builder icon (<img>/<svg>), or Elementor's icon + text spans — the
+        // elements must stay real DOM: scrambling the whole thing strips the icon (CSS method) or
+        // re-injects it inside an extra <span> that breaks the builder's flex layout (JS method).
+        // So only the text nodes are scrambled. Mirrors create_protected_mailto().
         $display_is_plain_text = ( trim( (string) $display ) === trim( wp_strip_all_tags( (string) $display ) ) );
 
         if ( $display_is_plain_text ) {
             $link .= $this->get_protected_display( $display, $protection_method );
         } else {
-            $link .= $display;
+            $link .= $this->protect_display_text_nodes( (string) $display, $protection_method );
         }
 
         $link .= '</a>';
@@ -377,6 +380,40 @@ class Encoding
 
 
         return $link;
+    }
+
+    /**
+     * Scramble the text nodes of an HTML fragment while leaving its elements in place.
+     * Inline <svg>, <script> and <style> blocks are passed through untouched.
+     *
+     * @param string $display
+     * @param string|null $protection_method
+     * @return string
+     */
+    private function protect_display_text_nodes( string $display, $protection_method = null ): string
+    {
+        $parts = preg_split(
+            '#(<svg\b.*?</svg\s*>|<script\b.*?</script\s*>|<style\b.*?</style\s*>|<[^>]+>)#is',
+            $display,
+            -1,
+            PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
+        );
+
+        if ( ! is_array( $parts ) ) {
+            return $display;
+        }
+
+        $out = '';
+
+        foreach ( $parts as $part ) {
+            if ( $part[0] === '<' || trim( $part ) === '' ) {
+                $out .= $part;
+            } else {
+                $out .= $this->get_protected_display( $part, $protection_method );
+            }
+        }
+
+        return $out;
     }
 
     /**
@@ -401,20 +438,28 @@ class Encoding
             $display = $display[0];
         }
 
+        // generate_email_image_url() requires a bare email address (it runs is_email()
+        // on its input and returns false otherwise). Page builders like WPForms, Divi,
+        // and Elementor commonly wrap the email in HTML (<span>x</span>) or surround
+        // it with copy ("Contact us at x"), which previously produced <img src="">
+        // — the broken image rendered invisibly on the frontend.
+        $email_for_image = '';
         if ( $convert_plain_to_image ) {
-            // generate_email_image_url() requires a bare email address (it runs is_email()
-            // on its input and returns false otherwise). Page builders like WPForms, Divi,
-            // and Elementor commonly wrap the email in HTML (<span>x</span>) or surround
-            // it with copy ("Contact us at x"), which previously produced <img src="">
-            // — the broken image rendered invisibly on the frontend.
-            $email_for_image = $display;
-            if ( ! is_email( (string) $display ) ) {
+            if ( is_email( (string) $display ) ) {
+                $email_for_image = (string) $display;
+            } else {
                 $stripped = wp_strip_all_tags( (string) $display );
                 $email_match = [];
                 if ( preg_match( $this->settings()->get_email_regex(), $stripped, $email_match ) ) {
                     $email_for_image = $email_match[0];
                 }
             }
+        }
+
+        // Image mode can only draw emails. A display with no email in it (a phone number from
+        // a protected tel: link, any custom href text) falls through to the JS/CSS methods
+        // instead of emitting a broken <img src="">.
+        if ( $email_for_image !== '' ) {
             $display = '<img src="' . $this->generate_email_image_url( $email_for_image ) . '" />';
         } elseif ( $protection_method !== 'without_javascript' ) {
             $display = $this->dynamic_js_email_encoding( $display, $protection_text );
