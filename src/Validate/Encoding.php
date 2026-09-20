@@ -268,7 +268,24 @@ class Encoding
         // still embedded in it so bots can't harvest them.
         $display_is_just_email = ( $email !== '' && trim( strip_tags( (string) $display ) ) === $email );
 
-        if ( $display_is_just_email ) {
+        if ( $display_is_just_email && trim( (string) $display ) !== $email ) {
+            // The email is wrapped in markup, e.g. Elementor's icon list:
+            // <span class="icon"><svg/></span><span class="text">x</span>. Scramble only the
+            // email text and leave the wrapping elements as real DOM. Passing the whole display
+            // through get_protected_display() re-injects it inside one extra <span>, so the icon
+            // and text stop being direct (flex) children of the anchor and the email drops onto
+            // its own row; the CSS method would strip the icon altogether.
+            $self = $this;
+            // (?![^<]*>) skips occurrences inside a tag, i.e. attribute values.
+            $link .= (string) preg_replace_callback(
+                '/' . preg_quote( $email, '/' ) . '(?![^<]*>)/',
+                function ( $match ) use ( $self, $protection_method ) {
+                    return $self->get_protected_display( $match[0], $protection_method );
+                },
+                (string) $display,
+                1
+            );
+        } elseif ( $display_is_just_email ) {
             $link .= $this->get_protected_display( $display, $protection_method );
         } else {
             $link .= $display;
