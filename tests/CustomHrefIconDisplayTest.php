@@ -60,6 +60,47 @@ final class CustomHrefIconDisplayTest extends TestCase
         $this->assertStringNotContainsString( '<img src=""', $result, 'Image mode must not replace the icon with a broken image' );
     }
 
+    /**
+     * Elementor Icon List: <a href="tel:x"><span icon><svg/></span><span text>number</span></a>.
+     * The icon must stay real DOM (flex child of the anchor) but the number inside the text
+     * span must not be left readable. Nassim, Asana 1218593609473108.
+     */
+    public function test_number_wrapped_in_markup_is_scrambled_but_wrappers_kept(): void
+    {
+        $icon    = '<span class="elementor-icon-list-icon"><svg viewBox="0 0 512 512"><path d="M0 0h512v512H0z"/></svg></span>';
+        $display = $icon . '<span class="elementor-icon-list-text">+31 (0)6 449 078 67</span>';
+
+        $result = $this->encoding->create_protected_href_att( $display, [ 'href' => 'tel:+31 (0)6 449 078 67' ], 'with_javascript' );
+
+        $this->assertStringContainsString( $icon, $result );
+        $this->assertStringContainsString( '<span class="elementor-icon-list-text"><span id="eeb-', $result );
+        $this->assertStringNotContainsString( '449 078 67', $result, 'The phone number must not be left in plain text' );
+    }
+
+    /** Elementor Icon Box copies the title (the phone number) into aria-label on its icon link. */
+    public function test_aria_label_repeating_the_number_is_encoded(): void
+    {
+        $result = $this->encoding->create_protected_href_att(
+            '<svg viewBox="0 0 24 24"><path d="M0 0h24v24H0z"/></svg>',
+            [ 'href' => 'tel:+31644907867', 'aria-label' => '+31 (0)6 449 078 67' ],
+            'with_javascript'
+        );
+
+        $this->assertStringContainsString( 'aria-label="', $result );
+        $this->assertStringNotContainsString( '449 078 67', $result );
+    }
+
+    /** Image mode can only draw emails; a phone number used to come out as <img src="">. */
+    public function test_image_mode_does_not_break_a_plain_number_display(): void
+    {
+        $this->setImageMode( true );
+
+        $result = $this->encoding->create_protected_href_att( '+31 6 449 078 67', [ 'href' => 'tel:+31644907867' ], 'with_javascript' );
+
+        $this->assertStringNotContainsString( '<img src=""', $result );
+        $this->assertStringNotContainsString( '449 078 67', $result );
+    }
+
     public function test_plain_text_display_is_still_scrambled(): void
     {
         $result = $this->encoding->create_protected_href_att( '+49 123 45678', [ 'href' => 'tel:+4912345678' ], 'without_javascript' );
