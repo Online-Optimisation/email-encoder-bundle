@@ -1,0 +1,112 @@
+# Same three gates as the local /check skill: PHPStan on the whole tree,
+# PHPCS on the PHP files a change touches, and the PHPUnit suite against a
+# real WordPress install.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PHP_VERSION: '8.4'
+
+jobs:
+  phpstan:
+    name: PHPStan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          coverage: none
+
+      - run: composer install --no-interaction --no-progress
+
+      - run: vendor/bin/phpstan analyse -c phpstan.neon --memory-limit=1G --no-progress
+
+  phpcs:
+    name: PHPCS (changed files)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          coverage: none
+
+      - run: composer install --no-interaction --no-progress
+
+      # Older files in src/ still have known PSR-12 issues, so only the files a
+      # change touches are linted, as /check does. core/ is legacy and out of scope.
+      - name: Lint changed PHP files in src/
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE=$(git rev-parse HEAD~1)
+          fi
+          CHANGED=$(git diff --name-only --diff-filter=ACMR "$BASE"...HEAD -- 'src/*.php' 'src/**/*.php')
+          if [ -z "$CHANGED" ]; then
+            echo "No PHP changes in src/, nothing to lint."
+            exit 0
+          fi
+          echo "$CHANGED"
+          echo "$CHANGED" | xargs vendor/bin/phpcs
+
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    env:
+      WP_ROOT: /tmp/wordpress
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: wordpress
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mysqli, gd
+          tools: wp-cli
+          coverage: none
+
+      - run: composer install --no-interaction --no-progress
+
+      # The suite boots WordPress through wp-load.php (tests/bootstrap.php), so it
+      # needs an installed site with the plugin active, like the DDEV setup.
+      - name: Install WordPress with the plugin active
+        run: |
+          wp core download --path="$WP_ROOT"
+          wp config create --path="$WP_ROOT" --dbname=wordpress --dbuser=root --dbpass=root --dbhost=127.0.0.1:3306
+          wp core install --path="$WP_ROOT" --url=http://localhost --title=CI --admin_user=admin --admin_password=admin --admin_email=ci@example.com --skip-email
+          ln -s "$GITHUB_WORKSPACE" "$WP_ROOT/wp-content/plugins/email-encoder-bundle"
+          wp plugin activate email-encoder-bundle --path="$WP_ROOT"
+
+      - name: Run PHPUnit
+        working-directory: ${{ env.WP_ROOT }}/wp-content/plugins/email-encoder-bundle
+        run: vendor/bin/phpunit
