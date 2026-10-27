@@ -206,9 +206,11 @@
 
 /* WP-injected admin notices that slip past .wp-header-end (rare but possible
    for warnings/errors from other plugins) — render them as flat cards below
-   the header instead of WP's default thin strip. */
-.eeb-wrap > .notice {
-	display: flex !important;
+   the header instead of WP's default thin strip. Notices that are meant to be
+   hidden (.hidden, [hidden], .hide-if-js) are left alone, and display is not
+   !important so an inline display:none set by their owner still wins. */
+.eeb-wrap > .notice:not(.hidden):not([hidden]):not(.hide-if-js) {
+	display: flex;
 	align-items: center !important;
 	gap: 12px !important;
 	background: var(--eeb-card) !important;
